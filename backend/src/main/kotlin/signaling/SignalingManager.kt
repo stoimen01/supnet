@@ -1,13 +1,21 @@
 package signaling
 
+import com.google.protobuf.InvalidProtocolBufferException
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.DefaultWebSocketServerSession
 import kotlinx.coroutines.channels.*
+import proto.*
+import proto.SignalingIntent.IntentCase.*
+import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 
 class SignalingManager {
+
+    data class User(val id: String, val name: String)
+
+    data class Room(val id: UUID, val name: String, val users: List<User>)
 
     private val usersCounter = AtomicInteger()
 
@@ -15,17 +23,9 @@ class SignalingManager {
 
     private val members = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
 
-    private val lastMessages = LinkedList<String>()
+    private val rooms = ConcurrentHashMap<UUID, Room>()
 
-    /**
-     * Handles a [member] idenitified by its session id renaming [to] a specific name.
-     */
-    private suspend fun memberRenamed(member: String, to: String) {
-        // Re-sets the member name.
-        val oldName = memberNames.put(member, to) ?: member
-        // Notifies everyone in the server about this change.
-        broadcast("server", "Member renamed from $oldName to $to")
-    }
+    private val lastMessages = LinkedList<String>()
 
     /**
      * Handles that a [member] with a specific [socket] left the server.
@@ -41,20 +41,6 @@ class SignalingManager {
             val name = memberNames.remove(member) ?: member
             broadcast("server", "Member left: $name.")
         }
-    }
-
-    /**
-     * Handles the 'who' command by sending the member a list of all all members names in the server.
-     */
-    private suspend fun who(sender: String) {
-        members[sender]?.send(Frame.Text(memberNames.values.joinToString(prefix = "[server::who] ")))
-    }
-
-    /**
-     * Handles the 'help' command by sending the member a list of available commands.
-     */
-    private suspend fun help(sender: String) {
-        members[sender]?.send(Frame.Text("[server::help] Possible commands are: /user, /help and /who"))
     }
 
     /**
@@ -84,6 +70,12 @@ class SignalingManager {
             if (lastMessages.size > 100) {
                 lastMessages.removeFirst()
             }
+        }
+    }
+
+    private suspend fun broadcastBinary(buffer: ByteBuffer) {
+        members.values.forEach { socket ->
+            socket.send(Frame.Binary(true, buffer))
         }
     }
 
@@ -128,60 +120,85 @@ class SignalingManager {
         val list = members.computeIfAbsent(id) { CopyOnWriteArrayList<WebSocketSession>() }
         list.add(wsSession)
 
-        if (list.size == 1) {
-            broadcast("server", "Member joined: $name.")
-        }
-
-        val messages = synchronized(lastMessages) { lastMessages.toList() }
-        for (message in messages) {
-            wsSession.send(Frame.Text(message))
-        }
+        // sending current rooms info
+        val infoEvent = rooms.values.toRoomsInfo()
+        wsSession.send(Frame.Binary(true, ByteBuffer.wrap(infoEvent.toByteArray())))
 
         try {
             wsSession.incoming.consumeEach { frame ->
-                if (frame is Frame.Text) {
-                    receivedMessage(id, frame.readText())
+                // accepting only binary frames
+                if (frame !is Frame.Binary) return@consumeEach
+                try {
+                    val intent = SignalingIntent.parseFrom(frame.readBytes())
+                    when (intent.intentCase) {
+                        CREATE_ROOM -> onCreateRoom(User(id, name), intent.createRoom)
+                        JOIN_ROOM -> onJoinRoom(intent.joinRoom)
+                        LEAVE_ROOM -> onLeaveRoom(intent.leaveRoom)
+                        INTENT_NOT_SET, null -> { /* no-op */ }
+                    }
+                } catch (ex : InvalidProtocolBufferException) {
+                    wsSession.close(CloseReason(CloseReason.Codes.PROTOCOL_ERROR, "INVALID INTENT"))
                 }
             }
         } finally {
             memberLeft(id, wsSession)
         }
-
     }
 
+    private suspend fun onCreateRoom(creator: User, intent: CreateRoomIntent) {
 
-    private suspend fun receivedMessage(id: String, command: String) {
-        // We are going to handle commands (text starting with '/') and normal messages
-        when {
-            // The command `who` responds the user about all the member names connected to the user.
-            command.startsWith("/who") -> who(id)
-            // The command `user` allows the user to set its name.
-            command.startsWith("/user") -> {
-                // We strip the command part to get the rest of the parameters.
-                // In this case the only parameter is the user's newName.
-                val newName = command.removePrefix("/user").trim()
-                // We verify that it is a valid name (in terms of length) to prevent abusing
-                when {
-                    newName.isEmpty() -> sendTo(id, "signalingManager::help", "/user [newName]")
-                    newName.length > 50 -> sendTo(
-                            id,
-                            "signalingManager::help",
-                            "new name is too long: 50 characters limit"
-                    )
-                    else -> memberRenamed(id, newName)
-                }
+        // check if room with such name already exists
+        val room = rooms.values.find { it.name == intent.name }
+        if (room == null) {
+
+            val newRoom = rooms.computeIfAbsent(UUID.randomUUID()) {
+                Room(it, intent.name, listOf(creator))
             }
-            // The command 'help' allows users to get a list of available commands.
-            command.startsWith("/help") -> help(id)
-            // If no commands matched at this point, we notify about it.
-            command.startsWith("/") -> sendTo(
-                    id,
-                    "signalingManager::help",
-                    "Unknown command ${command.takeWhile { !it.isWhitespace() }}"
-            )
-            // Handle a normal message.
-            else -> message(id, command)
+
+            val event = RoomCreatedEvent.newBuilder()
+                    .setId(newRoom.id.toString())
+                    .setName(newRoom.name)
+                    .build()
+
+            broadcastBinary(ByteBuffer.wrap(event.toByteArray()))
+
+        } else {
+
+
         }
     }
 
+
+    private fun onLeaveRoom(intent: LeaveRoomIntent) {
+
+
+    }
+
+    private fun onJoinRoom(intent: JoinRoomIntent) {
+
+    }
+
+
+
+    private fun MutableCollection<Room>.toRoomsInfo(): RoomsInfoEvent {
+        val rooms = map { (id, name, users) ->
+
+            val roomMembers = users.map {
+                proto.User.newBuilder()
+                        .setId(it.id)
+                        .setName(it.name)
+                        .build()
+            }
+
+            return@map proto.Room.newBuilder()
+                    .setId(id.toString())
+                    .addAllMembers(roomMembers)
+                    .setName(name)
+                    .build()
+        }
+
+        return RoomsInfoEvent.newBuilder()
+                .addAllList(rooms)
+                .build()
+    }
 }

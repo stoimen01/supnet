@@ -1,0 +1,80 @@
+syntax = "proto3";
+
+option java_package = "proto";
+option java_multiple_files = true;
+
+message User {
+    string id = 1;
+    string name = 2;
+}
+
+message Room {
+    string id = 1;
+    string name = 2;
+    repeated User members = 3;
+}
+
+/* SIGNALING INTENTS */
+
+message CreateRoomIntent {
+    string name = 1;
+}
+
+message JoinRoomIntent {
+    string id = 1;
+}
+
+message LeaveRoomIntent {
+    string id = 1;
+}
+
+message SignalingIntent {
+    oneof intent {
+        CreateRoomIntent create_room = 1;
+        JoinRoomIntent join_room = 2;
+        LeaveRoomIntent leave_room = 3;
+    }
+}
+
+/* SIGNALING EVENTS */
+
+message RoomsInfoEvent {
+    repeated Room list = 1;
+}
+
+message RoomCreatedEvent {
+    string id = 1;
+    string name = 2;
+}
+
+message RoomNotCreatedEvent {
+}
+
+message RoomJoinedEvent {
+    string id = 1;
+}
+
+message RoomNotJoinedEvent {
+}
+
+message RoomLeavedEvent {
+    string id = 1;
+}
+
+message RoomNotLeavedEvent {
+}
+
+message SignalingEvent {
+    oneof event {
+        RoomsInfoEvent rooms_info = 1;
+
+        RoomCreatedEvent room_created = 2;
+        RoomNotCreatedEvent room_not_created = 3;
+
+        RoomJoinedEvent room_joined = 4;
+        RoomNotJoinedEvent room_not_joined = 5;
+
+        RoomLeavedEvent room_leaved = 6;
+        RoomNotLeavedEvent room_not_leaved = 7;
+    }
+}
