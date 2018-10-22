@@ -1,66 +1,21 @@
 package signaling
 
 import io.ktor.http.cio.websocket.*
-import io.ktor.sessions.sessions
 import io.ktor.websocket.DefaultWebSocketServerSession
 import kotlinx.coroutines.channels.*
-import sessions.SessionsManager
 import java.util.*
 import java.util.concurrent.*
 import java.util.concurrent.atomic.*
 
-class SignalingManager(
-        private val sessionsManager: SessionsManager
-) {
-    /**
-     * Atomic counter used to get unique user-names based on the maxiumum users the server had.
-     */
+class SignalingManager {
+
     private val usersCounter = AtomicInteger()
 
-    /**
-     * A concurrent map associating session IDs to user names.
-     */
     private val memberNames = ConcurrentHashMap<String, String>()
 
-    /**
-     * Associates a session-id to a set of websockets.
-     * Since a browser is able to open several tabs and windows with the same cookies and thus the same session.
-     * There might be several opened sockets for the same client.
-     */
     private val members = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
 
-    /**
-     * A list of the lastest messages sent to the server, so new members can have a bit context of what
-     * other people was talking about before joining.
-     */
     private val lastMessages = LinkedList<String>()
-
-    /**
-     * Handles that a member identified with a session id and a socket joined.
-     */
-    private suspend fun memberJoin(member: String, socket: WebSocketSession) {
-        // Checks if this user is already registered in the server and gives him/her a temporal name if required.
-        val name = memberNames.computeIfAbsent(member) { "user${usersCounter.incrementAndGet()}" }
-
-        // Associates this socket to the member id.
-        // Since iteration is likely to happen more frequently than adding new items,
-        // we use a `CopyOnWriteArrayList`.
-        // We could also control how many sockets we would allow per client here before appending it.
-        // But since this is a sample we are not doing it.
-        val list = members.computeIfAbsent(member) { CopyOnWriteArrayList<WebSocketSession>() }
-        list.add(socket)
-
-        // Only when joining the first socket for a member notifies the rest of the users.
-        if (list.size == 1) {
-            broadcast("server", "Member joined: $name.")
-        }
-
-        // Sends the user the latest messages from this server to let the member have a bit context.
-        val messages = synchronized(lastMessages) { lastMessages.toList() }
-        for (message in messages) {
-            socket.send(Frame.Text(message))
-        }
-    }
 
     /**
      * Handles a [member] idenitified by its session id renaming [to] a specific name.
@@ -166,27 +121,30 @@ class SignalingManager(
         }
     }
 
-    suspend fun onNewSession(wsSession: DefaultWebSocketServerSession) {
+    suspend fun onNewSession(id: String, wsSession: DefaultWebSocketServerSession) {
 
-        val sessions = wsSession.call.sessions
+        val name = memberNames.computeIfAbsent(id) { "user${usersCounter.incrementAndGet()}" }
 
-        val session = sessionsManager.getSession(sessions)
+        val list = members.computeIfAbsent(id) { CopyOnWriteArrayList<WebSocketSession>() }
+        list.add(wsSession)
 
-        if (!sessionsManager.isSessionValid(sessions)) {
-            wsSession.close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Session is invalid or unavailable"))
-            return
+        if (list.size == 1) {
+            broadcast("server", "Member joined: $name.")
         }
 
-        memberJoin(session!!.id, wsSession)
+        val messages = synchronized(lastMessages) { lastMessages.toList() }
+        for (message in messages) {
+            wsSession.send(Frame.Text(message))
+        }
 
         try {
             wsSession.incoming.consumeEach { frame ->
                 if (frame is Frame.Text) {
-                    receivedMessage(session.id, frame.readText())
+                    receivedMessage(id, frame.readText())
                 }
             }
         } finally {
-            memberLeft(session.id, wsSession)
+            memberLeft(id, wsSession)
         }
 
     }

@@ -9,34 +9,25 @@ import signaling.SignalingManager
 import java.time.Duration
 
 fun Application.main() {
-    ChatApplication().apply { main() }
-}
 
-class ChatApplication {
+    val signalingManager = SignalingManager()
+    val sessionManager = SessionsManager(signalingManager)
 
-    private val sessionManager = SessionsManager()
-    private val signalingManager = SignalingManager(sessionManager)
+    install(DefaultHeaders)
 
-    fun Application.main() {
+    install(Sessions) {
+        cookie<SignalingSession>("SESSION")
+    }
 
-        install(DefaultHeaders)
+    install(WebSockets) {
+        pingPeriod = Duration.ofMinutes(1)
+    }
 
-        install(Sessions) {
-            cookie<SignalingSession>("SESSION")
-        }
+    intercept(ApplicationCallPipeline.Features) {
+        sessionManager.onSession(call.sessions)
+    }
 
-        install(WebSockets) {
-            pingPeriod = Duration.ofMinutes(1)
-        }
-
-        intercept(ApplicationCallPipeline.Features) {
-            sessionManager.onSession(call.sessions)
-        }
-
-        routing {
-            webSocket("/signaling") {
-                signalingManager.onNewSession(this)
-            }
-        }
+    routing {
+        webSocket("/signaling", sessionManager::onNewSession)
     }
 }
