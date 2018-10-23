@@ -8,12 +8,12 @@ public interface LeaveRoomIntentOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional string id = 1;</code>
+   * <code>optional string room_id = 1;</code>
    */
-  java.lang.String getId();
+  java.lang.String getRoomId();
   /**
-   * <code>optional string id = 1;</code>
+   * <code>optional string room_id = 1;</code>
    */
   com.google.protobuf.ByteString
-      getIdBytes();
+      getRoomIdBytes();
 }

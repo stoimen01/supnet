@@ -70,5 +70,14 @@ public interface SignalingEventOrBuilder extends
    */
   proto.RoomNotLeavedEventOrBuilder getRoomNotLeavedOrBuilder();
 
+  /**
+   * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+   */
+  proto.RoomRemovedEvent getRoomRemoved();
+  /**
+   * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+   */
+  proto.RoomRemovedEventOrBuilder getRoomRemovedOrBuilder();
+
   public proto.SignalingEvent.EventCase getEventCase();
 }

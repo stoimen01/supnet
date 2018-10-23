@@ -55,6 +55,11 @@ public final class Signaling {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_RoomCreatedEvent_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_RoomRemovedEvent_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_RoomRemovedEvent_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_RoomNotCreatedEvent_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -95,28 +100,30 @@ public final class Signaling {
     java.lang.String[] descriptorData = {
       "\n\017signaling.proto\" \n\004User\022\n\n\002id\030\001 \001(\t\022\014\n" +
       "\004name\030\002 \001(\t\"8\n\004Room\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030" +
-      "\002 \001(\t\022\026\n\007members\030\003 \003(\0132\005.User\" \n\020CreateR" +
-      "oomIntent\022\014\n\004name\030\001 \001(\t\"\034\n\016JoinRoomInten" +
-      "t\022\n\n\002id\030\001 \001(\t\"\035\n\017LeaveRoomIntent\022\n\n\002id\030\001" +
-      " \001(\t\"\223\001\n\017SignalingIntent\022(\n\013create_room\030" +
-      "\001 \001(\0132\021.CreateRoomIntentH\000\022$\n\tjoin_room\030" +
-      "\002 \001(\0132\017.JoinRoomIntentH\000\022&\n\nleave_room\030\003" +
-      " \001(\0132\020.LeaveRoomIntentH\000B\010\n\006intent\"%\n\016Ro" +
-      "omsInfoEvent\022\023\n\004list\030\001 \003(\0132\005.Room\",\n\020Roo",
-      "mCreatedEvent\022\n\n\002id\030\001 \001(\t\022\014\n\004name\030\002 \001(\t\"" +
-      "\025\n\023RoomNotCreatedEvent\"\035\n\017RoomJoinedEven" +
-      "t\022\n\n\002id\030\001 \001(\t\"\024\n\022RoomNotJoinedEvent\"\035\n\017R" +
-      "oomLeavedEvent\022\n\n\002id\030\001 \001(\t\"\024\n\022RoomNotLea" +
-      "vedEvent\"\317\002\n\016SignalingEvent\022%\n\nrooms_inf" +
-      "o\030\001 \001(\0132\017.RoomsInfoEventH\000\022)\n\014room_creat" +
-      "ed\030\002 \001(\0132\021.RoomCreatedEventH\000\0220\n\020room_no" +
-      "t_created\030\003 \001(\0132\024.RoomNotCreatedEventH\000\022" +
-      "\'\n\013room_joined\030\004 \001(\0132\020.RoomJoinedEventH\000" +
-      "\022.\n\017room_not_joined\030\005 \001(\0132\023.RoomNotJoine",
-      "dEventH\000\022\'\n\013room_leaved\030\006 \001(\0132\020.RoomLeav" +
-      "edEventH\000\022.\n\017room_not_leaved\030\007 \001(\0132\023.Roo" +
-      "mNotLeavedEventH\000B\007\n\005eventB\t\n\005protoP\001b\006p" +
-      "roto3"
+      "\002 \001(\t\022\026\n\007members\030\003 \003(\0132\005.User\"%\n\020CreateR" +
+      "oomIntent\022\021\n\troom_name\030\001 \001(\t\"!\n\016JoinRoom" +
+      "Intent\022\017\n\007room_id\030\001 \001(\t\"\"\n\017LeaveRoomInte" +
+      "nt\022\017\n\007room_id\030\001 \001(\t\"\223\001\n\017SignalingIntent\022" +
+      "(\n\013create_room\030\001 \001(\0132\021.CreateRoomIntentH" +
+      "\000\022$\n\tjoin_room\030\002 \001(\0132\017.JoinRoomIntentH\000\022" +
+      "&\n\nleave_room\030\003 \001(\0132\020.LeaveRoomIntentH\000B" +
+      "\010\n\006intent\"%\n\016RoomsInfoEvent\022\023\n\004list\030\001 \003(",
+      "\0132\005.Room\",\n\020RoomCreatedEvent\022\n\n\002id\030\001 \001(\t" +
+      "\022\014\n\004name\030\002 \001(\t\"\036\n\020RoomRemovedEvent\022\n\n\002id" +
+      "\030\001 \001(\t\"\025\n\023RoomNotCreatedEvent\"\035\n\017RoomJoi" +
+      "nedEvent\022\n\n\002id\030\001 \001(\t\"\024\n\022RoomNotJoinedEve" +
+      "nt\"\035\n\017RoomLeavedEvent\022\n\n\002id\030\001 \001(\t\"\024\n\022Roo" +
+      "mNotLeavedEvent\"\372\002\n\016SignalingEvent\022%\n\nro" +
+      "oms_info\030\001 \001(\0132\017.RoomsInfoEventH\000\022)\n\014roo" +
+      "m_created\030\002 \001(\0132\021.RoomCreatedEventH\000\0220\n\020" +
+      "room_not_created\030\003 \001(\0132\024.RoomNotCreatedE" +
+      "ventH\000\022\'\n\013room_joined\030\004 \001(\0132\020.RoomJoined",
+      "EventH\000\022.\n\017room_not_joined\030\005 \001(\0132\023.RoomN" +
+      "otJoinedEventH\000\022\'\n\013room_leaved\030\006 \001(\0132\020.R" +
+      "oomLeavedEventH\000\022.\n\017room_not_leaved\030\007 \001(" +
+      "\0132\023.RoomNotLeavedEventH\000\022)\n\014room_removed" +
+      "\030\010 \001(\0132\021.RoomRemovedEventH\000B\007\n\005eventB\t\n\005" +
+      "protoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -147,19 +154,19 @@ public final class Signaling {
     internal_static_CreateRoomIntent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_CreateRoomIntent_descriptor,
-        new java.lang.String[] { "Name", });
+        new java.lang.String[] { "RoomName", });
     internal_static_JoinRoomIntent_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_JoinRoomIntent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_JoinRoomIntent_descriptor,
-        new java.lang.String[] { "Id", });
+        new java.lang.String[] { "RoomId", });
     internal_static_LeaveRoomIntent_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_LeaveRoomIntent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_LeaveRoomIntent_descriptor,
-        new java.lang.String[] { "Id", });
+        new java.lang.String[] { "RoomId", });
     internal_static_SignalingIntent_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_SignalingIntent_fieldAccessorTable = new
@@ -178,42 +185,48 @@ public final class Signaling {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RoomCreatedEvent_descriptor,
         new java.lang.String[] { "Id", "Name", });
-    internal_static_RoomNotCreatedEvent_descriptor =
+    internal_static_RoomRemovedEvent_descriptor =
       getDescriptor().getMessageTypes().get(8);
+    internal_static_RoomRemovedEvent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_RoomRemovedEvent_descriptor,
+        new java.lang.String[] { "Id", });
+    internal_static_RoomNotCreatedEvent_descriptor =
+      getDescriptor().getMessageTypes().get(9);
     internal_static_RoomNotCreatedEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RoomNotCreatedEvent_descriptor,
         new java.lang.String[] { });
     internal_static_RoomJoinedEvent_descriptor =
-      getDescriptor().getMessageTypes().get(9);
+      getDescriptor().getMessageTypes().get(10);
     internal_static_RoomJoinedEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RoomJoinedEvent_descriptor,
         new java.lang.String[] { "Id", });
     internal_static_RoomNotJoinedEvent_descriptor =
-      getDescriptor().getMessageTypes().get(10);
+      getDescriptor().getMessageTypes().get(11);
     internal_static_RoomNotJoinedEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RoomNotJoinedEvent_descriptor,
         new java.lang.String[] { });
     internal_static_RoomLeavedEvent_descriptor =
-      getDescriptor().getMessageTypes().get(11);
+      getDescriptor().getMessageTypes().get(12);
     internal_static_RoomLeavedEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RoomLeavedEvent_descriptor,
         new java.lang.String[] { "Id", });
     internal_static_RoomNotLeavedEvent_descriptor =
-      getDescriptor().getMessageTypes().get(12);
+      getDescriptor().getMessageTypes().get(13);
     internal_static_RoomNotLeavedEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RoomNotLeavedEvent_descriptor,
         new java.lang.String[] { });
     internal_static_SignalingEvent_descriptor =
-      getDescriptor().getMessageTypes().get(13);
+      getDescriptor().getMessageTypes().get(14);
     internal_static_SignalingEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SignalingEvent_descriptor,
-        new java.lang.String[] { "RoomsInfo", "RoomCreated", "RoomNotCreated", "RoomJoined", "RoomNotJoined", "RoomLeaved", "RoomNotLeaved", "Event", });
+        new java.lang.String[] { "RoomsInfo", "RoomCreated", "RoomNotCreated", "RoomJoined", "RoomNotJoined", "RoomLeaved", "RoomNotLeaved", "RoomRemoved", "Event", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

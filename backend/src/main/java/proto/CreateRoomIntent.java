@@ -15,7 +15,7 @@ public  final class CreateRoomIntent extends
     super(builder);
   }
   private CreateRoomIntent() {
-    name_ = "";
+    roomName_ = "";
   }
 
   @java.lang.Override
@@ -46,7 +46,7 @@ public  final class CreateRoomIntent extends
           case 10: {
             java.lang.String s = input.readStringRequireUtf8();
 
-            name_ = s;
+            roomName_ = s;
             break;
           }
         }
@@ -72,34 +72,34 @@ public  final class CreateRoomIntent extends
             proto.CreateRoomIntent.class, proto.CreateRoomIntent.Builder.class);
   }
 
-  public static final int NAME_FIELD_NUMBER = 1;
-  private volatile java.lang.Object name_;
+  public static final int ROOM_NAME_FIELD_NUMBER = 1;
+  private volatile java.lang.Object roomName_;
   /**
-   * <code>optional string name = 1;</code>
+   * <code>optional string room_name = 1;</code>
    */
-  public java.lang.String getName() {
-    java.lang.Object ref = name_;
+  public java.lang.String getRoomName() {
+    java.lang.Object ref = roomName_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      name_ = s;
+      roomName_ = s;
       return s;
     }
   }
   /**
-   * <code>optional string name = 1;</code>
+   * <code>optional string room_name = 1;</code>
    */
   public com.google.protobuf.ByteString
-      getNameBytes() {
-    java.lang.Object ref = name_;
+      getRoomNameBytes() {
+    java.lang.Object ref = roomName_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      name_ = b;
+      roomName_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -118,8 +118,8 @@ public  final class CreateRoomIntent extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getNameBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
+    if (!getRoomNameBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, roomName_);
     }
   }
 
@@ -128,8 +128,8 @@ public  final class CreateRoomIntent extends
     if (size != -1) return size;
 
     size = 0;
-    if (!getNameBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
+    if (!getRoomNameBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, roomName_);
     }
     memoizedSize = size;
     return size;
@@ -147,8 +147,8 @@ public  final class CreateRoomIntent extends
     proto.CreateRoomIntent other = (proto.CreateRoomIntent) obj;
 
     boolean result = true;
-    result = result && getName()
-        .equals(other.getName());
+    result = result && getRoomName()
+        .equals(other.getRoomName());
     return result;
   }
 
@@ -159,8 +159,8 @@ public  final class CreateRoomIntent extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + NAME_FIELD_NUMBER;
-    hash = (53 * hash) + getName().hashCode();
+    hash = (37 * hash) + ROOM_NAME_FIELD_NUMBER;
+    hash = (53 * hash) + getRoomName().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -279,7 +279,7 @@ public  final class CreateRoomIntent extends
     }
     public Builder clear() {
       super.clear();
-      name_ = "";
+      roomName_ = "";
 
       return this;
     }
@@ -303,7 +303,7 @@ public  final class CreateRoomIntent extends
 
     public proto.CreateRoomIntent buildPartial() {
       proto.CreateRoomIntent result = new proto.CreateRoomIntent(this);
-      result.name_ = name_;
+      result.roomName_ = roomName_;
       onBuilt();
       return result;
     }
@@ -345,8 +345,8 @@ public  final class CreateRoomIntent extends
 
     public Builder mergeFrom(proto.CreateRoomIntent other) {
       if (other == proto.CreateRoomIntent.getDefaultInstance()) return this;
-      if (!other.getName().isEmpty()) {
-        name_ = other.name_;
+      if (!other.getRoomName().isEmpty()) {
+        roomName_ = other.roomName_;
         onChanged();
       }
       onChanged();
@@ -375,71 +375,71 @@ public  final class CreateRoomIntent extends
       return this;
     }
 
-    private java.lang.Object name_ = "";
+    private java.lang.Object roomName_ = "";
     /**
-     * <code>optional string name = 1;</code>
+     * <code>optional string room_name = 1;</code>
      */
-    public java.lang.String getName() {
-      java.lang.Object ref = name_;
+    public java.lang.String getRoomName() {
+      java.lang.Object ref = roomName_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        name_ = s;
+        roomName_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
       }
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>optional string room_name = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getNameBytes() {
-      java.lang.Object ref = name_;
+        getRoomNameBytes() {
+      java.lang.Object ref = roomName_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        name_ = b;
+        roomName_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>optional string room_name = 1;</code>
      */
-    public Builder setName(
+    public Builder setRoomName(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      name_ = value;
+      roomName_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>optional string room_name = 1;</code>
      */
-    public Builder clearName() {
+    public Builder clearRoomName() {
       
-      name_ = getDefaultInstance().getName();
+      roomName_ = getDefaultInstance().getRoomName();
       onChanged();
       return this;
     }
     /**
-     * <code>optional string name = 1;</code>
+     * <code>optional string room_name = 1;</code>
      */
-    public Builder setNameBytes(
+    public Builder setRoomNameBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      name_ = value;
+      roomName_ = value;
       onChanged();
       return this;
     }

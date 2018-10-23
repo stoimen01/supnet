@@ -8,12 +8,12 @@ public interface CreateRoomIntentOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional string name = 1;</code>
+   * <code>optional string room_name = 1;</code>
    */
-  java.lang.String getName();
+  java.lang.String getRoomName();
   /**
-   * <code>optional string name = 1;</code>
+   * <code>optional string room_name = 1;</code>
    */
   com.google.protobuf.ByteString
-      getNameBytes();
+      getRoomNameBytes();
 }

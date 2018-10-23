@@ -15,7 +15,7 @@ public  final class JoinRoomIntent extends
     super(builder);
   }
   private JoinRoomIntent() {
-    id_ = "";
+    roomId_ = "";
   }
 
   @java.lang.Override
@@ -46,7 +46,7 @@ public  final class JoinRoomIntent extends
           case 10: {
             java.lang.String s = input.readStringRequireUtf8();
 
-            id_ = s;
+            roomId_ = s;
             break;
           }
         }
@@ -72,34 +72,34 @@ public  final class JoinRoomIntent extends
             proto.JoinRoomIntent.class, proto.JoinRoomIntent.Builder.class);
   }
 
-  public static final int ID_FIELD_NUMBER = 1;
-  private volatile java.lang.Object id_;
+  public static final int ROOM_ID_FIELD_NUMBER = 1;
+  private volatile java.lang.Object roomId_;
   /**
-   * <code>optional string id = 1;</code>
+   * <code>optional string room_id = 1;</code>
    */
-  public java.lang.String getId() {
-    java.lang.Object ref = id_;
+  public java.lang.String getRoomId() {
+    java.lang.Object ref = roomId_;
     if (ref instanceof java.lang.String) {
       return (java.lang.String) ref;
     } else {
       com.google.protobuf.ByteString bs = 
           (com.google.protobuf.ByteString) ref;
       java.lang.String s = bs.toStringUtf8();
-      id_ = s;
+      roomId_ = s;
       return s;
     }
   }
   /**
-   * <code>optional string id = 1;</code>
+   * <code>optional string room_id = 1;</code>
    */
   public com.google.protobuf.ByteString
-      getIdBytes() {
-    java.lang.Object ref = id_;
+      getRoomIdBytes() {
+    java.lang.Object ref = roomId_;
     if (ref instanceof java.lang.String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8(
               (java.lang.String) ref);
-      id_ = b;
+      roomId_ = b;
       return b;
     } else {
       return (com.google.protobuf.ByteString) ref;
@@ -118,8 +118,8 @@ public  final class JoinRoomIntent extends
 
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getIdBytes().isEmpty()) {
-      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
+    if (!getRoomIdBytes().isEmpty()) {
+      com.google.protobuf.GeneratedMessageV3.writeString(output, 1, roomId_);
     }
   }
 
@@ -128,8 +128,8 @@ public  final class JoinRoomIntent extends
     if (size != -1) return size;
 
     size = 0;
-    if (!getIdBytes().isEmpty()) {
-      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
+    if (!getRoomIdBytes().isEmpty()) {
+      size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, roomId_);
     }
     memoizedSize = size;
     return size;
@@ -147,8 +147,8 @@ public  final class JoinRoomIntent extends
     proto.JoinRoomIntent other = (proto.JoinRoomIntent) obj;
 
     boolean result = true;
-    result = result && getId()
-        .equals(other.getId());
+    result = result && getRoomId()
+        .equals(other.getRoomId());
     return result;
   }
 
@@ -159,8 +159,8 @@ public  final class JoinRoomIntent extends
     }
     int hash = 41;
     hash = (19 * hash) + getDescriptorForType().hashCode();
-    hash = (37 * hash) + ID_FIELD_NUMBER;
-    hash = (53 * hash) + getId().hashCode();
+    hash = (37 * hash) + ROOM_ID_FIELD_NUMBER;
+    hash = (53 * hash) + getRoomId().hashCode();
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -279,7 +279,7 @@ public  final class JoinRoomIntent extends
     }
     public Builder clear() {
       super.clear();
-      id_ = "";
+      roomId_ = "";
 
       return this;
     }
@@ -303,7 +303,7 @@ public  final class JoinRoomIntent extends
 
     public proto.JoinRoomIntent buildPartial() {
       proto.JoinRoomIntent result = new proto.JoinRoomIntent(this);
-      result.id_ = id_;
+      result.roomId_ = roomId_;
       onBuilt();
       return result;
     }
@@ -345,8 +345,8 @@ public  final class JoinRoomIntent extends
 
     public Builder mergeFrom(proto.JoinRoomIntent other) {
       if (other == proto.JoinRoomIntent.getDefaultInstance()) return this;
-      if (!other.getId().isEmpty()) {
-        id_ = other.id_;
+      if (!other.getRoomId().isEmpty()) {
+        roomId_ = other.roomId_;
         onChanged();
       }
       onChanged();
@@ -375,71 +375,71 @@ public  final class JoinRoomIntent extends
       return this;
     }
 
-    private java.lang.Object id_ = "";
+    private java.lang.Object roomId_ = "";
     /**
-     * <code>optional string id = 1;</code>
+     * <code>optional string room_id = 1;</code>
      */
-    public java.lang.String getId() {
-      java.lang.Object ref = id_;
+    public java.lang.String getRoomId() {
+      java.lang.Object ref = roomId_;
       if (!(ref instanceof java.lang.String)) {
         com.google.protobuf.ByteString bs =
             (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
-        id_ = s;
+        roomId_ = s;
         return s;
       } else {
         return (java.lang.String) ref;
       }
     }
     /**
-     * <code>optional string id = 1;</code>
+     * <code>optional string room_id = 1;</code>
      */
     public com.google.protobuf.ByteString
-        getIdBytes() {
-      java.lang.Object ref = id_;
+        getRoomIdBytes() {
+      java.lang.Object ref = roomId_;
       if (ref instanceof String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
                 (java.lang.String) ref);
-        id_ = b;
+        roomId_ = b;
         return b;
       } else {
         return (com.google.protobuf.ByteString) ref;
       }
     }
     /**
-     * <code>optional string id = 1;</code>
+     * <code>optional string room_id = 1;</code>
      */
-    public Builder setId(
+    public Builder setRoomId(
         java.lang.String value) {
       if (value == null) {
     throw new NullPointerException();
   }
   
-      id_ = value;
+      roomId_ = value;
       onChanged();
       return this;
     }
     /**
-     * <code>optional string id = 1;</code>
+     * <code>optional string room_id = 1;</code>
      */
-    public Builder clearId() {
+    public Builder clearRoomId() {
       
-      id_ = getDefaultInstance().getId();
+      roomId_ = getDefaultInstance().getRoomId();
       onChanged();
       return this;
     }
     /**
-     * <code>optional string id = 1;</code>
+     * <code>optional string room_id = 1;</code>
      */
-    public Builder setIdBytes(
+    public Builder setRoomIdBytes(
         com.google.protobuf.ByteString value) {
       if (value == null) {
     throw new NullPointerException();
   }
   checkByteStringIsUtf8(value);
       
-      id_ = value;
+      roomId_ = value;
       onChanged();
       return this;
     }

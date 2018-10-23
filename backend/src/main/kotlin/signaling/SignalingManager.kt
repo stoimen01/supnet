@@ -6,6 +6,7 @@ import io.ktor.websocket.DefaultWebSocketServerSession
 import kotlinx.coroutines.channels.*
 import proto.*
 import proto.SignalingIntent.IntentCase.*
+import java.lang.IllegalArgumentException
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.*
@@ -15,114 +16,27 @@ class SignalingManager {
 
     data class User(val id: String, val name: String)
 
-    data class Room(val id: UUID, val name: String, val users: List<User>)
+    data class Room(val id: UUID, val name: String, val members: MutableSet<User>)
 
     private val usersCounter = AtomicInteger()
 
-    private val memberNames = ConcurrentHashMap<String, String>()
+    private val users = ConcurrentHashMap<String, User>()
 
-    private val members = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
+    private val connections = ConcurrentHashMap<String, MutableList<WebSocketSession>>()
 
     private val rooms = ConcurrentHashMap<UUID, Room>()
 
-    private val lastMessages = LinkedList<String>()
-
-    /**
-     * Handles that a [member] with a specific [socket] left the server.
-     */
-    private suspend fun memberLeft(member: String, socket: WebSocketSession) {
-        // Removes the socket connection for this member
-        val connections = members[member]
-        connections?.remove(socket)
-
-        // If no more sockets are connected for this member, let's remove it from the server
-        // and notify the rest of the users about this event.
-        if (connections != null && connections.isEmpty()) {
-            val name = memberNames.remove(member) ?: member
-            broadcast("server", "Member left: $name.")
-        }
-    }
-
-    /**
-     * Handles sending to a [recipient] from a [sender] a [message].
-     *
-     * Both [recipient] and [sender] are identified by its session-id.
-     */
-    private suspend fun sendTo(recipient: String, sender: String, message: String) {
-        members[recipient]?.send(Frame.Text("[$sender] $message"))
-    }
-
-    /**
-     * Handles a [message] sent from a [sender] by notifying the rest of the users.
-     */
-    private suspend fun message(sender: String, message: String) {
-        // Pre-format the message to be send, to prevent doing it for all the users or connected sockets.
-        val name = memberNames[sender] ?: sender
-        val formatted = "[$name] $message"
-
-        // Sends this pre-formatted message to all the members in the server.
-        broadcast(formatted)
-
-        // Appends the message to the list of [lastMessages] and caps that collection to 100 items to prevent
-        // growing too much.
-        synchronized(lastMessages) {
-            lastMessages.add(formatted)
-            if (lastMessages.size > 100) {
-                lastMessages.removeFirst()
-            }
-        }
-    }
-
-    private suspend fun broadcastBinary(buffer: ByteBuffer) {
-        members.values.forEach { socket ->
-            socket.send(Frame.Binary(true, buffer))
-        }
-    }
-
-    /**
-     * Sends a [message] to all the members in the server, including all the connections per member.
-     */
-    private suspend fun broadcast(message: String) {
-        members.values.forEach { socket ->
-            socket.send(Frame.Text(message))
-        }
-    }
-
-    /**
-     * Sends a [message] coming from a [sender] to all the members in the server, including all the connections per member.
-     */
-    private suspend fun broadcast(sender: String, message: String) {
-        val name = memberNames[sender] ?: sender
-        broadcast("[$name] $message")
-    }
-
-    /**
-     * Sends a [message] to a list of [this] [WebSocketSession].
-     */
-    private suspend fun List<WebSocketSession>.send(frame: Frame) {
-        forEach {
-            try {
-                it.send(frame.copy())
-            } catch (t: Throwable) {
-                try {
-                    it.close(CloseReason(CloseReason.Codes.PROTOCOL_ERROR, ""))
-                } catch (ignore: ClosedSendChannelException) {
-                    // at some point it will get closed
-                }
-            }
-        }
-    }
-
     suspend fun onNewSession(id: String, wsSession: DefaultWebSocketServerSession) {
 
-        val name = memberNames.computeIfAbsent(id) { "user${usersCounter.incrementAndGet()}" }
+        val user = users.computeIfAbsent(id) {
+            User(id = it, name = "user${usersCounter.incrementAndGet()}")
+        }
 
-        val list = members.computeIfAbsent(id) { CopyOnWriteArrayList<WebSocketSession>() }
+        val list = connections.computeIfAbsent(id) { CopyOnWriteArrayList<WebSocketSession>() }
         list.add(wsSession)
 
         // sending current rooms info
-        val infoEvent = rooms.values.toRoomsInfo()
-        wsSession.send(Frame.Binary(true, ByteBuffer.wrap(infoEvent.toByteArray())))
+        wsSession.send(buildEvent { roomsInfo = rooms.values.toRoomsInfo() })
 
         try {
             wsSession.incoming.consumeEach { frame ->
@@ -131,9 +45,9 @@ class SignalingManager {
                 try {
                     val intent = SignalingIntent.parseFrom(frame.readBytes())
                     when (intent.intentCase) {
-                        CREATE_ROOM -> onCreateRoom(User(id, name), intent.createRoom)
-                        JOIN_ROOM -> onJoinRoom(intent.joinRoom)
-                        LEAVE_ROOM -> onLeaveRoom(intent.leaveRoom)
+                        CREATE_ROOM -> onCreateRoom(user, intent.createRoom)
+                        JOIN_ROOM -> onJoinRoom(user, intent.joinRoom)
+                        LEAVE_ROOM -> onLeaveRoom(user, intent.leaveRoom)
                         INTENT_NOT_SET, null -> { /* no-op */ }
                     }
                 } catch (ex : InvalidProtocolBufferException) {
@@ -141,49 +55,157 @@ class SignalingManager {
                 }
             }
         } finally {
-            memberLeft(id, wsSession)
+            onDisconnected(user, wsSession)
+        }
+    }
+
+    private suspend fun onDisconnected(user: User, wsSession: DefaultWebSocketServerSession) {
+        val (id) = user
+
+        // Removes the socket connection for this member
+        val usrConnections = connections[id]
+        usrConnections?.remove(wsSession)
+
+        if (usrConnections != null && usrConnections.isEmpty()) {
+
+            users.remove(id)
+
+            rooms.values.forEach { room ->
+                if (room.members.remove(user)) {
+                    if (room.members.isEmpty()) {
+                        rooms.remove(room.id)
+                        broadcastEvent { setRoomRemoved(RoomRemovedEvent.newBuilder().setId(room.id.toString())) }
+                    } else {
+                        val leaveEvent = buildEvent { setRoomLeaved(RoomLeavedEvent.newBuilder().setId(id)) }
+                        room.members.forEach { connections[it.id]?.send(leaveEvent) }
+                    }
+                }
+            }
         }
     }
 
     private suspend fun onCreateRoom(creator: User, intent: CreateRoomIntent) {
 
-        // check if room with such name already exists
-        val room = rooms.values.find { it.name == intent.name }
-        if (room == null) {
+        // room name should not be empty
+        if (intent.roomName.isEmpty()) {
+            sendEvent(creator.id) { setRoomNotCreated(RoomNotCreatedEvent.newBuilder()) }
+            return
+        }
 
-            val newRoom = rooms.computeIfAbsent(UUID.randomUUID()) {
-                Room(it, intent.name, listOf(creator))
+        // check if room with such name already exists
+        val room = rooms.values.find { it.name == intent.roomName }
+        if (room != null) {
+            sendEvent(creator.id) { setRoomNotCreated(RoomNotCreatedEvent.newBuilder()) }
+            return
+        }
+
+        val newRoom = rooms.computeIfAbsent(UUID.randomUUID()) {
+            Room(it, intent.roomName, hashSetOf(creator))
+        }
+
+        val event = RoomCreatedEvent.newBuilder()
+                .setId(newRoom.id.toString())
+                .setName(newRoom.name)
+
+        broadcastEvent { setRoomCreated(event) }
+    }
+
+    private suspend fun onLeaveRoom(leaver: User, intent: LeaveRoomIntent) {
+        try {
+            val room = rooms[intent.roomId.toUUID()]
+            if (room == null) {
+                sendEvent(leaver.id) { setRoomNotLeaved(RoomNotLeavedEvent.newBuilder()) }
+                return
             }
 
-            val event = RoomCreatedEvent.newBuilder()
-                    .setId(newRoom.id.toString())
-                    .setName(newRoom.name)
-                    .build()
+            val isRemoved = synchronized(room.members) { room.members.remove(leaver) }
+            if (!isRemoved) {
+                sendEvent(leaver.id) { setRoomNotLeaved(RoomNotLeavedEvent.newBuilder()) }
+                return
+            }
 
-            broadcastBinary(ByteBuffer.wrap(event.toByteArray()))
+            val leaveEvent = buildEvent { setRoomLeaved(RoomLeavedEvent.newBuilder().setId(leaver.id)) }
+            sendEvent(leaver.id, leaveEvent)
 
-        } else {
+            if (room.members.isEmpty()) {
+                rooms.remove(room.id)
+                broadcastEvent { setRoomRemoved(RoomRemovedEvent.newBuilder().setId(room.id.toString())) }
+            } else {
+                room.members.forEach { connections[it.id]?.send(leaveEvent) }
+            }
 
-
+        } catch (ex: IllegalArgumentException) {
+            sendEvent(leaver.id) { setRoomNotLeaved(RoomNotLeavedEvent.newBuilder()) }
         }
     }
 
+    private suspend fun onJoinRoom(user: User, intent: JoinRoomIntent) {
+        try {
+            val room = rooms[intent.roomId.toUUID()]
+            if (room == null) {
+                sendEvent(user.id) { setRoomNotJoined(RoomNotJoinedEvent.newBuilder()) }
+                return
+            }
 
-    private fun onLeaveRoom(intent: LeaveRoomIntent) {
+            val isAdded = synchronized(room.members) { room.members.add(user) }
+            if (!isAdded) {
+                sendEvent(user.id) { setRoomNotJoined(RoomNotJoinedEvent.newBuilder()) }
+                return
+            }
 
+            // Notify everyone in the room including the newly joined user that he joined successfully
+            val event = buildEvent { setRoomJoined(RoomJoinedEvent.newBuilder().setId(user.id)) }
+            room.members.forEach { connections[it.id]?.send(event) }
 
+        } catch (ex: IllegalArgumentException) {
+            sendEvent(user.id) { setRoomNotJoined(RoomNotJoinedEvent.newBuilder()) }
+        }
     }
 
-    private fun onJoinRoom(intent: JoinRoomIntent) {
-
+    private fun buildEvent(builder: SignalingEvent.Builder.() -> Unit): SignalingEvent {
+        return SignalingEvent.newBuilder()
+                .apply { builder() }
+                .build()
     }
 
+    /* Sends event to all connections for all users */
+    private suspend fun broadcastEvent(builder: SignalingEvent.Builder.() -> Unit) {
+        val event = buildEvent(builder)
+        connections.values.forEach { sockets ->
+            sockets.send(event)
+        }
+    }
 
+    /* Sends event to all connections for particular user */
+    private suspend fun sendEvent(id: String, builder: SignalingEvent.Builder.() -> Unit) {
+        val event = buildEvent(builder)
+        connections[id]?.send(event)
+    }
+
+    private suspend fun sendEvent(id: String, event: SignalingEvent) {
+        connections[id]?.send(event)
+    }
+
+    private suspend fun List<WebSocketSession>.send(event: SignalingEvent) = forEach { it.send(event) }
+
+    private suspend fun WebSocketSession.send(event: SignalingEvent) {
+        try {
+            send(Frame.Binary(true, ByteBuffer.wrap(event.toByteArray())))
+        } catch (t: Throwable) {
+            try {
+                close(CloseReason(CloseReason.Codes.PROTOCOL_ERROR, ""))
+            } catch (ignore: ClosedSendChannelException) {
+                // at some point it will get closed
+            }
+        }
+    }
+
+    private fun String.toUUID() = UUID.fromString(this)
 
     private fun MutableCollection<Room>.toRoomsInfo(): RoomsInfoEvent {
-        val rooms = map { (id, name, users) ->
+        val rooms = map { (id, name, members) ->
 
-            val roomMembers = users.map {
+            val roomMembers = members.map {
                 proto.User.newBuilder()
                         .setId(it.id)
                         .setName(it.name)

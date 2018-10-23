@@ -140,6 +140,20 @@ public  final class SignalingEvent extends
             eventCase_ = 7;
             break;
           }
+          case 66: {
+            proto.RoomRemovedEvent.Builder subBuilder = null;
+            if (eventCase_ == 8) {
+              subBuilder = ((proto.RoomRemovedEvent) event_).toBuilder();
+            }
+            event_ =
+                input.readMessage(proto.RoomRemovedEvent.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((proto.RoomRemovedEvent) event_);
+              event_ = subBuilder.buildPartial();
+            }
+            eventCase_ = 8;
+            break;
+          }
         }
       }
     } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -174,6 +188,7 @@ public  final class SignalingEvent extends
     ROOM_NOT_JOINED(5),
     ROOM_LEAVED(6),
     ROOM_NOT_LEAVED(7),
+    ROOM_REMOVED(8),
     EVENT_NOT_SET(0);
     private final int value;
     private EventCase(int value) {
@@ -196,6 +211,7 @@ public  final class SignalingEvent extends
         case 5: return ROOM_NOT_JOINED;
         case 6: return ROOM_LEAVED;
         case 7: return ROOM_NOT_LEAVED;
+        case 8: return ROOM_REMOVED;
         case 0: return EVENT_NOT_SET;
         default: return null;
       }
@@ -351,6 +367,26 @@ public  final class SignalingEvent extends
     return proto.RoomNotLeavedEvent.getDefaultInstance();
   }
 
+  public static final int ROOM_REMOVED_FIELD_NUMBER = 8;
+  /**
+   * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+   */
+  public proto.RoomRemovedEvent getRoomRemoved() {
+    if (eventCase_ == 8) {
+       return (proto.RoomRemovedEvent) event_;
+    }
+    return proto.RoomRemovedEvent.getDefaultInstance();
+  }
+  /**
+   * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+   */
+  public proto.RoomRemovedEventOrBuilder getRoomRemovedOrBuilder() {
+    if (eventCase_ == 8) {
+       return (proto.RoomRemovedEvent) event_;
+    }
+    return proto.RoomRemovedEvent.getDefaultInstance();
+  }
+
   private byte memoizedIsInitialized = -1;
   public final boolean isInitialized() {
     byte isInitialized = memoizedIsInitialized;
@@ -383,6 +419,9 @@ public  final class SignalingEvent extends
     }
     if (eventCase_ == 7) {
       output.writeMessage(7, (proto.RoomNotLeavedEvent) event_);
+    }
+    if (eventCase_ == 8) {
+      output.writeMessage(8, (proto.RoomRemovedEvent) event_);
     }
   }
 
@@ -418,6 +457,10 @@ public  final class SignalingEvent extends
     if (eventCase_ == 7) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(7, (proto.RoomNotLeavedEvent) event_);
+    }
+    if (eventCase_ == 8) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(8, (proto.RoomRemovedEvent) event_);
     }
     memoizedSize = size;
     return size;
@@ -467,6 +510,10 @@ public  final class SignalingEvent extends
         result = result && getRoomNotLeaved()
             .equals(other.getRoomNotLeaved());
         break;
+      case 8:
+        result = result && getRoomRemoved()
+            .equals(other.getRoomRemoved());
+        break;
       case 0:
       default:
     }
@@ -508,6 +555,10 @@ public  final class SignalingEvent extends
       case 7:
         hash = (37 * hash) + ROOM_NOT_LEAVED_FIELD_NUMBER;
         hash = (53 * hash) + getRoomNotLeaved().hashCode();
+        break;
+      case 8:
+        hash = (37 * hash) + ROOM_REMOVED_FIELD_NUMBER;
+        hash = (53 * hash) + getRoomRemoved().hashCode();
         break;
       case 0:
       default:
@@ -703,6 +754,13 @@ public  final class SignalingEvent extends
           result.event_ = roomNotLeavedBuilder_.build();
         }
       }
+      if (eventCase_ == 8) {
+        if (roomRemovedBuilder_ == null) {
+          result.event_ = event_;
+        } else {
+          result.event_ = roomRemovedBuilder_.build();
+        }
+      }
       result.eventCase_ = eventCase_;
       onBuilt();
       return result;
@@ -772,6 +830,10 @@ public  final class SignalingEvent extends
         }
         case ROOM_NOT_LEAVED: {
           mergeRoomNotLeaved(other.getRoomNotLeaved());
+          break;
+        }
+        case ROOM_REMOVED: {
+          mergeRoomRemoved(other.getRoomRemoved());
           break;
         }
         case EVENT_NOT_SET: {
@@ -1727,6 +1789,136 @@ public  final class SignalingEvent extends
       eventCase_ = 7;
       onChanged();;
       return roomNotLeavedBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        proto.RoomRemovedEvent, proto.RoomRemovedEvent.Builder, proto.RoomRemovedEventOrBuilder> roomRemovedBuilder_;
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public proto.RoomRemovedEvent getRoomRemoved() {
+      if (roomRemovedBuilder_ == null) {
+        if (eventCase_ == 8) {
+          return (proto.RoomRemovedEvent) event_;
+        }
+        return proto.RoomRemovedEvent.getDefaultInstance();
+      } else {
+        if (eventCase_ == 8) {
+          return roomRemovedBuilder_.getMessage();
+        }
+        return proto.RoomRemovedEvent.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public Builder setRoomRemoved(proto.RoomRemovedEvent value) {
+      if (roomRemovedBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        event_ = value;
+        onChanged();
+      } else {
+        roomRemovedBuilder_.setMessage(value);
+      }
+      eventCase_ = 8;
+      return this;
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public Builder setRoomRemoved(
+        proto.RoomRemovedEvent.Builder builderForValue) {
+      if (roomRemovedBuilder_ == null) {
+        event_ = builderForValue.build();
+        onChanged();
+      } else {
+        roomRemovedBuilder_.setMessage(builderForValue.build());
+      }
+      eventCase_ = 8;
+      return this;
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public Builder mergeRoomRemoved(proto.RoomRemovedEvent value) {
+      if (roomRemovedBuilder_ == null) {
+        if (eventCase_ == 8 &&
+            event_ != proto.RoomRemovedEvent.getDefaultInstance()) {
+          event_ = proto.RoomRemovedEvent.newBuilder((proto.RoomRemovedEvent) event_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          event_ = value;
+        }
+        onChanged();
+      } else {
+        if (eventCase_ == 8) {
+          roomRemovedBuilder_.mergeFrom(value);
+        }
+        roomRemovedBuilder_.setMessage(value);
+      }
+      eventCase_ = 8;
+      return this;
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public Builder clearRoomRemoved() {
+      if (roomRemovedBuilder_ == null) {
+        if (eventCase_ == 8) {
+          eventCase_ = 0;
+          event_ = null;
+          onChanged();
+        }
+      } else {
+        if (eventCase_ == 8) {
+          eventCase_ = 0;
+          event_ = null;
+        }
+        roomRemovedBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public proto.RoomRemovedEvent.Builder getRoomRemovedBuilder() {
+      return getRoomRemovedFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    public proto.RoomRemovedEventOrBuilder getRoomRemovedOrBuilder() {
+      if ((eventCase_ == 8) && (roomRemovedBuilder_ != null)) {
+        return roomRemovedBuilder_.getMessageOrBuilder();
+      } else {
+        if (eventCase_ == 8) {
+          return (proto.RoomRemovedEvent) event_;
+        }
+        return proto.RoomRemovedEvent.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>optional .RoomRemovedEvent room_removed = 8;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        proto.RoomRemovedEvent, proto.RoomRemovedEvent.Builder, proto.RoomRemovedEventOrBuilder> 
+        getRoomRemovedFieldBuilder() {
+      if (roomRemovedBuilder_ == null) {
+        if (!(eventCase_ == 8)) {
+          event_ = proto.RoomRemovedEvent.getDefaultInstance();
+        }
+        roomRemovedBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            proto.RoomRemovedEvent, proto.RoomRemovedEvent.Builder, proto.RoomRemovedEventOrBuilder>(
+                (proto.RoomRemovedEvent) event_,
+                getParentForChildren(),
+                isClean());
+        event_ = null;
+      }
+      eventCase_ = 8;
+      onChanged();;
+      return roomRemovedBuilder_;
     }
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {

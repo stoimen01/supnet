@@ -17,15 +17,15 @@ message Room {
 /* SIGNALING INTENTS */
 
 message CreateRoomIntent {
-    string name = 1;
+    string room_name = 1;
 }
 
 message JoinRoomIntent {
-    string id = 1;
+    string room_id = 1;
 }
 
 message LeaveRoomIntent {
-    string id = 1;
+    string room_id = 1;
 }
 
 message SignalingIntent {
@@ -45,6 +45,10 @@ message RoomsInfoEvent {
 message RoomCreatedEvent {
     string id = 1;
     string name = 2;
+}
+
+message RoomRemovedEvent {
+    string id = 1;
 }
 
 message RoomNotCreatedEvent {
@@ -76,5 +80,7 @@ message SignalingEvent {
 
         RoomLeavedEvent room_leaved = 6;
         RoomNotLeavedEvent room_not_leaved = 7;
+
+        RoomRemovedEvent room_removed = 8;
     }
 }
