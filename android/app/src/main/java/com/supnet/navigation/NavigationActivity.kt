@@ -1,10 +1,11 @@
 package com.supnet.navigation
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.supnet.R
+import com.supnet.rooms.RoomsFragment
 import com.supnet.xirsys.Xirsys
 import com.supnet.xirsys.XirsysResponse
 import org.webrtc.PeerConnection
@@ -17,6 +18,12 @@ class NavigationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
+
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.fragmentContainer, RoomsFragment(), null)
+                .commit()
+        }
 
     }
 
