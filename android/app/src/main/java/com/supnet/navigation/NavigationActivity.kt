@@ -3,11 +3,19 @@ package com.supnet.navigation
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
-import com.supnet.rooms.RoomsFragment
+import com.supnet.Supnet
+import com.supnet.common.hide
+import com.supnet.common.show
+import com.supnet.navigation.NavigationViewModel.NavigationCommand.*
+import com.supnet.rooms.list.RoomsListFragment
 import com.supnet.xirsys.Xirsys
 import com.supnet.xirsys.XirsysResponse
+import kotlinx.android.synthetic.main.activity_navigation.*
 import org.webrtc.PeerConnection
 import retrofit2.Call
 import retrofit2.Callback
@@ -15,17 +23,46 @@ import retrofit2.Response
 
 class NavigationActivity : AppCompatActivity() {
 
+    private val viewModel by lazy {
+        ViewModelProviders
+            .of(this, NavigationViewModelFactory(Supnet.signalingClient))
+            .get(NavigationViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
 
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .add(R.id.fragmentContainer, RoomsFragment(), null)
-                .commit()
-        }
+        barLoading.hide()
+        txtConnectionError.hide()
 
+        viewModel.getCommands().observe(this, Observer {
+            onNavigationCommand(it.getData())
+        })
     }
+
+    private fun onNavigationCommand(cmd: NavigationViewModel.NavigationCommand?) = when (cmd) {
+        SHOW_LOADING -> {
+            barLoading.show()
+            txtConnectionError.hide()
+        }
+        SHOW_ROOMS -> {
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.fragmentContainer, RoomsListFragment(), null)
+                .commit()
+            barLoading.hide()
+            txtConnectionError.hide()
+            Toast.makeText(this, "CONNECTED", Toast.LENGTH_SHORT).show()
+        }
+        SHOW_ERROR -> {
+            fragmentContainer.hide()
+            barLoading.hide()
+            txtConnectionError.show()
+        }
+        null -> { /* no-op */ }
+    }
+
+
 
     private fun getIceServers() {
 
@@ -64,11 +101,5 @@ class NavigationActivity : AppCompatActivity() {
             }
         })
     }
-
-
-
-
-
-
 
 }

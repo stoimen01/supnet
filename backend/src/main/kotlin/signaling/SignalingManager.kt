@@ -45,9 +45,15 @@ class SignalingManager {
                 try {
                     val intent = SignalingIntent.parseFrom(frame.readBytes())
                     when (intent.intentCase) {
-                        CREATE_ROOM -> onCreateRoom(user, intent.createRoom)
-                        JOIN_ROOM -> onJoinRoom(user, intent.joinRoom)
-                        LEAVE_ROOM -> onLeaveRoom(user, intent.leaveRoom)
+                        CREATE_ROOM -> {
+                            onCreateRoom(user, intent.createRoom)
+                        }
+                        JOIN_ROOM -> {
+                            onJoinRoom(user, intent.joinRoom)
+                        }
+                        LEAVE_ROOM -> {
+                            onLeaveRoom(user, intent.leaveRoom)
+                        }
                         INTENT_NOT_SET, null -> { /* no-op */ }
                     }
                 } catch (ex : InvalidProtocolBufferException) {

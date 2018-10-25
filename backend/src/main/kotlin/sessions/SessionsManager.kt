@@ -16,16 +16,19 @@ class SessionsManager(
 
     fun onSession(sessions: CurrentSession) {
         if (sessions.get<SignalingSession>() == null) {
+            println("SESSION CREATED")
             sessions.set(SignalingSession(nextNonce()))
         }
     }
 
-    suspend fun onNewSession(wsSession: DefaultWebSocketServerSession) {
+    suspend fun onWsSession(wsSession: DefaultWebSocketServerSession) {
 
         val session = wsSession.call.sessions.get<SignalingSession>()
         if (session == null) {
+            println("WS SESSION CLOSED")
             wsSession.close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Session is invalid or unavailable"))
         } else {
+            println("WS SESSION PASSED")
             signalingManager.onNewSession(session.id, wsSession)
         }
 

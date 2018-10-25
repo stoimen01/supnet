@@ -1,7 +1,7 @@
 package com.supnet
 
 import android.app.Application
-import com.supnet.rooms.SignalingClient
+import com.supnet.signaling.SignalingClient
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 

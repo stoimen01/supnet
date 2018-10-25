@@ -1,4 +1,5 @@
 import io.ktor.application.*
+import io.ktor.features.CallLogging
 import io.ktor.features.DefaultHeaders
 import io.ktor.routing.*
 import io.ktor.sessions.*
@@ -15,6 +16,8 @@ fun Application.main() {
 
     install(DefaultHeaders)
 
+    install(CallLogging)
+
     install(Sessions) {
         cookie<SignalingSession>("SESSION")
     }
@@ -28,6 +31,8 @@ fun Application.main() {
     }
 
     routing {
-        webSocket("/signaling", sessionManager::onNewSession)
+        webSocket("/signaling") {
+            sessionManager.onWsSession(this)
+        }
     }
 }

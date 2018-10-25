@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Supnet</string>
     <string name="btn_join">Join</string>
+    <string name="txt_connection_closed">Connection closed !</string>
+    <string name="room_creator_label">Enter room name :</string>
+    <string name="create">Create</string>
+    <string name="cancel">Cancel</string>
 </resources>

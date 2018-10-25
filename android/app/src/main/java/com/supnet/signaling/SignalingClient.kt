@@ -1,15 +1,18 @@
-package com.supnet.rooms
+package com.supnet.signaling
 
 import com.google.protobuf.InvalidProtocolBufferException
-import com.supnet.rooms.SignalingClient.RoomsEvent.*
-import com.supnet.rooms.SignalingClient.SignalingState.*
+import com.supnet.signaling.SignalingClient.RoomsEvent.*
+import com.supnet.signaling.SignalingClient.SignalingState.*
 import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import okhttp3.*
 import okio.ByteString
+import proto.CreateRoomIntent
 import proto.SignalingEvent
 import proto.SignalingEvent.EventCase.*
+import proto.SignalingIntent
+import java.nio.ByteBuffer
 
 class SignalingClient(
     private val client: OkHttpClient
@@ -25,11 +28,14 @@ class SignalingClient(
     sealed class RoomsEvent {
         data class RoomsReceived(val rooms: List<String>) : RoomsEvent()
         object RoomCreated : RoomsEvent()
+        object RoomCreating : RoomsEvent()
         object RoomNotCreated : RoomsEvent()
     }
 
     private val states = BehaviorSubject.createDefault<SignalingState>(Idle)
     private val events = PublishSubject.create<RoomsEvent>()
+
+    lateinit var ws: WebSocket
 
     fun getStates(): Observable<SignalingState> = states
 
@@ -37,17 +43,16 @@ class SignalingClient(
 
     fun connect() {
         val request = Request.Builder()
-            .url("ws://192.168.0.9:8080/signaling")
+            .url("ws://10.0.2.2:8080/signaling")
             .build()
 
-        client.newWebSocket(request, this)
+        ws = client.newWebSocket(request, this)
         states.onNext(Connecting)
     }
 
     fun close() {
-        // client.dispatcher().executorService().shutdown()
+        ws.close(0, "")
     }
-
 
     /* Websocket listener implementation */
     override fun onOpen(webSocket: WebSocket, response: Response) {
@@ -66,6 +71,7 @@ class SignalingClient(
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+        t.printStackTrace()
         states.onNext(Closed)
     }
 
@@ -105,6 +111,19 @@ class SignalingClient(
 
     override fun loadForRequest(url: HttpUrl): MutableList<Cookie> {
         return mutableListOf()
+    }
+
+    fun createRoom(name: String) {
+
+        val intent = SignalingIntent.newBuilder()
+            .setCreateRoom(CreateRoomIntent.newBuilder().setRoomName(name))
+            .build()
+
+        if (ws.send(ByteString.of(ByteBuffer.wrap(intent.toByteArray())))) {
+            events.onNext(RoomCreating)
+        } else {
+            events.onNext(RoomNotCreated)
+        }
     }
 
 

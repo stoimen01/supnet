@@ -1,4 +1,4 @@
-package com.supnet.rooms
+package com.supnet.rooms.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,14 +13,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.supnet.R
 import com.supnet.Supnet
+import com.supnet.common.hide
+import com.supnet.common.show
+import com.supnet.common.showToast
+import com.supnet.rooms.RoomCreatorFragment
+import com.supnet.rooms.list.RoomsListViewModel.RoomsListCommand.*
 import kotlinx.android.synthetic.main.fragment_rooms.*
 
-class RoomsFragment : Fragment(), RoomCreatorFragment.Listener {
+class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this, RoomsViewModelFactory(Supnet.signalingClient))
-            .get(RoomsViewModel::class.java)
+            .of(this, RoomsListViewModelFactory(Supnet.signalingClient))
+            .get(RoomsListViewModel::class.java)
     }
 
     private val roomsAdapter = RoomsAdapter {
@@ -37,12 +42,29 @@ class RoomsFragment : Fragment(), RoomCreatorFragment.Listener {
         listRooms.adapter = roomsAdapter
         listRooms.layoutManager = LinearLayoutManager(context)
 
+        barLoading.hide()
+
         btnAdd.setOnClickListener {
             RoomCreatorFragment().show(childFragmentManager, "")
         }
 
-        viewModel.getRooms().observe(this, Observer {
+        viewModel.getLiveRooms().observe(this, Observer {
             roomsAdapter.update(it)
+        })
+
+        viewModel.getLiveCommands().observe(this, Observer {
+            when (it.getData()) {
+                SHOW_LOADING -> {
+                    barLoading.show()
+                    listRooms.hide()
+                }
+                SHOW_ROOM_CREATE_ERROR -> {
+                    showToast("Cannot create room at the moment")
+                    barLoading.hide()
+                    listRooms.show()
+                }
+                null -> {}
+            }
         })
     }
 
@@ -63,7 +85,7 @@ class RoomsFragment : Fragment(), RoomCreatorFragment.Listener {
 
         override fun getItemCount() = rooms.size
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RoomsAdapter.MyViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.list_item_room, parent, false)
             return MyViewHolder(view)
