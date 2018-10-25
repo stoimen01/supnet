@@ -2,6 +2,7 @@ package com.supnet.rooms
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.supnet.signaling.SignalingClient
 
 class RoomsViewModelFactory(
     private val signalingClient: SignalingClient
