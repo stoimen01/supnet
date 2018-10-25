@@ -7,10 +7,6 @@ import java.util.concurrent.TimeUnit
 
 class Supnet : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     companion object {
         val signalingClient by lazy {
             val httpClient = OkHttpClient.Builder()

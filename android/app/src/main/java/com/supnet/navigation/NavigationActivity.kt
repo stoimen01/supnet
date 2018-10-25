@@ -5,6 +5,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
@@ -12,6 +13,7 @@ import com.supnet.Supnet
 import com.supnet.common.hide
 import com.supnet.common.show
 import com.supnet.navigation.NavigationViewModel.NavigationCommand.*
+import com.supnet.rooms.room.RoomFragment
 import com.supnet.rooms.list.RoomsListFragment
 import com.supnet.xirsys.Xirsys
 import com.supnet.xirsys.XirsysResponse
@@ -42,27 +44,32 @@ class NavigationActivity : AppCompatActivity() {
     }
 
     private fun onNavigationCommand(cmd: NavigationViewModel.NavigationCommand?) = when (cmd) {
-        SHOW_LOADING -> {
+        ShowLoading -> {
             barLoading.show()
             txtConnectionError.hide()
         }
-        SHOW_ROOMS -> {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentContainer, RoomsListFragment(), null)
-                .commit()
+        ShowRooms -> {
+            showFragment(RoomsListFragment())
             barLoading.hide()
             txtConnectionError.hide()
             Toast.makeText(this, "CONNECTED", Toast.LENGTH_SHORT).show()
         }
-        SHOW_ERROR -> {
+        ShowError -> {
             fragmentContainer.hide()
             barLoading.hide()
             txtConnectionError.show()
         }
+        is ShowRoom -> {
+            showFragment(RoomFragment.newInstance(cmd.roomId))
+        }
         null -> { /* no-op */ }
     }
 
-
+    private fun showFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, fragment, null)
+            .commit()
+    }
 
     private fun getIceServers() {
 

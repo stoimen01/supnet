@@ -16,15 +16,17 @@ import com.supnet.Supnet
 import com.supnet.common.hide
 import com.supnet.common.show
 import com.supnet.common.showToast
-import com.supnet.rooms.RoomCreatorFragment
+import com.supnet.navigation.NavigationViewModel
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListCommand.*
-import kotlinx.android.synthetic.main.fragment_rooms.*
+import kotlinx.android.synthetic.main.fragment_rooms_list.*
 
 class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
 
     private val viewModel by lazy {
+        val navigator = ViewModelProviders.of(activity!!)
+            .get(NavigationViewModel::class.java)
         ViewModelProviders
-            .of(this, RoomsListViewModelFactory(Supnet.signalingClient))
+            .of(this, RoomsListViewModelFactory(Supnet.signalingClient, navigator))
             .get(RoomsListViewModel::class.java)
     }
 
@@ -33,7 +35,7 @@ class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_rooms, container, false)
+        return inflater.inflate(R.layout.fragment_rooms_list, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -49,7 +51,7 @@ class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
         }
 
         viewModel.getLiveRooms().observe(this, Observer {
-            roomsAdapter.update(it)
+            roomsAdapter.update(it.map { it.name })
         })
 
         viewModel.getLiveCommands().observe(this, Observer {

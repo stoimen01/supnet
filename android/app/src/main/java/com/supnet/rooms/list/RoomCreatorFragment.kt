@@ -1,4 +1,4 @@
-package com.supnet.rooms
+package com.supnet.rooms.list
 
 import android.annotation.SuppressLint
 import android.app.Dialog
