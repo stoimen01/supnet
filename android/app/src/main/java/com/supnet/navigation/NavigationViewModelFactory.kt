@@ -2,10 +2,10 @@ package com.supnet.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.supnet.signaling.SignalingClient
+import com.supnet.signaling.client.RxSignalingClient
 
 class NavigationViewModelFactory(
-    private val signalingClient: SignalingClient
+    private val signalingClient: RxSignalingClient
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")

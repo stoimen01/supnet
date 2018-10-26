@@ -1,9 +1,10 @@
-package com.supnet.signaling
+package com.supnet.signaling.client
 
 import com.google.protobuf.InvalidProtocolBufferException
-import com.supnet.signaling.SignalingClient.RoomsEvent.*
-import com.supnet.signaling.SignalingClient.RoomsEvent.RoomJoinEvent.*
-import com.supnet.signaling.SignalingClient.SignalingState.*
+import com.supnet.signaling.entities.Room
+import com.supnet.signaling.client.RxSignalingClient.RoomsEvent.*
+import com.supnet.signaling.client.RxSignalingClient.RoomsEvent.RoomJoinEvent.*
+import com.supnet.signaling.client.RxSignalingClient.SignalingState.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -17,9 +18,9 @@ import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class SignalingClient(
+class RxSignalingClient(
     private val client: OkHttpClient
-) : WebSocketListener() {
+) : WebSocketListener(), SignalingClient {
 
     sealed class SignalingState {
         object Idle : SignalingState()
@@ -144,7 +145,12 @@ class SignalingClient(
 
     private fun processEvent(event: SignalingEvent) = when (event.eventCase) {
         ROOMS_INFO -> {
-            val rooms = event.roomsInfo.listList.map { Room(UUID.fromString(it.id), it.name) }
+            val rooms = event.roomsInfo.listList.map {
+                Room(
+                    UUID.fromString(it.id),
+                    it.name
+                )
+            }
             events.onNext(RoomsReceived(rooms))
         }
         ROOM_CREATED -> {

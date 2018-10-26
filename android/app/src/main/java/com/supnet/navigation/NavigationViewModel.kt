@@ -7,14 +7,14 @@ import com.supnet.common.Command
 import com.supnet.navigation.NavigationViewModel.NavigationCommand.*
 import com.supnet.rooms.list.RoomsListNavigator
 import com.supnet.rooms.room.RoomNavigator
-import com.supnet.signaling.SignalingClient
-import com.supnet.signaling.SignalingClient.SignalingState.*
+import com.supnet.signaling.client.RxSignalingClient
+import com.supnet.signaling.client.RxSignalingClient.SignalingState.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import java.util.*
 
 class NavigationViewModel(
-    private val signalingClient: SignalingClient
+    private val signalingClient: RxSignalingClient
 ) : ViewModel(), RoomsListNavigator, RoomNavigator {
 
     sealed class NavigationCommand {
@@ -35,7 +35,7 @@ class NavigationViewModel(
 
     fun getCommands(): LiveData<Command<NavigationCommand>> = liveCommands
 
-    private fun onSignalingState(state: SignalingClient.SignalingState) = when (state) {
+    private fun onSignalingState(state: RxSignalingClient.SignalingState) = when (state) {
         Idle -> { }
         Connecting -> {
             postCommand(ShowLoading)

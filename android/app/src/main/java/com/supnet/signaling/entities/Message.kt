@@ -1,4 +1,4 @@
-package com.supnet.signaling
+package com.supnet.signaling.entities
 
 data class Message(
     val author: User,

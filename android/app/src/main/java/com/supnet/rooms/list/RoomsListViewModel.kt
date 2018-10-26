@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.supnet.common.Command
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
-import com.supnet.signaling.Room
-import com.supnet.signaling.SignalingClient
+import com.supnet.signaling.entities.Room
+import com.supnet.signaling.client.RxSignalingClient
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import java.util.*
 
 class RoomsListViewModel(
-    private val signalingClient: SignalingClient,
+    private val signalingClient: RxSignalingClient,
     private val navigator: RoomsListNavigator
 ) : ViewModel() {
 

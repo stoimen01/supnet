@@ -14,7 +14,7 @@ import com.supnet.Supnet
 import com.supnet.common.*
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListCommand.*
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
-import com.supnet.signaling.Room
+import com.supnet.signaling.entities.Room
 import kotlinx.android.synthetic.main.fragment_rooms_list.*
 import java.util.*
 

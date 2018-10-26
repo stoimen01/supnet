@@ -1,4 +1,4 @@
-package com.supnet.signaling
+package com.supnet.signaling.entities
 
 import java.util.*
 

@@ -1,7 +1,7 @@
 package com.supnet
 
 import android.app.Application
-import com.supnet.signaling.SignalingClient
+import com.supnet.signaling.client.RxSignalingClient
 import okhttp3.OkHttpClient
 import java.util.concurrent.TimeUnit
 
@@ -12,7 +12,7 @@ class Supnet : Application() {
             val httpClient = OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .build()
-            SignalingClient(httpClient)
+            RxSignalingClient(httpClient)
         }
     }
 }
