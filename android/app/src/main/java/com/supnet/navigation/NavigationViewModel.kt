@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.supnet.common.Command
 import com.supnet.navigation.NavigationViewModel.NavigationCommand.*
+import com.supnet.rooms.list.RoomsListNavigator
+import com.supnet.rooms.room.RoomNavigator
 import com.supnet.signaling.SignalingClient
 import com.supnet.signaling.SignalingClient.SignalingState.*
 import io.reactivex.disposables.CompositeDisposable
@@ -13,7 +15,7 @@ import java.util.*
 
 class NavigationViewModel(
     private val signalingClient: SignalingClient
-) : ViewModel(), RoomsListNavigator {
+) : ViewModel(), RoomsListNavigator, RoomNavigator {
 
     sealed class NavigationCommand {
         object ShowLoading : NavigationCommand()
@@ -36,22 +38,30 @@ class NavigationViewModel(
     private fun onSignalingState(state: SignalingClient.SignalingState) = when (state) {
         Idle -> { }
         Connecting -> {
-            postCommand(Command(ShowLoading))
+            postCommand(ShowLoading)
         }
         Connected -> {
-            postCommand(Command(ShowRooms))
+            postCommand(ShowRooms)
         }
         Closed -> {
-            postCommand(Command(ShowError))
+            postCommand(ShowError)
         }
     }
 
     override fun onRoomCreated(roomId: UUID) {
-        postCommand(Command(ShowRoom(roomId)))
+        postCommand(ShowRoom(roomId))
     }
 
-    private fun postCommand(cmd: Command<NavigationCommand>) {
-        liveCommands.postValue(cmd)
+    override fun onRoomJoined(roomId: UUID) {
+        postCommand(ShowRoom(roomId))
+    }
+
+    override fun onRoomExitClicked() {
+        postCommand(ShowRooms)
+    }
+
+    private fun postCommand(cmd: NavigationCommand) {
+        liveCommands.postValue(Command(cmd))
     }
 
     override fun onCleared() {

@@ -6,37 +6,30 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.supnet.R
 import com.supnet.Supnet
-import com.supnet.common.hide
-import com.supnet.common.show
-import com.supnet.common.showToast
-import com.supnet.navigation.NavigationViewModel
+import com.supnet.common.*
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListCommand.*
+import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
+import com.supnet.signaling.Room
 import kotlinx.android.synthetic.main.fragment_rooms_list.*
+import java.util.*
 
-class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
+class RoomsListFragment : BaseFragment(),
+    RoomCreatorDialogFragment.Listener {
 
     private val viewModel by lazy {
-        val navigator = ViewModelProviders.of(activity!!)
-            .get(NavigationViewModel::class.java)
         ViewModelProviders
-            .of(this, RoomsListViewModelFactory(Supnet.signalingClient, navigator))
+            .of(this, RoomsListViewModelFactory(Supnet.signalingClient, getNavigator()))
             .get(RoomsListViewModel::class.java)
     }
 
-    private val roomsAdapter = RoomsAdapter {
-        viewModel.onJoinRoom(it)
-    }
+    private val roomsAdapter by lazy { RoomsAdapter(viewModel::onJoinRoom) }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_rooms_list, container, false)
-    }
+    override fun getViewId() = R.layout.fragment_rooms_list
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -45,29 +38,52 @@ class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
         listRooms.layoutManager = LinearLayoutManager(context)
 
         barLoading.hide()
+        txtRoomsEmpty.hide()
+        listRooms.hide()
 
         btnAdd.setOnClickListener {
-            RoomCreatorFragment().show(childFragmentManager, "")
+            RoomCreatorDialogFragment().show(childFragmentManager, "")
         }
 
-        viewModel.getLiveRooms().observe(this, Observer {
-            roomsAdapter.update(it.map { it.name })
-        })
+        observe(viewModel.getLiveState(), this::onLiveState)
+        observe(viewModel.getLiveCommands(), this::onLiveCommand)
+    }
 
-        viewModel.getLiveCommands().observe(this, Observer {
-            when (it.getData()) {
-                SHOW_LOADING -> {
-                    barLoading.show()
-                    listRooms.hide()
-                }
-                SHOW_ROOM_CREATE_ERROR -> {
-                    showToast("Cannot create room at the moment")
-                    barLoading.hide()
-                    listRooms.show()
-                }
-                null -> {}
+    private fun onLiveState(state: RoomsListViewModel.RoomsListState) = when (state) {
+        Loading -> {
+            barLoading.show()
+            txtRoomsEmpty.hide()
+            listRooms.hide()
+        }
+        Empty -> {
+            txtRoomsEmpty.show()
+            listRooms.hide()
+            barLoading.hide()
+        }
+        is Available -> {
+            listRooms.show()
+            barLoading.hide()
+            txtRoomsEmpty.hide()
+            roomsAdapter.update(state.rooms)
+        }
+    }
+
+    private fun onLiveCommand(cmd: Command<RoomsListViewModel.RoomsListCommand?>) {
+        when (cmd.getData()) {
+            SHOW_ROOM_CREATE_ERROR -> {
+                showToast("Cannot create room at the moment")
+                listRooms.show()
+                barLoading.hide()
+                txtRoomsEmpty.hide()
             }
-        })
+            SHOW_ROOM_JOIN_ERROR ->  {
+                showToast("Cannot join room at the moment")
+                listRooms.show()
+                barLoading.hide()
+                txtRoomsEmpty.hide()
+            }
+            null -> {/*no-op*/}
+        }
     }
 
     override fun onCreateRoom(name: String) {
@@ -75,12 +91,12 @@ class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
     }
 
     class RoomsAdapter(
-        private val listener: (String) -> Unit
+        private val listener: (UUID) -> Unit
     ) : RecyclerView.Adapter<RoomsAdapter.MyViewHolder>() {
 
-        private var rooms = listOf<String>()
+        private var rooms = listOf<Room>()
 
-        fun update(rooms: List<String>) {
+        fun update(rooms: List<Room>) {
             this.rooms = rooms
             notifyDataSetChanged()
         }
@@ -94,9 +110,9 @@ class RoomsListFragment : Fragment(), RoomCreatorFragment.Listener {
         }
 
         override fun onBindViewHolder(holder: MyViewHolder, i: Int) {
-            holder.titleView.text = rooms[i]
+            holder.titleView.text = rooms[i].name
             holder.btnView.setOnClickListener {
-                listener(rooms[i])
+                listener(rooms[i].id)
             }
         }
 

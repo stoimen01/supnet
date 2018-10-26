@@ -5,4 +5,8 @@
     <string name="room_creator_label">Enter room name :</string>
     <string name="create">Create</string>
     <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="rooms_toolbar_title">Rooms</string>
+    <string name="rooms_not_available">There are no rooms at the moment.\n You can always create some !</string>
+    <string name="room_leave_question">You are going to leave the room.\n Are you sure ?</string>
 </resources>

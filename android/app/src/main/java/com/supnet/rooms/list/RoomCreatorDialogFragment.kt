@@ -10,7 +10,7 @@ import com.supnet.R
 import kotlinx.android.synthetic.main.dialog_room_creator.view.*
 import java.lang.IllegalArgumentException
 
-class RoomCreatorFragment : DialogFragment() {
+class RoomCreatorDialogFragment : DialogFragment() {
 
     interface Listener {
         fun onCreateRoom(name: String)
@@ -28,14 +28,13 @@ class RoomCreatorFragment : DialogFragment() {
             val view = LayoutInflater.from(it)
                 .inflate(R.layout.dialog_room_creator, null)
 
-            val builder = AlertDialog.Builder(it)
-            builder.setView(view)
+            return@let AlertDialog.Builder(it)
+                .setView(view)
                 .setPositiveButton(R.string.create) { _, _ ->
                     listener.onCreateRoom(view.txtRoomName.text.toString())
                 }
                 .setNegativeButton(R.string.cancel, null)
-            // Create the AlertDialog object and return it
-            builder.create()
+            .create()
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 }

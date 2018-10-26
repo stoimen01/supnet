@@ -13,7 +13,8 @@ import java.util.*
 
 class RoomViewModel(
     private val roomId: UUID,
-    private val signalingClient: SignalingClient
+    private val signalingClient: SignalingClient,
+    private val navigator: RoomNavigator
 ) : ViewModel() {
 
     private val disposables = CompositeDisposable()
@@ -49,6 +50,14 @@ class RoomViewModel(
                 """))
             }
         }
+    }
+
+    fun onLeaveRoom() {
+
+        signalingClient.leaveRoom(roomId)
+
+
+        navigator.onRoomExitClicked()
     }
 
 }

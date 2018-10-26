@@ -2,19 +2,17 @@ package com.supnet.signaling
 
 import com.google.protobuf.InvalidProtocolBufferException
 import com.supnet.signaling.SignalingClient.RoomsEvent.*
+import com.supnet.signaling.SignalingClient.RoomsEvent.RoomJoinEvent.*
 import com.supnet.signaling.SignalingClient.SignalingState.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.rxkotlin.Observables
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import okhttp3.*
 import okio.ByteString
-import proto.CreateRoomIntent
-import proto.SignalingEvent
+import proto.*
 import proto.SignalingEvent.EventCase.*
-import proto.SignalingIntent
 import java.nio.ByteBuffer
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -35,6 +33,11 @@ class SignalingClient(
         data class RoomCreated(val room: Room) : RoomsEvent()
         data class RoomRemoved(val roomId: UUID) : RoomsEvent()
         object RoomNotCreated : RoomsEvent()
+
+        sealed class RoomJoinEvent : RoomsEvent() {
+            object RoomJoined : RoomJoinEvent()
+            object RoomNotJoined : RoomJoinEvent()
+        }
     }
 
     private val states = BehaviorSubject.createDefault<SignalingState>(Idle)
@@ -67,12 +70,12 @@ class SignalingClient(
     }
 
     fun createRoom(name: String): Single<UUID> {
-        val intent = SignalingIntent.newBuilder()
-            .setCreateRoom(CreateRoomIntent.newBuilder().setRoomName(name))
-            .build()
-            .toByteArray()
 
-        return Observables.combineLatest(events, send(intent).toObservable<Unit>().startWith(Unit)) { event, _ -> event }
+        val intent = CreateRoomIntent.newBuilder()
+            .setRoomName(name)
+
+        return events
+            .doOnSubscribe { sendIntent { setCreateRoom(intent) } }
             .flatMap { event ->
                 if (event is RoomCreated) {
                     if (event.room.name == name) {
@@ -89,6 +92,32 @@ class SignalingClient(
             .timeout(10, TimeUnit.SECONDS)
             .take(1)
             .singleOrError()
+    }
+
+    fun joinRoom(roomId: UUID): Completable {
+        val intent = JoinRoomIntent.newBuilder()
+            .setRoomId(roomId.toString())
+
+        return events
+            .doOnSubscribe { sendIntent { setJoinRoom(intent) } }
+            .ofType(RoomJoinEvent::class.java)
+            .take(1)
+            .flatMapCompletable {
+                return@flatMapCompletable when (it) {
+                    RoomJoined -> Completable.complete()
+                    RoomNotJoined -> Completable.error(Throwable("Room join error"))
+                }
+            }
+    }
+
+    fun leaveRoom(roomId: UUID) {
+
+        val intent = LeaveRoomIntent.newBuilder()
+            .setRoomId(roomId.toString())
+
+        sendIntent {
+            setLeaveRoom(intent)
+        }
     }
 
     /* Websocket listener implementation */
@@ -130,10 +159,10 @@ class SignalingClient(
             events.onNext(RoomRemoved(UUID.fromString(event.roomRemoved.id)))
         }
         ROOM_JOINED -> {
-
+            events.onNext(RoomJoined)
         }
         ROOM_NOT_JOINED -> {
-
+            events.onNext(RoomNotJoined)
         }
         ROOM_LEAVED -> {
 
@@ -146,7 +175,7 @@ class SignalingClient(
 
     private fun createRoomsList(): Observable<List<Room>> {
         return events
-            .scan(listOf()) { list, event ->
+            .scan(listOf<Room>()) { list, event ->
                 return@scan when (event) {
                     is RoomsReceived -> event.rooms
                     is RoomCreated -> list + event.room
@@ -154,13 +183,15 @@ class SignalingClient(
                     else -> list
                 }
             }
+            .replay(1)
+            .autoConnect()
     }
 
-    private fun send(data: ByteArray): Completable {
-        return if (ws.send(ByteString.of(ByteBuffer.wrap(data)))) {
-            Completable.complete()
-        } else {
-            Completable.error(Throwable("Cannot send data !"))
-        }
+    private fun sendIntent(builder: SignalingIntent.Builder.() -> Unit) {
+        val data = SignalingIntent.newBuilder()
+            .apply { builder() }
+            .build().toByteArray()
+        ws.send(ByteString.of(ByteBuffer.wrap(data)))
     }
+
 }

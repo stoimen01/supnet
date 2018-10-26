@@ -52,7 +52,6 @@ class NavigationActivity : AppCompatActivity() {
             showFragment(RoomsListFragment())
             barLoading.hide()
             txtConnectionError.hide()
-            Toast.makeText(this, "CONNECTED", Toast.LENGTH_SHORT).show()
         }
         ShowError -> {
             fragmentContainer.hide()
@@ -69,6 +68,15 @@ class NavigationActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment, null)
             .commit()
+    }
+
+    override fun onBackPressed() {
+        val fragment = this.supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        if (fragment is BackPressHandler) {
+            if (!fragment.onBackPressed()) {
+                super.onBackPressed()
+            }
+        } else super.onBackPressed()
     }
 
     private fun getIceServers() {

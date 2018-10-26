@@ -7,12 +7,13 @@ import java.util.*
 
 class RoomViewModelFactory(
     private val roomId: UUID,
-    private val signalingClient: SignalingClient
+    private val signalingClient: SignalingClient,
+    private val navigator: RoomNavigator
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return RoomViewModel(roomId, signalingClient) as T
+        return RoomViewModel(roomId, signalingClient, navigator) as T
     }
 
 }

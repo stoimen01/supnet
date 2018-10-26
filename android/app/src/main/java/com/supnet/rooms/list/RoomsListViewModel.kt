@@ -4,11 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.supnet.common.Command
-import com.supnet.navigation.RoomsListNavigator
+import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
 import com.supnet.signaling.Room
 import com.supnet.signaling.SignalingClient
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import java.util.*
 
 class RoomsListViewModel(
     private val signalingClient: SignalingClient,
@@ -16,30 +17,45 @@ class RoomsListViewModel(
 ) : ViewModel() {
 
     enum class RoomsListCommand {
-        SHOW_LOADING, SHOW_ROOM_CREATE_ERROR
+        SHOW_ROOM_CREATE_ERROR, SHOW_ROOM_JOIN_ERROR
+    }
+
+    sealed class RoomsListState {
+        object Loading : RoomsListState()
+        object Empty : RoomsListState()
+        data class Available(val rooms: List<Room>) : RoomsListState()
     }
 
     private val disposables = CompositeDisposable()
-    private val liveRooms = MutableLiveData<List<Room>>()
+    private val liveState = MutableLiveData<RoomsListState>()
     private val liveCommands = MutableLiveData<Command<RoomsListCommand>>()
 
     init {
+        liveState.postValue(Loading)
         disposables += signalingClient.getRooms()
             .subscribe {
-                liveRooms.postValue(it)
+                if (it.isEmpty()) liveState.postValue(Empty)
+                else liveState.postValue(Available(it))
             }
     }
 
-    fun getLiveRooms(): LiveData<List<Room>> = liveRooms
+    fun getLiveState(): LiveData<RoomsListState> = liveState
 
     fun getLiveCommands(): LiveData<Command<RoomsListCommand>> = liveCommands
 
-    fun onJoinRoom(it: String) {
-
+    fun onJoinRoom(roomId: UUID) {
+        liveState.postValue(Loading)
+        disposables += signalingClient
+            .joinRoom(roomId)
+            .subscribe({
+                navigator.onRoomJoined(roomId)
+            }, {
+                liveCommands.postValue(Command(RoomsListCommand.SHOW_ROOM_JOIN_ERROR))
+            })
     }
 
     fun onCreateRoom(name: String) {
-        liveCommands.postValue(Command(RoomsListCommand.SHOW_LOADING))
+        liveState.postValue(Loading)
         disposables += signalingClient
             .createRoom(name)
             .subscribe({
