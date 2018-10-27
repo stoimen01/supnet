@@ -3,7 +3,6 @@ package com.supnet.navigation
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -27,7 +26,7 @@ class NavigationActivity : AppCompatActivity() {
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this, NavigationViewModelFactory(Supnet.signalingClient))
+            .of(this, NavigationViewModelFactory(Supnet.roomsManager))
             .get(NavigationViewModel::class.java)
     }
 
@@ -61,7 +60,12 @@ class NavigationActivity : AppCompatActivity() {
         is ShowRoom -> {
             showFragment(RoomFragment.newInstance(cmd.roomId))
         }
+        is LogMessage -> {
+            Log.d("ACTIVITY", cmd.data)
+            Unit
+        }
         null -> { /* no-op */ }
+
     }
 
     private fun showFragment(fragment: Fragment) {

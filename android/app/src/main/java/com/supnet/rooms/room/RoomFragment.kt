@@ -24,7 +24,7 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
     private val viewModel by lazy {
         val roomId = UUID.fromString(arguments?.getString(ROOM_ID_KEY))
         return@lazy ViewModelProviders
-            .of(this, RoomViewModelFactory(roomId, Supnet.signalingClient, getNavigator()))
+            .of(this, RoomViewModelFactory(roomId, Supnet.roomsManager))
             .get(RoomViewModel::class.java)
     }
 

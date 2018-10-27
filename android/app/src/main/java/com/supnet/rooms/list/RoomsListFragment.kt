@@ -23,7 +23,7 @@ class RoomsListFragment : BaseFragment(),
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this, RoomsListViewModelFactory(Supnet.signalingClient, getNavigator()))
+            .of(this, RoomsListViewModelFactory(Supnet.roomsManager))
             .get(RoomsListViewModel::class.java)
     }
 

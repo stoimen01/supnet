@@ -2,16 +2,15 @@ package com.supnet.rooms.list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.supnet.signaling.client.RxSignalingClient
+import com.supnet.signaling.rooms.RoomsManager
 
 class RoomsListViewModelFactory(
-    private val signalingClient: RxSignalingClient,
-    private val navigator: RoomsListNavigator
+    private val roomsManager: RoomsManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return RoomsListViewModel(signalingClient, navigator) as T
+        return RoomsListViewModel(roomsManager) as T
     }
 
 }
