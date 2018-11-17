@@ -1,6 +1,7 @@
 package com.supnet.rooms.room
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,20 +37,14 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
         listMessages.adapter = adapter
         listMessages.layoutManager = LinearLayoutManager(context)
 
-        toolbarRoom.title = ""
         toolbarRoom.setNavigationOnClickListener { showLeaveConfirmationDialog() }
 
-        btnSend.setOnClickListener {
-            showToast("SENDING MESSAGE")
-            viewModel.sendMessage(txtMsgContent.text.toString())
-        }
+        btnSend.setOnClickListener { viewModel.sendMessage(txtMsgContent.text.toString()) }
 
         observe(viewModel.getLiveRoomData()) { (room, messages) ->
-
-            if (toolbarRoom.title!!.toString().trim() != room.name) {
+            if (toolbarRoom.title?.toString() != room.name) {
                 toolbarRoom.title = room.name
             }
-
             adapter.update(messages.toList())
         }
     }

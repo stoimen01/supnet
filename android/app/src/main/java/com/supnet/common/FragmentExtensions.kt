@@ -2,6 +2,7 @@ package com.supnet.common
 
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -19,5 +20,11 @@ fun Fragment.getNavigator(): NavigationViewModel {
 fun <T> Fragment.observe(liveData: LiveData<T>, block: (T) -> Unit) {
     liveData.observe(this, Observer {
         if (it != null) block(it)
+    })
+}
+
+fun <T> LifecycleOwner.observeCommands(liveData: LiveData<Command<T>>, block: (T) -> Unit) {
+    liveData.observe(this, Observer { cmd ->
+        cmd?.getData()?.let { block(it) }
     })
 }

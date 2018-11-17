@@ -68,7 +68,7 @@ class RoomsListFragment : BaseFragment(),
         }
     }
 
-    private fun onLiveCommand(cmd: VEvent<RoomsListViewModel.RoomsListCommand?>) {
+    private fun onLiveCommand(cmd: Command<RoomsListViewModel.RoomsListCommand?>) {
         when (cmd.getData()) {
             SHOW_ROOM_CREATE_ERROR -> {
                 showToast("Cannot create room at the moment")

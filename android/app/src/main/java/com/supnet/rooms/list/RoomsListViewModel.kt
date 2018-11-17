@@ -3,7 +3,7 @@ package com.supnet.rooms.list
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.supnet.common.BaseViewModel
-import com.supnet.common.VEvent
+import com.supnet.common.Command
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
 import com.supnet.signaling.entities.Room
 import io.reactivex.Observable
@@ -28,7 +28,7 @@ class RoomsListViewModel(
     }
 
     private val liveState = MutableLiveData<RoomsListState>()
-    private val liveCommands = MutableLiveData<VEvent<RoomsListCommand>>()
+    private val liveCommands = MutableLiveData<Command<RoomsListCommand>>()
 
     init {
         disposables += rooms
@@ -45,7 +45,7 @@ class RoomsListViewModel(
 
     fun getLiveState(): LiveData<RoomsListState> = liveState
 
-    fun getLiveCommands(): LiveData<VEvent<RoomsListCommand>> = liveCommands
+    fun getLiveCommands(): LiveData<Command<RoomsListCommand>> = liveCommands
 
     fun onJoinRoom(roomId: UUID) = joinRoom(roomId)
 
