@@ -57,26 +57,27 @@ class RxSignalingClient(
 
     }
 
-    /* Websocket listener implementation */
-    override fun onOpen(webSocket: WebSocket, response: Response) {
-        events.onNext(SocketConnected)
+    private fun sendIntent(builder: ProtoSignalingIntent.Builder.() -> Unit) {
+        val data = ProtoSignalingIntent.newBuilder()
+            .apply { builder() }
+            .build().toByteArray()
+        ws.send(ByteString.of(ByteBuffer.wrap(data)))
     }
 
-    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-        events.onNext(SocketDisconnected)
-    }
+    /* Websocket listener implementation */
+    override fun onOpen(webSocket: WebSocket, response: Response) = events.onNext(SocketConnected)
+
+    override fun onClosed(webSocket: WebSocket, code: Int, reason: String) = events.onNext(SocketDisconnected)
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
         events.onNext(SocketFailed)
         t.printStackTrace()
     }
 
-    override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-        try {
-            processEvent(ProtoSignalingEvent.parseFrom(bytes.toByteArray()))
-        } catch (ex : InvalidProtocolBufferException) {
-            ex.printStackTrace()
-        }
+    override fun onMessage(webSocket: WebSocket, bytes: ByteString) = try {
+        processEvent(ProtoSignalingEvent.parseFrom(bytes.toByteArray()))
+    } catch (ex : InvalidProtocolBufferException) {
+        ex.printStackTrace()
     }
 
     private fun processEvent(event: ProtoSignalingEvent) = when (event.eventCase) {
@@ -102,11 +103,9 @@ class RxSignalingClient(
 
         ROOM_NOT_JOINED -> events.onNext(RoomNotJoined)
 
-        ROOM_LEAVED -> { }
+        ROOM_LEAVED -> events.onNext(RoomLeaved)
 
-        ROOM_NOT_LEAVED -> { }
-
-        EVENT_NOT_SET, null -> { }
+        ROOM_NOT_LEAVED -> events.onNext(RoomNotLeaved)
 
         MESSAGE_RECEIVED -> {
             val sender = event.messageReceived.senderName
@@ -117,12 +116,7 @@ class RxSignalingClient(
         MESSAGE_SEND -> events.onNext(MessageSend)
 
         MESSAGE_NOT_SEND -> events.onNext(MessageNotSend)
-    }
 
-    private fun sendIntent(builder: ProtoSignalingIntent.Builder.() -> Unit) {
-        val data = ProtoSignalingIntent.newBuilder()
-            .apply { builder() }
-            .build().toByteArray()
-        ws.send(ByteString.of(ByteBuffer.wrap(data)))
+        EVENT_NOT_SET, null -> { }
     }
 }

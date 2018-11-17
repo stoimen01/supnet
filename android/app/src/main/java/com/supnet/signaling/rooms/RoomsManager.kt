@@ -48,15 +48,23 @@ interface RoomsManager {
         }
 
         sealed class ConnectionEvent : Event() {
+
             object SocketConnected: ConnectionEvent()
             object SocketDisconnected: ConnectionEvent()
             object SocketFailed: ConnectionEvent()
+
             data class RoomsReceived(val rooms: List<Room>) : ConnectionEvent()
             data class RoomCreated(val room: Room) : ConnectionEvent()
-            data class RoomRemoved(val roomId: UUID) : ConnectionEvent()
             object RoomNotCreated : ConnectionEvent()
+
+            data class RoomRemoved(val roomId: UUID) : ConnectionEvent()
+
             object RoomJoined : ConnectionEvent()
             object RoomNotJoined : ConnectionEvent()
+
+            object RoomLeaved : ConnectionEvent()
+            object RoomNotLeaved : ConnectionEvent()
+
             object MessageSend : ConnectionEvent()
             object MessageNotSend : ConnectionEvent()
             data class MessageReceived(val sender: String, val data: String) : ConnectionEvent()

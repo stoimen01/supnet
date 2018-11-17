@@ -171,31 +171,44 @@ class RxRoomsManager(
         }
 
         is InRoom -> when (event) {
+
             OnDisconnect -> {
                 signalingClient.processIntent(Disconnect)
                 Disconnecting
             }
+
             OnLeaveRoom -> {
                 signalingClient.processIntent(LeaveRoom(lastState.room.id))
-                InLobby(lastState.rooms)
+                lastState
             }
-            SocketDisconnected, SocketFailed -> Disconnected
-            is RoomCreated -> {
-                lastState.copy(rooms = lastState.rooms + event.room)
-            }
-            is RoomRemoved -> {
-                lastState.copy(rooms = lastState.rooms.filter { it.id != event.roomId })
-            }
-            is RoomJoined -> {
-                lastState // TODO notify
-            }
+
             is OnSendMessage -> {
                 signalingClient.processIntent(SendMessage(event.data))
                 lastState.copy(messages = lastState.messages + Message("You", event.data, MessageStatus.SENDING))
             }
+
+            SocketDisconnected, SocketFailed -> Disconnected
+
+            is RoomCreated -> {
+                lastState.copy(rooms = lastState.rooms + event.room)
+            }
+
+            is RoomRemoved -> {
+                lastState.copy(rooms = lastState.rooms.filter { it.id != event.roomId })
+            }
+
+            is RoomJoined -> {
+                lastState
+            }
+
+            RoomLeaved -> {
+                InLobby(lastState.rooms)
+            }
+
             is MessageReceived -> {
                lastState.copy(messages = lastState.messages + Message(event.sender, event.data, MessageStatus.SENT))
             }
+
             MessageSend -> {
                 val messages = lastState.messages.toMutableSet()
                 val origMsg = messages.first { it.status == MessageStatus.SENDING }
@@ -204,6 +217,7 @@ class RxRoomsManager(
                 messages.add(newMsg)
                 lastState.copy(messages = messages)
             }
+
             MessageNotSend -> {
                 val messages = lastState.messages.toMutableSet()
                 val origMsg = messages.first { it.status == MessageStatus.SENDING }

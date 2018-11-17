@@ -8,6 +8,7 @@ import com.supnet.navigation.NavigationCommand.*
 import com.supnet.signaling.rooms.RoomsManager
 import com.supnet.signaling.rooms.RoomsManager.State.*
 import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 
 class NavigationViewModel(
@@ -25,6 +26,7 @@ class NavigationViewModel(
             .distinctUntilChanged { t1, t2 ->
                 t1.javaClass.canonicalName == t2.javaClass.canonicalName
             }
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::onConnectionState)
 
         disposables += stateLog.subscribe { postCommand(LogMessage(it)) }
