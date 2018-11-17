@@ -54,6 +54,9 @@ class SignalingManager {
                         LEAVE_ROOM -> {
                             onLeaveRoom(user, intent.leaveRoom)
                         }
+                        SEND_MESSAGE -> {
+                            onSendMessage(user, intent.sendMessage)
+                        }
                         INTENT_NOT_SET, null -> { /* no-op */ }
                     }
                 } catch (ex : InvalidProtocolBufferException) {
@@ -167,6 +170,28 @@ class SignalingManager {
             sendEvent(user.id) { setRoomNotJoined(RoomNotJoinedEvent.newBuilder()) }
         }
     }
+
+    private suspend fun onSendMessage(sender: User, intent: SendMessageIntent) {
+
+        val room = rooms.values.find { it.members.contains(sender) }
+        if (room == null) {
+            sendEvent(sender.id) { setMessageNotSend(MessageNotSendEvent.newBuilder())}
+            return
+        }
+
+        // TODO : keep message cache
+        val event = MessageReceived.newBuilder()
+                .setSenderName(sender.name)
+                .setData(intent.data)
+
+        room.members.forEach {
+            if (it.id == sender.id) return@forEach
+            sendEvent(it.id) { setMessageReceived(event) }
+        }
+
+        sendEvent(sender.id) { setMessageSend(MessageSendEvent.newBuilder()) }
+    }
+
 
     private fun buildEvent(builder: SignalingEvent.Builder.() -> Unit): SignalingEvent {
         return SignalingEvent.newBuilder()
