@@ -6,47 +6,51 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.supnet.R
 import com.supnet.Supnet
 import com.supnet.common.AlertDialogFragment
 import com.supnet.common.BaseFragment
-import com.supnet.common.getNavigator
 import com.supnet.common.observe
+import com.supnet.common.showToast
 import com.supnet.navigation.BackPressHandler
 import com.supnet.signaling.entities.Message
 import kotlinx.android.synthetic.main.fragment_room.*
-import java.util.UUID
 
 class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Listener {
 
     private val viewModel by lazy {
-        val roomId = UUID.fromString(arguments?.getString(ROOM_ID_KEY))
-        return@lazy ViewModelProviders
-            .of(this, RoomViewModelFactory(roomId, Supnet.roomsManager))
+        ViewModelProviders
+            .of(this, RoomViewModelFactory(Supnet.roomsManager))
             .get(RoomViewModel::class.java)
     }
 
-    override fun getViewId() = R.layout.fragment_room
+    override fun provideViewId() = R.layout.fragment_room
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        val adapter = MessagesAdapter {}
+        val adapter = MessagesAdapter { showToast("message clicked from $it") }
         listMessages.adapter = adapter
         listMessages.layoutManager = LinearLayoutManager(context)
 
-        toolbarRoom.setNavigationOnClickListener {
-            showLeaveConfirmationDialog()
+        toolbarRoom.title = ""
+        toolbarRoom.setNavigationOnClickListener { showLeaveConfirmationDialog() }
+
+        btnSend.setOnClickListener {
+            showToast("SENDING MESSAGE")
+            viewModel.sendMessage(txtMsgContent.text.toString())
         }
 
-        observe(viewModel.getLiveRoom()) {
-            toolbarRoom.title = it.name
-        }
+        observe(viewModel.getLiveRoomData()) { (room, messages) ->
 
-        observe(viewModel.getLiveMessages()) {
-            adapter.update(it)
+            if (toolbarRoom.title!!.toString().trim() != room.name) {
+                toolbarRoom.title = room.name
+            }
+
+            adapter.update(messages.toList())
         }
     }
 
@@ -56,35 +60,24 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
     }
 
     private fun showLeaveConfirmationDialog() {
-        AlertDialogFragment.newInstance(getString(R.string.room_leave_question))
+        AlertDialogFragment
+            .newInstance(getString(R.string.room_leave_question))
             .show(childFragmentManager, null)
     }
 
-    override fun onConfirm() {
-        viewModel.onLeaveRoom()
-    }
-
-    companion object {
-        private const val ROOM_ID_KEY = "ROOM_ID_KEY"
-
-        fun newInstance(roomId: UUID): RoomFragment {
-            val bundle = Bundle()
-            bundle.putString(ROOM_ID_KEY, roomId.toString())
-            val fragment = RoomFragment()
-            fragment.arguments = bundle
-            return fragment
-        }
-    }
+    override fun onConfirm() = viewModel.onLeaveRoom()
 
     class MessagesAdapter(
         private val listener: (String) -> Unit
     ) : RecyclerView.Adapter<MessagesAdapter.MyViewHolder>() {
 
-        private var messages = listOf<Message>()
+        private val messages = mutableListOf<Message>()
 
-        fun update(messages: List<Message>) {
-            this.messages = messages
-            notifyDataSetChanged()
+        fun update(newMessages: List<Message>) {
+            val diffResult = DiffUtil.calculateDiff(MsgDiffCallback(messages, newMessages));
+            messages.clear()
+            messages.addAll(newMessages)
+            diffResult.dispatchUpdatesTo(this)
         }
 
         override fun getItemCount() = messages.size
@@ -96,10 +89,10 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
         }
 
         override fun onBindViewHolder(holder: MyViewHolder, i: Int) {
-            holder.userNameView.text = messages[i].author.name
+            holder.userNameView.text = messages[i].author
             holder.msgView.text = messages[i].content
             holder.view.setOnClickListener {
-                listener(messages[i].author.name)
+                listener(messages[i].author)
             }
         }
 
@@ -108,6 +101,23 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
             val userNameView: TextView = view.findViewById(R.id.txtUserName),
             val msgView: TextView = view.findViewById(R.id.txtMsg)
         ) : RecyclerView.ViewHolder(view)
+
+        class MsgDiffCallback(
+            private val oldMessages: List<Message>,
+            private val newMessages: List<Message>
+        ) : DiffUtil.Callback() {
+
+            override fun getOldListSize() = oldMessages.size
+
+            override fun getNewListSize() = newMessages.size
+
+            override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                oldMessages[oldItemPosition].content == newMessages[newItemPosition].content
+
+            override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                oldMessages[oldItemPosition] == newMessages[newItemPosition]
+        }
+
     }
 
 }

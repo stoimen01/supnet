@@ -29,7 +29,7 @@ class RoomsListFragment : BaseFragment(),
 
     private val roomsAdapter by lazy { RoomsAdapter(viewModel::onJoinRoom) }
 
-    override fun getViewId() = R.layout.fragment_rooms_list
+    override fun provideViewId() = R.layout.fragment_rooms_list
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -68,7 +68,7 @@ class RoomsListFragment : BaseFragment(),
         }
     }
 
-    private fun onLiveCommand(cmd: Command<RoomsListViewModel.RoomsListCommand?>) {
+    private fun onLiveCommand(cmd: VEvent<RoomsListViewModel.RoomsListCommand?>) {
         when (cmd.getData()) {
             SHOW_ROOM_CREATE_ERROR -> {
                 showToast("Cannot create room at the moment")

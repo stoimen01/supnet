@@ -13,6 +13,7 @@ import okio.ByteString
 import proto.CreateRoomIntent
 import proto.JoinRoomIntent
 import proto.LeaveRoomIntent
+import proto.SendMessageIntent
 import proto.SignalingEvent as ProtoSignalingEvent
 import proto.SignalingIntent as ProtoSignalingIntent
 import proto.SignalingEvent.EventCase.*
@@ -43,6 +44,9 @@ class RxSignalingClient(
         is JoinRoom -> {
             sendIntent { setJoinRoom(JoinRoomIntent.newBuilder().setRoomId(intent.roomId.toString())) }
         }
+        is SendMessage ->  {
+            sendIntent { setSendMessage(SendMessageIntent.newBuilder().setData(intent.data)) }
+        }
         is LeaveRoom -> {
             sendIntent { setLeaveRoom(LeaveRoomIntent.newBuilder().setRoomId(intent.roomId.toString())) }
         }
@@ -50,6 +54,7 @@ class RxSignalingClient(
             ws.close(0, "")
             Unit
         }
+
     }
 
     /* Websocket listener implementation */
@@ -102,6 +107,16 @@ class RxSignalingClient(
         ROOM_NOT_LEAVED -> { }
 
         EVENT_NOT_SET, null -> { }
+
+        MESSAGE_RECEIVED -> {
+            val sender = event.messageReceived.senderName
+            val data = event.messageReceived.data
+            events.onNext(MessageReceived(sender, data))
+        }
+
+        MESSAGE_SEND -> events.onNext(MessageSend)
+
+        MESSAGE_NOT_SEND -> events.onNext(MessageNotSend)
     }
 
     private fun sendIntent(builder: ProtoSignalingIntent.Builder.() -> Unit) {
@@ -110,5 +125,4 @@ class RxSignalingClient(
             .build().toByteArray()
         ws.send(ByteString.of(ByteBuffer.wrap(data)))
     }
-
 }

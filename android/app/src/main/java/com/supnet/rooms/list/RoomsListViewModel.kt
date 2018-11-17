@@ -2,23 +2,23 @@ package com.supnet.rooms.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import com.supnet.common.BaseViewModel
-import com.supnet.common.Command
+import com.supnet.common.VEvent
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
-import com.supnet.signaling.rooms.RoomsManager
 import com.supnet.signaling.entities.Room
-import com.supnet.signaling.rooms.RoomsManager.State.*
-import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.Observable
 import io.reactivex.rxkotlin.plusAssign
 import java.util.*
 
 class RoomsListViewModel(
-    private val roomsManager: RoomsManager
+    rooms: Observable<List<Room>>,
+    private val joinRoom: (UUID) -> Unit,
+    private val createRoom: (String) -> Unit
 ) : BaseViewModel() {
 
     enum class RoomsListCommand {
-        SHOW_ROOM_CREATE_ERROR, SHOW_ROOM_JOIN_ERROR
+        SHOW_ROOM_CREATE_ERROR,
+        SHOW_ROOM_JOIN_ERROR
     }
 
     sealed class RoomsListState {
@@ -28,27 +28,27 @@ class RoomsListViewModel(
     }
 
     private val liveState = MutableLiveData<RoomsListState>()
-    private val liveCommands = MutableLiveData<Command<RoomsListCommand>>()
+    private val liveCommands = MutableLiveData<VEvent<RoomsListCommand>>()
 
-    init { disposables += roomsManager.getState().subscribe(this::onState) }
+    init {
+        disposables += rooms
+            .subscribe ({
+                if (it.isEmpty()) {
+                    liveState.postValue(Empty)
+                } else {
+                    liveState.postValue(Available(it))
+                }
+            }, {
+
+            })
+    }
 
     fun getLiveState(): LiveData<RoomsListState> = liveState
 
-    fun getLiveCommands(): LiveData<Command<RoomsListCommand>> = liveCommands
+    fun getLiveCommands(): LiveData<VEvent<RoomsListCommand>> = liveCommands
 
-    fun onJoinRoom(roomId: UUID) = roomsManager.joinRoom(roomId)
+    fun onJoinRoom(roomId: UUID) = joinRoom(roomId)
 
-    fun onCreateRoom(name: String) = roomsManager.createRoom(name)
-
-    private fun onState(state: RoomsManager.State) = when (state) {
-        is InLobby -> {
-            if (state.rooms.isEmpty()) {
-                liveState.postValue(Empty)
-            } else {
-                liveState.postValue(Available(state.rooms))
-            }
-        }
-        else -> { /* no-op */ }
-    }
+    fun onCreateRoom(name: String) = createRoom(name)
 
 }

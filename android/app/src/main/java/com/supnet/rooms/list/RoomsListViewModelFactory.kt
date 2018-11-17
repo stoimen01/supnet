@@ -10,7 +10,11 @@ class RoomsListViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return RoomsListViewModel(roomsManager) as T
+        return RoomsListViewModel(
+            roomsManager.getRooms(),
+            roomsManager::joinRoom,
+            roomsManager::createRoom
+        ) as T
     }
 
 }

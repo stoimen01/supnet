@@ -11,7 +11,7 @@ import com.supnet.R
 import com.supnet.Supnet
 import com.supnet.common.hide
 import com.supnet.common.show
-import com.supnet.navigation.NavigationViewModel.NavigationCommand.*
+import com.supnet.navigation.NavigationCommand.*
 import com.supnet.rooms.room.RoomFragment
 import com.supnet.rooms.list.RoomsListFragment
 import com.supnet.xirsys.Xirsys
@@ -42,7 +42,7 @@ class NavigationActivity : AppCompatActivity() {
         })
     }
 
-    private fun onNavigationCommand(cmd: NavigationViewModel.NavigationCommand?) = when (cmd) {
+    private fun onNavigationCommand(cmd: NavigationCommand?) = when (cmd) {
         ShowLoading -> {
             barLoading.show()
             txtConnectionError.hide()
@@ -57,8 +57,9 @@ class NavigationActivity : AppCompatActivity() {
             barLoading.hide()
             txtConnectionError.show()
         }
-        is ShowRoom -> {
-            showFragment(RoomFragment.newInstance(cmd.roomId))
+        ShowRoom -> {
+            showFragment(RoomFragment())
+            barLoading.hide()
         }
         is LogMessage -> {
             Log.d("ACTIVITY", cmd.data)

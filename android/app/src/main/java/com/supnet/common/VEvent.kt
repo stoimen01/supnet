@@ -1,6 +1,6 @@
 package com.supnet.common
 
-class Command<out T>(private val content: T) {
+class VEvent<out T>(private val content: T) {
 
     private var hasBeenHandled = false
 

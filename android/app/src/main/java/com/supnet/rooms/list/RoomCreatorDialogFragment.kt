@@ -25,8 +25,7 @@ class RoomCreatorDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return activity?.let {
 
-            val view = LayoutInflater.from(it)
-                .inflate(R.layout.dialog_room_creator, null)
+            val view = LayoutInflater.from(it).inflate(R.layout.dialog_room_creator, null)
 
             return@let AlertDialog.Builder(it)
                 .setView(view)

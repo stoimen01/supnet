@@ -10,7 +10,12 @@ class NavigationViewModelFactory(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return NavigationViewModel(roomsManager) as T
+        return NavigationViewModel(
+            roomsManager::connect,
+            roomsManager::disconnect,
+            roomsManager.getState(),
+            roomsManager.getStateLog()
+        ) as T
     }
 
 }
