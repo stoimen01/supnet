@@ -89,23 +89,29 @@ class RxSignalingClient(
             events.onNext(RoomsReceived(rooms))
         }
 
-        ROOM_CREATED -> {
-            with(event.roomCreated) {
-                events.onNext(RoomCreated(Room(UUID.fromString(id), name)))
-            }
+        ROOM_ADDED -> with(event.roomAdded) {
+            events.onNext(RoomAdded(Room(UUID.fromString(id), name)))
+        }
+
+        ROOM_REMOVED -> events.onNext(RoomRemoved(UUID.fromString(event.roomRemoved.id)))
+
+        ROOM_CREATED -> with(event.roomCreated) {
+            events.onNext(RoomCreated(Room(UUID.fromString(id), name)))
         }
 
         ROOM_NOT_CREATED -> events.onNext(RoomNotCreated)
-
-        ROOM_REMOVED -> events.onNext(RoomRemoved(UUID.fromString(event.roomRemoved.id)))
 
         ROOM_JOINED -> events.onNext(RoomJoined)
 
         ROOM_NOT_JOINED -> events.onNext(RoomNotJoined)
 
-        ROOM_LEAVED -> events.onNext(RoomLeaved)
+        ROOM_LEFT -> events.onNext(RoomLeft)
 
-        ROOM_NOT_LEAVED -> events.onNext(RoomNotLeaved)
+        ROOM_NOT_LEFT -> events.onNext(RoomNotLeft)
+
+        USER_JOINED -> events.onNext(UserJoined(event.userJoined.id))
+
+        USER_LEFT -> events.onNext(UserLeft(event.userLeft.id))
 
         MESSAGE_RECEIVED -> {
             val sender = event.messageReceived.senderName

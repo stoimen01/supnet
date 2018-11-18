@@ -12,6 +12,7 @@ import com.supnet.common.show
 import com.supnet.navigation.NavigationCommand.*
 import com.supnet.rooms.room.RoomFragment
 import com.supnet.rooms.list.RoomsListFragment
+import com.supnet.signaling.webrtc.PeerConnectionClient
 import kotlinx.android.synthetic.main.activity_navigation.*
 
 class NavigationActivity : AppCompatActivity() {
@@ -21,6 +22,7 @@ class NavigationActivity : AppCompatActivity() {
             .of(this, NavigationViewModelFactory(Supnet.roomsManager))
             .get(NavigationViewModel::class.java)
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

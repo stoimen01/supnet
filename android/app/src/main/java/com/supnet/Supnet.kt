@@ -5,6 +5,7 @@ import com.supnet.signaling.rooms.RxRoomsManager
 import com.supnet.signaling.client.RxSignalingClient
 import com.supnet.signaling.rooms.RoomsReducer
 import okhttp3.OkHttpClient
+import org.webrtc.EglBase
 import java.util.concurrent.TimeUnit
 
 class Supnet : Application() {
@@ -17,6 +18,7 @@ class Supnet : Application() {
                 .build()
             RxSignalingClient(httpClient)
         }
+
 
         val roomsManager by lazy { RxRoomsManager(signalingClient, RoomsReducer()) }
 

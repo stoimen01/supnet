@@ -6,7 +6,6 @@ import com.supnet.signaling.rooms.RoomsEffect.SignalingEffect.*
 import com.supnet.signaling.rooms.RoomsEvent.SignalingEvent.*
 import com.supnet.signaling.rooms.RoomsEvent.UIEvent.*
 import com.supnet.signaling.rooms.RoomsState.*
-import com.supnet.signaling.rooms.StateReducer.IllegalEventException
 
 private typealias RoomsReduceResult = ReduceResult<RoomsState, RoomsEffect>
 
@@ -67,9 +66,9 @@ class RoomsReducer : StateReducer<RoomsState, RoomsEvent, RoomsEffect> {
             resultOf(JoiningRoom(room, rooms), JoinRoom(event.roomId))
         }
 
-        is RoomCreated -> stateOnly(copy(rooms = rooms + event.room))
+        is RoomAdded -> stateOnly(copy(rooms = rooms + event.room))
 
-        is RoomRemoved -> stateOnly(copy(rooms = rooms.filter { it.id != event.roomId })) // optimize this
+        is RoomRemoved -> stateOnly(copy(rooms = rooms.filter { it.id != event.roomId }))
 
         else -> throwInvalid(this, event)
     }
@@ -79,6 +78,8 @@ class RoomsReducer : StateReducer<RoomsState, RoomsEvent, RoomsEffect> {
         SocketDisconnected, SocketFailed -> stateOnly(Disconnected)
 
         OnDisconnect -> resultOf(Disconnecting, Disconnect)
+
+        is RoomAdded -> stateOnly(copy(rooms = rooms + event.room))
 
         is RoomCreated -> stateOnly(InRoom(event.room, rooms + event.room, setOf()))
 
@@ -95,7 +96,7 @@ class RoomsReducer : StateReducer<RoomsState, RoomsEvent, RoomsEffect> {
 
         OnDisconnect -> resultOf(Disconnecting, Disconnect)
 
-        is RoomCreated -> stateOnly(copy(rooms = rooms + event.room))
+        is RoomAdded -> stateOnly(copy(rooms = rooms + event.room))
 
         is RoomRemoved -> stateOnly(copy(rooms = rooms.filter { it.id != event.roomId }))
 
@@ -120,13 +121,15 @@ class RoomsReducer : StateReducer<RoomsState, RoomsEvent, RoomsEffect> {
             resultOf(newState, SendMessage(event.data))
         }
 
-        is RoomCreated -> stateOnly(copy(rooms = rooms + event.room))
+        is RoomAdded -> stateOnly(copy(rooms = rooms + event.room))
 
         is RoomRemoved -> stateOnly(copy(rooms = rooms.filter { it.id != event.roomId }))
 
-        is RoomJoined -> repeat()
+        is UserJoined -> repeat()
 
-        RoomLeaved -> stateOnly(InLobby(rooms))
+        is UserLeft -> repeat()
+
+        RoomLeft -> stateOnly(InLobby(rooms))
 
         is MessageReceived -> stateOnly(copy(
             messages = messages + Message(

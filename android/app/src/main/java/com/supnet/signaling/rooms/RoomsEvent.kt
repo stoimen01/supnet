@@ -21,16 +21,21 @@ sealed class RoomsEvent {
         object SocketFailed: SignalingEvent()
 
         data class RoomsReceived(val rooms: List<Room>) : SignalingEvent()
+
+        data class RoomAdded(val room: Room) : SignalingEvent()
+        data class RoomRemoved(val roomId: UUID) : SignalingEvent()
+
         data class RoomCreated(val room: Room) : SignalingEvent()
         object RoomNotCreated : SignalingEvent()
-
-        data class RoomRemoved(val roomId: UUID) : SignalingEvent()
 
         object RoomJoined : SignalingEvent()
         object RoomNotJoined : SignalingEvent()
 
-        object RoomLeaved : SignalingEvent()
-        object RoomNotLeaved : SignalingEvent()
+        object RoomLeft : SignalingEvent()
+        object RoomNotLeft : SignalingEvent()
+
+        data class UserJoined(val id: String) : SignalingEvent()
+        data class UserLeft(val id: String) : SignalingEvent()
 
         object MessageSend : SignalingEvent()
         object MessageNotSend : SignalingEvent()
