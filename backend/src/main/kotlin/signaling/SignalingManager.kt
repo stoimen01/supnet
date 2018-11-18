@@ -134,10 +134,11 @@ class SignalingManager {
             }
 
             val leaveEvent = buildEvent { setRoomLeaved(RoomLeavedEvent.newBuilder().setId(leaver.id)) }
+            sendEvent(leaver.id, leaveEvent)
 
             if (room.members.isEmpty()) {
                 rooms.remove(room.id)
-                sendEvent(leaver.id, leaveEvent)
+
                 broadcastEvent { setRoomRemoved(RoomRemovedEvent.newBuilder().setId(room.id.toString())) }
             } else {
                 room.members.forEach { connections[it.id]?.send(leaveEvent) }

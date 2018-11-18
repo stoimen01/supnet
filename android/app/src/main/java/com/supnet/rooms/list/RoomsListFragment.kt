@@ -18,8 +18,7 @@ import com.supnet.signaling.entities.Room
 import kotlinx.android.synthetic.main.fragment_rooms_list.*
 import java.util.*
 
-class RoomsListFragment : BaseFragment(),
-    RoomCreatorDialogFragment.Listener {
+class RoomsListFragment : BaseFragment(), RoomCreatorDialogFragment.Listener {
 
     private val viewModel by lazy {
         ViewModelProviders
@@ -31,6 +30,8 @@ class RoomsListFragment : BaseFragment(),
 
     override fun provideViewId() = R.layout.fragment_rooms_list
 
+    override fun onCreateRoom(name: String) = viewModel.onCreateRoom(name)
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -41,12 +42,10 @@ class RoomsListFragment : BaseFragment(),
         txtRoomsEmpty.hide()
         listRooms.hide()
 
-        btnAdd.setOnClickListener {
-            RoomCreatorDialogFragment().show(childFragmentManager, "")
-        }
+        btnAdd.setOnClickListener { RoomCreatorDialogFragment().show(childFragmentManager, "") }
 
         observe(viewModel.getLiveState(), this::onLiveState)
-        observe(viewModel.getLiveCommands(), this::onLiveCommand)
+        observeCommands(viewModel.getLiveCommands(), this::onLiveCommand)
     }
 
     private fun onLiveState(state: RoomsListViewModel.RoomsListState) = when (state) {
@@ -68,26 +67,19 @@ class RoomsListFragment : BaseFragment(),
         }
     }
 
-    private fun onLiveCommand(cmd: Command<RoomsListViewModel.RoomsListCommand?>) {
-        when (cmd.getData()) {
-            SHOW_ROOM_CREATE_ERROR -> {
-                showToast("Cannot create room at the moment")
-                listRooms.show()
-                barLoading.hide()
-                txtRoomsEmpty.hide()
-            }
-            SHOW_ROOM_JOIN_ERROR ->  {
-                showToast("Cannot join room at the moment")
-                listRooms.show()
-                barLoading.hide()
-                txtRoomsEmpty.hide()
-            }
-            null -> {/*no-op*/}
+    private fun onLiveCommand(cmd: RoomsListViewModel.RoomsListCommand) = when (cmd) {
+        SHOW_ROOM_CREATE_ERROR -> {
+            showToast("Cannot create room at the moment")
+            listRooms.show()
+            barLoading.hide()
+            txtRoomsEmpty.hide()
         }
-    }
-
-    override fun onCreateRoom(name: String) {
-        viewModel.onCreateRoom(name)
+        SHOW_ROOM_JOIN_ERROR ->  {
+            showToast("Cannot join room at the moment")
+            listRooms.show()
+            barLoading.hide()
+            txtRoomsEmpty.hide()
+        }
     }
 
     class RoomsAdapter(
@@ -111,9 +103,7 @@ class RoomsListFragment : BaseFragment(),
 
         override fun onBindViewHolder(holder: MyViewHolder, i: Int) {
             holder.titleView.text = rooms[i].name
-            holder.btnView.setOnClickListener {
-                listener(rooms[i].id)
-            }
+            holder.btnView.setOnClickListener { listener(rooms[i].id) }
         }
 
         class MyViewHolder(val view: View) : RecyclerView.ViewHolder(view) {

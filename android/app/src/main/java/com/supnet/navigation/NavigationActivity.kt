@@ -1,7 +1,6 @@
 package com.supnet.navigation
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -53,11 +52,6 @@ class NavigationActivity : AppCompatActivity() {
             showFragment(RoomFragment())
             barLoading.hide()
             txtConnectionError.hide()
-        }
-
-        is LogMessage -> {
-            Log.d("ACTIVITY", cmd.data)
-            Unit
         }
 
     }

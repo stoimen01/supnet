@@ -2,10 +2,10 @@ package com.supnet.signaling.client
 
 import com.google.protobuf.InvalidProtocolBufferException
 import com.supnet.signaling.entities.Room
-import com.supnet.signaling.client.SignalingClient.*
-import com.supnet.signaling.client.SignalingClient.SignalingIntent.*
-import com.supnet.signaling.rooms.RoomsManager.Event.ConnectionEvent
-import com.supnet.signaling.rooms.RoomsManager.Event.ConnectionEvent.*
+import com.supnet.signaling.rooms.RoomsEvent.SignalingEvent
+import com.supnet.signaling.rooms.RoomsEvent.SignalingEvent.*
+import com.supnet.signaling.rooms.RoomsEffect.SignalingEffect
+import com.supnet.signaling.rooms.RoomsEffect.SignalingEffect.*
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
 import okhttp3.*
@@ -24,14 +24,14 @@ class RxSignalingClient(
     private val client: OkHttpClient
 ) : WebSocketListener(), SignalingClient {
 
-    private val events = PublishSubject.create<ConnectionEvent>()
+    private val events = PublishSubject.create<SignalingEvent>()
 
     private lateinit var ws: WebSocket
 
     /* SignalingClient implementation */
-    override fun getEvents(): Observable<ConnectionEvent> = events
+    override fun getEvents(): Observable<SignalingEvent> = events
 
-    override fun processIntent(intent: SignalingIntent) = when (intent) {
+    override fun handleEffect(intent: SignalingEffect) = when (intent) {
         Connect -> {
             val request = Request.Builder()
                 .url("ws://10.0.2.2:8080/signaling")

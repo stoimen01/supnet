@@ -1,20 +1,10 @@
 package com.supnet.signaling.client
 
-import com.supnet.signaling.rooms.RoomsManager
+import com.supnet.signaling.rooms.RoomsEffect
+import com.supnet.signaling.rooms.RoomsEvent
 import io.reactivex.Observable
-import java.util.*
 
 interface SignalingClient {
-    
-    sealed class SignalingIntent {
-        object Connect: SignalingIntent()
-        data class CreateRoom(val name: String): SignalingIntent()
-        data class JoinRoom(val roomId: UUID): SignalingIntent()
-        data class LeaveRoom(val roomId: UUID): SignalingIntent()
-        data class SendMessage(val data: String) : SignalingIntent()
-        object Disconnect: SignalingIntent()
-    }
-
-    fun getEvents(): Observable<RoomsManager.Event.ConnectionEvent>
-    fun processIntent(intent: SignalingIntent)
+    fun getEvents(): Observable<RoomsEvent.SignalingEvent>
+    fun handleEffect(intent: RoomsEffect.SignalingEffect)
 }

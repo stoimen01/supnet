@@ -7,5 +7,4 @@ sealed class NavigationCommand {
     object ShowRooms : NavigationCommand()
     object ShowError : NavigationCommand()
     object ShowRoom : NavigationCommand()
-    data class LogMessage(val data: String): NavigationCommand()
 }

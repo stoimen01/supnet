@@ -6,7 +6,8 @@ import com.supnet.common.BaseViewModel
 import com.supnet.common.Command
 import com.supnet.navigation.NavigationCommand.*
 import com.supnet.signaling.rooms.RoomsManager
-import com.supnet.signaling.rooms.RoomsManager.State.*
+import com.supnet.signaling.rooms.RoomsState
+import com.supnet.signaling.rooms.RoomsState.*
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
@@ -14,8 +15,7 @@ import io.reactivex.rxkotlin.plusAssign
 class NavigationViewModel(
     connect: () -> Unit,
     private val disconnect: () -> Unit,
-    stateStream: Observable<RoomsManager.State>,
-    stateLog: Observable<String>
+    stateStream: Observable<RoomsState>
 ) : BaseViewModel() {
 
     private val liveCommands = MutableLiveData<Command<NavigationCommand>>()
@@ -29,14 +29,12 @@ class NavigationViewModel(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(::onConnectionState)
 
-        disposables += stateLog.subscribe { postCommand(LogMessage(it)) }
-
         connect()
     }
 
     fun getCommands(): LiveData<Command<NavigationCommand>> = liveCommands
 
-    private fun onConnectionState(state: RoomsManager.State) = when (state) {
+    private fun onConnectionState(state: RoomsState) = when (state) {
         Idle, Connecting, Connected -> postCommand(ShowLoading)
         Disconnecting, Disconnected -> postCommand(ShowError)
         is InLobby -> postCommand(ShowRooms)

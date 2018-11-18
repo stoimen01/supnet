@@ -1,7 +1,7 @@
 package com.supnet.rooms.room
 
+import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +12,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.supnet.R
 import com.supnet.Supnet
-import com.supnet.common.AlertDialogFragment
-import com.supnet.common.BaseFragment
-import com.supnet.common.observe
-import com.supnet.common.showToast
+import com.supnet.common.*
 import com.supnet.navigation.BackPressHandler
 import com.supnet.signaling.entities.Message
+import com.supnet.signaling.entities.MessageStatus.*
 import kotlinx.android.synthetic.main.fragment_room.*
 
 class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Listener {
@@ -39,7 +37,11 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
 
         toolbarRoom.setNavigationOnClickListener { showLeaveConfirmationDialog() }
 
-        btnSend.setOnClickListener { viewModel.sendMessage(txtMsgContent.text.toString()) }
+        btnSend.setOnClickListener {
+            viewModel.sendMessage(txtMsgContent.text.toString())
+            hideKeyboard()
+            txtMsgContent.setText("")
+        }
 
         observe(viewModel.getLiveRoomData()) { (room, messages) ->
             if (toolbarRoom.title?.toString() != room.name) {
@@ -84,10 +86,15 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
         }
 
         override fun onBindViewHolder(holder: MyViewHolder, i: Int) {
-            holder.userNameView.text = messages[i].author
-            holder.msgView.text = messages[i].content
-            holder.view.setOnClickListener {
-                listener(messages[i].author)
+            val msg = messages[i]
+            holder.userNameView.text = msg.author
+            holder.view.setOnClickListener { listener(msg.author) }
+            holder.msgView.text = msg.content
+
+            when (msg.status) {
+                SENDING -> holder.msgView.setTextColor(Color.GRAY)
+                SENT -> holder.msgView.setTextColor(Color.BLACK)
+                FAILED -> holder.msgView.setTextColor(Color.RED)
             }
         }
 

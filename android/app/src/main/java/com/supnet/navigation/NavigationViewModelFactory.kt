@@ -13,8 +13,7 @@ class NavigationViewModelFactory(
         return NavigationViewModel(
             roomsManager::connect,
             roomsManager::disconnect,
-            roomsManager.getState(),
-            roomsManager.getStateLog()
+            roomsManager.getState()
         ) as T
     }
 

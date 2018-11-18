@@ -39,7 +39,7 @@ class RoomsListViewModel(
                     liveState.postValue(Available(it))
                 }
             }, {
-
+                it.printStackTrace()
             })
     }
 
