@@ -332,7 +332,6 @@ public class PeerConnectionClient {
       try {
         createMediaConstraintsInternal();
         createPeerConnectionInternal();
-        maybeCreateAndStartRtcEventLog();
       } catch (Exception e) {
         reportError("Failed to create peer connection: " + e.getMessage());
         throw e;
@@ -641,51 +640,11 @@ public class PeerConnectionClient {
       findVideoSender();
     }
 
-    if (peerConnectionParameters.aecDump) {
-      try {
-        ParcelFileDescriptor aecDumpFileDescriptor =
-            ParcelFileDescriptor.open(new File(Environment.getExternalStorageDirectory().getPath()
-                                          + File.separator + "Download/audio.aecdump"),
-                ParcelFileDescriptor.MODE_READ_WRITE | ParcelFileDescriptor.MODE_CREATE
-                    | ParcelFileDescriptor.MODE_TRUNCATE);
-        factory.startAecDump(aecDumpFileDescriptor.detachFd(), -1);
-      } catch (IOException e) {
-        Log.e(TAG, "Can not open aecdump file", e);
-      }
-    }
-
-    if (saveRecordedAudioToFile != null) {
-      if (saveRecordedAudioToFile.start()) {
-        Log.d(TAG, "Recording input audio to file is activated");
-      }
-    }
     Log.d(TAG, "Peer connection created.");
   }
 
-  private File createRtcEventLogOutputFile() {
-    DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_hhmm_ss", Locale.getDefault());
-    Date date = new Date();
-    final String outputFileName = "event_log_" + dateFormat.format(date) + ".log";
-    return new File(
-        appContext.getDir(RTCEVENTLOG_OUTPUT_DIR_NAME, Context.MODE_PRIVATE), outputFileName);
-  }
-
-  private void maybeCreateAndStartRtcEventLog() {
-    if (appContext == null || peerConnection == null) {
-      return;
-    }
-    if (!peerConnectionParameters.enableRtcEventLog) {
-      Log.d(TAG, "RtcEventLog is disabled.");
-      return;
-    }
-    rtcEventLog = new RtcEventLog(peerConnection);
-    rtcEventLog.start(createRtcEventLogOutputFile());
-  }
-
   private void closeInternal() {
-    if (factory != null && peerConnectionParameters.aecDump) {
-      factory.stopAecDump();
-    }
+
     Log.d(TAG, "Closing peer connection.");
     statsTimer.cancel();
     if (dataChannel != null) {

@@ -76,17 +76,15 @@ class SignalingManager {
         usrConnections?.remove(wsSession)
 
         if (usrConnections != null && usrConnections.isEmpty()) {
-
             users.remove(id)
-
             rooms.values.forEach { room ->
                 if (room.members.remove(user)) {
                     if (room.members.isEmpty()) {
                         rooms.remove(room.id)
                         broadcastEvent { setRoomRemoved(RoomRemovedEvent.newBuilder().setId(room.id.toString())) }
                     } else {
-                        val leaveEvent = buildEvent { setRoomLeaved(RoomLeavedEvent.newBuilder().setId(id)) }
-                        room.members.forEach { connections[it.id]?.send(leaveEvent) }
+                        val leftEvent = buildEvent { setUserLeft(UserLeftEvent.newBuilder().setId(id)) }
+                        room.members.forEach { connections[it.id]?.send(leftEvent) }
                     }
                 }
             }
@@ -112,45 +110,54 @@ class SignalingManager {
             Room(it, intent.roomName, hashSetOf(creator))
         }
 
-        val event = RoomCreatedEvent.newBuilder()
+        val createdEvent = RoomCreatedEvent.newBuilder()
                 .setId(newRoom.id.toString())
                 .setName(newRoom.name)
 
-        broadcastEvent { setRoomCreated(event) }
+        sendEvent(creator.id) { setRoomCreated(createdEvent) }
+
+        val addedEvent = RoomAddedEvent.newBuilder()
+                .setId(newRoom.id.toString())
+                .setName(newRoom.name)
+
+        broadcastExcept(creator) { setRoomAdded(addedEvent) }
     }
 
     private suspend fun onLeaveRoom(leaver: User, intent: LeaveRoomIntent) {
         try {
+
             val room = rooms[intent.roomId.toUUID()]
             if (room == null) {
-                sendEvent(leaver.id) { setRoomNotLeaved(RoomNotLeavedEvent.newBuilder()) }
+                sendEvent(leaver.id) { setRoomNotLeft(RoomNotLeftEvent.newBuilder()) }
                 return
             }
 
             val isRemoved = synchronized(room.members) { room.members.remove(leaver) }
             if (!isRemoved) {
-                sendEvent(leaver.id) { setRoomNotLeaved(RoomNotLeavedEvent.newBuilder()) }
+                sendEvent(leaver.id) { setRoomNotLeft(RoomNotLeftEvent.newBuilder()) }
                 return
             }
 
-            val leaveEvent = buildEvent { setRoomLeaved(RoomLeavedEvent.newBuilder().setId(leaver.id)) }
-            sendEvent(leaver.id, leaveEvent)
+            val roomLeftEvent = buildEvent { setRoomLeft(RoomLeftEvent.newBuilder().setId(leaver.id)) }
+            sendEvent(leaver.id, roomLeftEvent)
+
+            val userLeftEvent = buildEvent { setUserLeft(UserLeftEvent.newBuilder().setId(leaver.id)) }
 
             if (room.members.isEmpty()) {
                 rooms.remove(room.id)
-
                 broadcastEvent { setRoomRemoved(RoomRemovedEvent.newBuilder().setId(room.id.toString())) }
             } else {
-                room.members.forEach { connections[it.id]?.send(leaveEvent) }
+                room.members.forEach { connections[it.id]?.send(userLeftEvent) }
             }
 
         } catch (ex: IllegalArgumentException) {
-            sendEvent(leaver.id) { setRoomNotLeaved(RoomNotLeavedEvent.newBuilder()) }
+            sendEvent(leaver.id) { setRoomNotLeft(RoomNotLeftEvent.newBuilder()) }
         }
     }
 
     private suspend fun onJoinRoom(user: User, intent: JoinRoomIntent) {
         try {
+
             val room = rooms[intent.roomId.toUUID()]
             if (room == null) {
                 sendEvent(user.id) { setRoomNotJoined(RoomNotJoinedEvent.newBuilder()) }
@@ -163,10 +170,16 @@ class SignalingManager {
                 return
             }
 
-            // Notify everyone in the room including the newly joined user that he joined successfully
-            val event = buildEvent { setRoomJoined(RoomJoinedEvent.newBuilder().setId(user.id)) }
-            room.members.forEach { connections[it.id]?.send(event) }
+            // Notify the user that he joined successfully
+            sendEvent(user.id) { setRoomJoined(RoomJoinedEvent.newBuilder().setId(user.id)) }
 
+            // Notify everyone else
+            val userJoined = buildEvent { setUserJoined(UserJoinedEvent.newBuilder().setId(user.id)) }
+            room.members.forEach {
+                if (it.id != user.id) {
+                    connections[it.id]?.send(userJoined)
+                }
+            }
         } catch (ex: IllegalArgumentException) {
             sendEvent(user.id) { setRoomNotJoined(RoomNotJoinedEvent.newBuilder()) }
         }
@@ -198,6 +211,15 @@ class SignalingManager {
         return SignalingEvent.newBuilder()
                 .apply { builder() }
                 .build()
+    }
+
+    private suspend fun broadcastExcept(excepted: User, builder: SignalingEvent.Builder.() -> Unit) {
+        val event = buildEvent(builder)
+        connections.forEach { (userId, sockets) ->
+            if (userId != excepted.id) {
+                sockets.send(event)
+            }
+        }
     }
 
     /* Sends event to all connections for all users */
