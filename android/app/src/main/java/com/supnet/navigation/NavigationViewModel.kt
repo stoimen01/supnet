@@ -5,34 +5,33 @@ import androidx.lifecycle.MutableLiveData
 import com.supnet.common.BaseViewModel
 import com.supnet.common.Command
 import com.supnet.navigation.NavigationCommand.*
-import com.supnet.signaling.rooms.RoomsManager
 import com.supnet.signaling.rooms.RoomsState
 import com.supnet.signaling.rooms.RoomsState.*
+import com.supnet.model.credentials.CredentialsState
+import com.supnet.model.credentials.CredentialsState.LoggedIn
+import com.supnet.model.credentials.CredentialsState.LoggedOut
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.rxkotlin.plusAssign
 
 class NavigationViewModel(
-    connect: () -> Unit,
-    private val disconnect: () -> Unit,
-    stateStream: Observable<RoomsState>
+    credentialsStates: Observable<CredentialsState>
 ) : BaseViewModel() {
 
     private val liveCommands = MutableLiveData<Command<NavigationCommand>>()
 
     init {
-
-        disposables += stateStream
-            .distinctUntilChanged { t1, t2 ->
-                t1.javaClass.canonicalName == t2.javaClass.canonicalName
-            }
+        disposables += credentialsStates
             .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(::onConnectionState)
-
-        connect()
+            .subscribe(this::onLoginState)
     }
 
     fun getCommands(): LiveData<Command<NavigationCommand>> = liveCommands
+
+    private fun onLoginState(state: CredentialsState) = when (state) {
+        is LoggedIn -> postCommand(ShowRooms)
+        LoggedOut -> postCommand(ShowLogin)
+    }
 
     private fun onConnectionState(state: RoomsState) = when (state) {
         Idle, Connecting, Connected -> postCommand(ShowLoading)
@@ -45,11 +44,6 @@ class NavigationViewModel(
 
     private fun postCommand(cmd: NavigationCommand) {
         liveCommands.postValue(Command(cmd))
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        disconnect()
     }
 
 }

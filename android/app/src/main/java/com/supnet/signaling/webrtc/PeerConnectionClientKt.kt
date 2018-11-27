@@ -1,3 +1,4 @@
+/*
 package com.supnet.signaling.webrtc
 
 import android.content.Context
@@ -288,7 +289,9 @@ class PeerConnectionClientKt(
 
     private inner class MySdpObserver : SdpObserver {
 
-        /** Called on success of Create{Offer,Answer}(). */
+        */
+/** Called on success of Create{Offer,Answer}(). *//*
+
         override fun onCreateSuccess(origSdp: SessionDescription) {
 
             var sdpDescription = origSdp.description
@@ -315,7 +318,9 @@ class PeerConnectionClientKt(
             }
         }
 
-        /** Called on success of Set{Local,Remote}Description(). */
+        */
+/** Called on success of Set{Local,Remote}Description(). *//*
+
         override fun onSetSuccess() = executor.execute {
             if (isInitiator) {
                 // For offering peer connection we first create offer and set
@@ -345,11 +350,13 @@ class PeerConnectionClientKt(
                 }
             }
 
-            /*
+            */
+/*
             if (peerConnectionParameters!!.videoMaxBitrate > 0) {
                 Log.d(TAG, "Set video maximum bitrate: " + peerConnectionParameters!!.videoMaxBitrate)
                 peerConnectionClient!!.setVideoMaxBitrate(peerConnectionParameters!!.videoMaxBitrate)
-            }*/
+            }*//*
+
         }
 
         override fun onCreateFailure(error: String) = reportError("createSDP error: $error")
@@ -367,7 +374,8 @@ class PeerConnectionClientKt(
         }
 
         override fun onIceConnectionChange(iceState: PeerConnection.IceConnectionState) {
-            /*
+            */
+/*
             executor.execute(() -> {
                 Log.d(TAG, "IceConnectionState: " + newState);
                 if (newState == IceConnectionState.CONNECTED) {
@@ -378,11 +386,13 @@ class PeerConnectionClientKt(
                   reportError("ICE connection failed.");
                 }
               });
-            */
+            *//*
+
         }
 
         override fun onDataChannel(dataChan: DataChannel) {
-            /*
+            */
+/*
             Log.d(TAG, "New Data channel " + dc.label());
 
               if (!dataChannelEnabled)
@@ -412,7 +422,8 @@ class PeerConnectionClientKt(
                   Log.d(TAG, "Got msg: " + strData + " over " + dc);
                 }
               });
-            */
+            *//*
+
         }
 
         override fun onSignalingChange(p0: PeerConnection.SignalingState?) = Unit
@@ -459,10 +470,12 @@ class PeerConnectionClientKt(
 
     private fun reportError(errMsg: String) {
         executor.execute {
-           /* if (!isError) {
+           */
+/* if (!isError) {
                 events.onPeerConnectionError(errorMessage)
                 isError = true
-            }*/
+            }*//*
+
         }
     }
 
@@ -573,7 +586,9 @@ class PeerConnectionClientKt(
             val newMLine = movePayloadTypesToFront(codecPayloadTypes, lines[mLineIndex]) ?: return sdpDescription
             Log.d(TAG, "Change media description from: " + lines[mLineIndex] + " to " + newMLine)
             lines[mLineIndex] = newMLine
-            return joinString(Arrays.asList(*lines), "\r\n", true /* delimiterAtEnd */)
+            return joinString(Arrays.asList(*lines), "\r\n", true */
+/* delimiterAtEnd *//*
+)
         }
 
         private fun joinString(s: Iterable<CharSequence>, delimiter: String, delimiterAtEnd: Boolean): String {
@@ -607,10 +622,14 @@ class PeerConnectionClientKt(
             newLineParts.addAll(header)
             newLineParts.addAll(preferredPayloadTypes)
             newLineParts.addAll(unpreferredPayloadTypes)
-            return joinString(newLineParts, " ", false /* delimiterAtEnd */)
+            return joinString(newLineParts, " ", false */
+/* delimiterAtEnd *//*
+)
         }
 
-        /** Returns the line number containing "m=audio|video", or -1 if no such line exists.  */
+        */
+/** Returns the line number containing "m=audio|video", or -1 if no such line exists.  *//*
+
         private fun findMediaDescriptionLine(isAudio: Boolean, sdpLines: Array<String>): Int {
             val mediaDescription = if (isAudio) "m=audio " else "m=video "
             for (i in sdpLines.indices) {
@@ -682,4 +701,4 @@ class PeerConnectionClientKt(
             return newSdpDescription.toString()
         }
     }
-}
+}*/

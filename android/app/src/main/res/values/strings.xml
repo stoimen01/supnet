@@ -9,4 +9,11 @@
     <string name="rooms_toolbar_title">Rooms</string>
     <string name="rooms_not_available">There are no rooms at the moment.\nYou can always create some !</string>
     <string name="room_leave_question">You are going to leave the room.\nAre you sure ?</string>
+    <string name="hint_email">Email address</string>
+    <string name="hint_username">Username</string>
+    <string name="hint_password">Password</string>
+    <string name="btn_sign_in">Sign in</string>
+    <string name="btn_register">Create account</string>
+    <string name="btn_back_to_sign_in">Back to sign in</string>
+    <string name="txt_welcome">Welcome to Supnet !</string>
 </resources>

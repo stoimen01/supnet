@@ -9,10 +9,11 @@ import com.supnet.Supnet
 import com.supnet.common.hide
 import com.supnet.common.observeCommands
 import com.supnet.common.show
+import com.supnet.user.login.LoginFragment
 import com.supnet.navigation.NavigationCommand.*
 import com.supnet.rooms.room.RoomFragment
 import com.supnet.rooms.list.RoomsListFragment
-import com.supnet.signaling.webrtc.PeerConnectionClient
+import com.supnet.user.UserNavigationFragment
 import kotlinx.android.synthetic.main.activity_navigation.*
 
 class NavigationActivity : AppCompatActivity() {
@@ -56,6 +57,11 @@ class NavigationActivity : AppCompatActivity() {
             txtConnectionError.hide()
         }
 
+        ShowLogin -> {
+            showFragment(UserNavigationFragment())
+            barLoading.hide()
+            txtConnectionError.hide()
+        }
     }
 
     override fun onBackPressed() {

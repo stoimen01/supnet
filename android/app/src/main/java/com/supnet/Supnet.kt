@@ -19,7 +19,6 @@ class Supnet : Application() {
             RxSignalingClient(httpClient)
         }
 
-
         val roomsManager by lazy { RxRoomsManager(signalingClient, RoomsReducer()) }
 
     }

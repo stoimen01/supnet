@@ -2,18 +2,16 @@ package com.supnet.navigation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.supnet.signaling.rooms.RoomsManager
+import com.supnet.model.credentials.CredentialsManager
 
 class NavigationViewModelFactory(
-    private val roomsManager: RoomsManager
+    private val credentialsManager: CredentialsManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return NavigationViewModel(
-            roomsManager::connect,
-            roomsManager::disconnect,
-            roomsManager.getState()
+            credentialsManager.getCredentialsStates()
         ) as T
     }
 

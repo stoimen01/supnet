@@ -6,7 +6,8 @@
  *  tree. An additional intellectual property rights grant can be found
  *  in the file PATENTS.  All contributing project authors may
  *  be found in the AUTHORS file in the root of the source tree.
- */
+ *//*
+
 
 package com.supnet.signaling.webrtc;
 
@@ -42,13 +43,15 @@ import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+*/
 /**
  * Peer connection client implementation.
  *
  * <p>All public methods are routed to local looper thread.
  * All PeerConnectionEvents callbacks are invoked from the same looper thread.
  * This class is a singleton.
- */
+ *//*
+
 public class PeerConnectionClient {
 
   public static final String VIDEO_TRACK_ID = "ARDAMSv0";
@@ -144,9 +147,11 @@ public class PeerConnectionClient {
   // recorded audio samples to an output file.
   @Nullable private RecordedAudioToFileController saveRecordedAudioToFile;
 
-  /**
+  */
+/**
    * Peer connection parameters.
-   */
+   *//*
+
   public static class DataChannelParameters {
     public final boolean ordered;
     public final int maxRetransmitTimeMs;
@@ -166,9 +171,11 @@ public class PeerConnectionClient {
     }
   }
 
-  /**
+  */
+/**
    * Peer connection parameters.
-   */
+   *//*
+
   public static class PeerConnectionParameters {
     public final boolean videoCallEnabled;
     public final boolean loopback;
@@ -227,57 +234,77 @@ public class PeerConnectionClient {
     }
   }
 
-  /**
+  */
+/**
    * Peer connection events.
-   */
+   *//*
+
   public interface PeerConnectionEvents {
-    /**
+    */
+/**
      * Callback fired once local SDP is created and set.
-     */
+     *//*
+
     void onLocalDescription(final SessionDescription sdp);
 
-    /**
+    */
+/**
      * Callback fired once local Ice candidate is generated.
-     */
+     *//*
+
     void onIceCandidate(final IceCandidate candidate);
 
-    /**
+    */
+/**
      * Callback fired once local ICE candidates are removed.
-     */
+     *//*
+
     void onIceCandidatesRemoved(final IceCandidate[] candidates);
 
-    /**
+    */
+/**
      * Callback fired once connection is established (IceConnectionState is
      * CONNECTED).
-     */
+     *//*
+
     void onIceConnected();
 
-    /**
+    */
+/**
      * Callback fired once connection is closed (IceConnectionState is
      * DISCONNECTED).
-     */
+     *//*
+
     void onIceDisconnected();
 
-    /**
+    */
+/**
      * Callback fired once peer connection is closed.
-     */
+     *//*
+
     void onPeerConnectionClosed();
 
-    /**
+    */
+/**
      * Callback fired once peer connection statistics is ready.
-     */
+     *//*
+
     void onPeerConnectionStatsReady(final StatsReport[] reports);
 
-    /**
+    */
+/**
      * Callback fired once peer connection error happened.
-     */
+     *//*
+
     void onPeerConnectionError(final String description);
   }
 
-  /**
+  */
+/**
    * Create a PeerConnectionClient with the specified parameters. PeerConnectionClient takes
    * ownership of |eglBase|.
-   */
+   *//*
+
   public PeerConnectionClient(Context appContext, EglBase eglBase,
                               PeerConnectionParameters peerConnectionParameters, PeerConnectionEvents events) {
     this.rootEglBase = eglBase;
@@ -299,9 +326,11 @@ public class PeerConnectionClient {
     });
   }
 
-  /**
+  */
+/**
    * This function should only be called once.
-   */
+   *//*
+
   public void createPeerConnectionFactory(PeerConnectionFactory.Options options) {
     if (factory != null) {
       throw new IllegalStateException("PeerConnectionFactory has already been constructed");
@@ -391,7 +420,9 @@ public class PeerConnectionClient {
 
     if (peerConnectionParameters.videoCodecHwAcceleration) {
       encoderFactory = new DefaultVideoEncoderFactory(
-          rootEglBase.getEglBaseContext(), true /* enableIntelVp8Encoder */, enableH264HighProfile);
+          rootEglBase.getEglBaseContext(), true */
+/* enableIntelVp8Encoder *//*
+, enableH264HighProfile);
       decoderFactory = new DefaultVideoDecoderFactory(rootEglBase.getEglBaseContext());
     } else {
       encoderFactory = new SoftwareVideoEncoderFactory();
@@ -412,7 +443,9 @@ public class PeerConnectionClient {
     // Enable/disable OpenSL ES playback.
     if (!peerConnectionParameters.useOpenSLES) {
       Log.d(TAG, "Disable OpenSL ES audio even if device supports it");
-      WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true /* enable */);
+      WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(true */
+/* enable *//*
+);
     } else {
       Log.d(TAG, "Allow OpenSL ES audio if device supports it");
       WebRtcAudioManager.setBlacklistDeviceForOpenSLESUsage(false);
@@ -1028,7 +1061,9 @@ public class PeerConnectionClient {
     return newSdpDescription.toString();
   }
 
-  /** Returns the line number containing "m=audio|video", or -1 if no such line exists. */
+  */
+/** Returns the line number containing "m=audio|video", or -1 if no such line exists. *//*
+
   private static int findMediaDescriptionLine(boolean isAudio, String[] sdpLines) {
     final String mediaDescription = isAudio ? "m=audio " : "m=video ";
     for (int i = 0; i < sdpLines.length; ++i) {
@@ -1073,7 +1108,9 @@ public class PeerConnectionClient {
     newLineParts.addAll(header);
     newLineParts.addAll(preferredPayloadTypes);
     newLineParts.addAll(unpreferredPayloadTypes);
-    return joinString(newLineParts, " ", false /* delimiterAtEnd */);
+    return joinString(newLineParts, " ", false */
+/* delimiterAtEnd *//*
+);
   }
 
   private static String preferCodec(String sdpDescription, String codec, boolean isAudio) {
@@ -1105,7 +1142,9 @@ public class PeerConnectionClient {
     }
     Log.d(TAG, "Change media description from: " + lines[mLineIndex] + " to " + newMLine);
     lines[mLineIndex] = newMLine;
-    return joinString(Arrays.asList(lines), "\r\n", true /* delimiterAtEnd */);
+    return joinString(Arrays.asList(lines), "\r\n", true */
+/* delimiterAtEnd *//*
+);
   }
 
   private void drainCandidates() {
@@ -1317,3 +1356,4 @@ public class PeerConnectionClient {
     }
   }
 }
+*/
