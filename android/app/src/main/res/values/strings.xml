@@ -16,4 +16,9 @@
     <string name="btn_register">Create account</string>
     <string name="btn_back_to_sign_in">Back to sign in</string>
     <string name="txt_welcome">Welcome to Supnet !</string>
+    <string name="txt_gadgets">Gadgets</string>
+    <string name="txt_friends">Friends</string>
+    <string name="txt_settings">Settings</string>
+    <string name="txt_search">Search</string>
+    <string name="txt_add_friend">Add Friend</string>
 </resources>

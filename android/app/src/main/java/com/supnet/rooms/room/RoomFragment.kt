@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.supnet.R
 import com.supnet.Supnet
 import com.supnet.common.*
-import com.supnet.navigation.BackPressHandler
+import com.supnet.common.BackPressHandler
 import com.supnet.signaling.entities.Message
 import com.supnet.signaling.entities.MessageStatus.*
 import kotlinx.android.synthetic.main.fragment_room.*

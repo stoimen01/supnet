@@ -1,18 +1,44 @@
 package com.supnet.model.credentials
 
-import com.jakewharton.rxrelay2.PublishRelay
-import com.supnet.model.credentials.CredentialsEvent.UIEvent.*
-
 import io.reactivex.Observable
-import io.reactivex.rxkotlin.Observables
-import io.reactivex.subjects.PublishSubject
+import com.jakewharton.rxrelay2.PublishRelay
+import com.supnet.common.ReduceResult
+import com.supnet.common.SchedulersProvider
+import com.supnet.common.StateReducer
+import com.supnet.model.credentials.CredentialsEvent.UIEvent.*
+import com.supnet.model.credentials.CredentialsState.*
+import com.supnet.model.credentials.api.CredentialsClient
+import com.supnet.model.credentials.store.CredentialsStore
 
 class CredentialsManagerImpl(
     private val credentialsStore: CredentialsStore,
-    private val credentialsApi: CredentialsApi
+    private val credentialsClient: CredentialsClient,
+    private val reducer: StateReducer<CredentialsState, CredentialsEvent, CredentialsEffect>,
+    private val schedulersProvider: SchedulersProvider
 ) : CredentialsManager {
 
     private val uiEvents = PublishRelay.create<CredentialsEvent>()
+
+    private val errorMessages = PublishRelay.create<String>()
+
+    private val states by lazy {
+        return@lazy Observable.merge(uiEvents, credentialsClient.getEvents())
+            .observeOn(schedulersProvider.computation())
+            .scan(ReduceResult<CredentialsState, CredentialsEffect>(LoggedOut), reducer::reduce)
+            .observeOn(schedulersProvider.io())
+            .doOnNext {
+                it?.effects?.forEach { effect ->
+                    return@forEach when(effect) {
+                        is CredentialsEffect.ApiEffect -> credentialsClient.handleEffect(effect)
+                        is CredentialsEffect.ErrorMessage -> errorMessages.accept(effect.data)
+                    }
+                }
+            }
+            .map { it.state }
+            .distinctUntilChanged()
+            .replay(1)
+            .refCount()
+    }
 
     override fun loginUser(
         email: String,
@@ -25,25 +51,9 @@ class CredentialsManagerImpl(
         password: String
     ) = uiEvents.accept(OnRegister(email, userName, password))
 
-    override fun logoutUser()  = uiEvents.accept(OnLogout)
+    override fun logoutUser() = uiEvents.accept(OnLogout)
 
-    /*private val credentialsStates by lazy {
-        return@lazy Observable.merge(uiEvents, credentialsApi.getEvents())
-            .scan { state, event ->
+    override fun getCredentialsStates() = states
 
-            }
-
-
-    }*/
-
-
-
-
-    override fun getCredentialsStates(): Observable<CredentialsState> {
-
-
-        return Observable.just<CredentialsState>(CredentialsState.LoggedOut)
-            .replay(1)
-            .autoConnect()
-    }
+    override fun getErrorMessages() = errorMessages
 }

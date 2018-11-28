@@ -1,5 +1,7 @@
 package com.supnet.signaling.rooms
 
+import com.supnet.common.ReduceResult
+import com.supnet.common.StateReducer
 import com.supnet.signaling.entities.Message
 import com.supnet.signaling.entities.MessageStatus
 import com.supnet.signaling.rooms.RoomsEffect.SignalingEffect.*

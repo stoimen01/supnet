@@ -6,4 +6,8 @@ sealed class CredentialsState {
 
     object LoggedOut : CredentialsState()
 
+    object Loading : CredentialsState()
+
+    object Unknown : CredentialsState()
+
 }

@@ -10,6 +10,8 @@ interface CredentialsManager {
 
     fun logoutUser()
 
-    fun getCredentialsStates() : Observable<CredentialsState>
+    fun getCredentialsStates(): Observable<CredentialsState>
+
+    fun getErrorMessages(): Observable<String>
 
 }

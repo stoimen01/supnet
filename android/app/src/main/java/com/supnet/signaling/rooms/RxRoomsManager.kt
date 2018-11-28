@@ -1,5 +1,6 @@
 package com.supnet.signaling.rooms
 
+import com.supnet.common.ReduceResult
 import com.supnet.signaling.client.SignalingClient
 import com.supnet.signaling.entities.Message
 import com.supnet.signaling.entities.Room
