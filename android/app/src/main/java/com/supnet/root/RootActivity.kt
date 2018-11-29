@@ -27,36 +27,20 @@ class RootActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_navigation)
         observeCommands(viewModel.getCommands(), this::onNavigationCommand)
-        observe(viewModel.getLiveState(), this::onLiveState)
-    }
-
-    private fun onLiveState(state: RootViewState) {
-        if (state.isLoading) progressBar.show()
-        else progressBar.hide()
     }
 
     private fun onNavigationCommand(cmd: RootCommand) = when (cmd) {
-
         ShowEntryFlow -> showFragment(EntryFragment())
-
         ShowIndoorFlow -> showFragment(IndoorFragment())
-
-        is ShowErrorMessage -> showToast(cmd.msg)
-
     }
 
     override fun onBackPressed() {
-        val fragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+        val fragment = currentFragment
         if (fragment is BackPressHandler && fragment.onBackPressed()) return
         super.onBackPressed()
     }
 
     private fun showFragment(fragment: Fragment) {
-
-        // don't show the same fragment multiple times
-        if (currentFragment?.javaClass?.canonicalName ==
-            fragment.javaClass.canonicalName) return
-
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragmentContainer, fragment, null)
             .commit()

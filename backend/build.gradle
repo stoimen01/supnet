@@ -42,11 +42,20 @@ compileTestKotlin {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
     compile 'com.google.protobuf:protobuf-java:3.0.0'
     protobuf fileTree("../protobuf/")
+
     compile "io.ktor:ktor-server-netty:$ktor_version"
+    compile "io.ktor:ktor-jackson:$ktor_version"
     compile "io.ktor:ktor-websockets:$ktor_version"
+
+    compile 'org.jetbrains.exposed:exposed:0.11.2'
+    compile "com.h2database:h2:1.4.196"
+    compile 'com.zaxxer:HikariCP:3.2.0'
+
     compile "ch.qos.logback:logback-classic:$logback_version"
+
     testCompile "io.ktor:ktor-server-test-host:$ktor_version"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

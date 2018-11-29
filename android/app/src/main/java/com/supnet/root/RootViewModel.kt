@@ -2,58 +2,26 @@ package com.supnet.root
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.supnet.common.BaseViewModel
+import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.root.RootCommand.*
-import com.supnet.model.credentials.CredentialsState
-import com.supnet.model.credentials.CredentialsState.*
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.plusAssign
+import com.supnet.entry.EntryFlowNavigator
 
-class RootViewModel(
-    credentialsStates: Observable<CredentialsState>,
-    errorMessages: Observable<String>
-) : BaseViewModel() {
+class RootViewModel : AutoDisposableViewModel(), EntryFlowNavigator {
 
     private val liveCommands = MutableLiveData<Command<RootCommand>>()
 
-    private val liveState = MutableLiveData<RootViewState>()
-
     init {
-        disposables += credentialsStates
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(this::onLoginState)
-
-        disposables += errorMessages
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                postCommand(ShowErrorMessage(it))
-            }
-
-        liveState.value = RootViewState(false)
+        postCommand(ShowEntryFlow)
     }
 
-    private fun onLoginState(state: CredentialsState) = when (state) {
-        is LoggedIn -> {
-            postCommand(ShowIndoorFlow)
-            liveState.value = RootViewState(false)
-        }
-        LoggedOut -> {
-            postCommand(ShowEntryFlow)
-            liveState.value = RootViewState(false)
-        }
-        Loading -> {
-            liveState.value = RootViewState(true)
-        }
-        Unknown -> {}
-    }
+    override fun onSuccessfulRegistration() = postCommand(ShowIndoorFlow)
+
+    override fun onSuccessfulLogin() = postCommand(ShowIndoorFlow)
 
     private fun postCommand(cmd: RootCommand) {
         liveCommands.value = Command(cmd)
     }
 
     fun getCommands(): LiveData<Command<RootCommand>> = liveCommands
-
-    fun getLiveState(): LiveData<RootViewState> = liveState
 }

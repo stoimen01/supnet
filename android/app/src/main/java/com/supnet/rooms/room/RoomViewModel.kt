@@ -2,8 +2,7 @@ package com.supnet.rooms.room
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.supnet.common.BaseViewModel
-import com.supnet.signaling.client.SignalingClient
+import com.supnet.common.AutoDisposableViewModel
 import com.supnet.signaling.entities.Message
 import com.supnet.signaling.entities.Room
 import io.reactivex.Observable
@@ -13,7 +12,7 @@ class RoomViewModel(
     roomData: Observable<Pair<Room, Set<Message>>>,
     private val sendMsg: (String) -> Unit,
     private val leaveRoom: () -> Unit
-) : BaseViewModel() {
+) : AutoDisposableViewModel() {
 
     private val liveRoomData = MutableLiveData<Pair<Room, Set<Message>>>()
 

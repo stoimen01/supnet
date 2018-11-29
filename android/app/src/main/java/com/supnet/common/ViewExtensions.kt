@@ -9,3 +9,8 @@ fun View.hide() {
 fun View.show() {
     if (visibility != View.VISIBLE) visibility = View.VISIBLE
 }
+
+var View.isVisible : Boolean
+get() = visibility == View.VISIBLE
+set(value) = if (value) show()
+else hide()

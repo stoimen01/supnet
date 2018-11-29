@@ -1,3 +1,3 @@
-package com.supnet.model.connection
+package com.supnet.data.connection
 
 enum class ConnectionState { CONNECTED, DISCONNECTED }

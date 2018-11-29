@@ -1,4 +1,4 @@
-package com.supnet.model.connection
+package com.supnet.data.connection
 
 import android.content.BroadcastReceiver
 import android.content.Context

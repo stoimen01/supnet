@@ -2,7 +2,7 @@ package com.supnet.rooms.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.supnet.common.BaseViewModel
+import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.rooms.list.RoomsListViewModel.RoomsListState.*
 import com.supnet.signaling.entities.Room
@@ -14,7 +14,7 @@ class RoomsListViewModel(
     rooms: Observable<List<Room>>,
     private val joinRoom: (UUID) -> Unit,
     private val createRoom: (String) -> Unit
-) : BaseViewModel() {
+) : AutoDisposableViewModel() {
 
     enum class RoomsListCommand {
         SHOW_ROOM_CREATE_ERROR,

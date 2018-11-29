@@ -6,6 +6,8 @@ import io.ktor.sessions.CurrentSession
 import io.ktor.sessions.get
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
+import io.ktor.util.KtorExperimentalAPI
+import io.ktor.util.generateNonce
 import io.ktor.util.nextNonce
 import io.ktor.websocket.DefaultWebSocketServerSession
 import signaling.SignalingManager
@@ -17,7 +19,7 @@ class SessionsManager(
     fun onSession(sessions: CurrentSession) {
         if (sessions.get<SignalingSession>() == null) {
             println("SESSION CREATED")
-            sessions.set(SignalingSession(nextNonce()))
+            sessions.set(SignalingSession(generateNonce()))
         }
     }
 

@@ -3,19 +3,25 @@ package com.supnet.entry.register
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
-import com.supnet.common.BaseFragment
-import com.supnet.common.observe
+import com.supnet.Supnet
+import com.supnet.common.*
 import com.supnet.entry.EntryViewModel
-import com.supnet.model.connection.ConnectionState
-import com.supnet.model.connection.ConnectionState.*
+import com.supnet.entry.register.RegisterEvent.RegisterViewEvent.*
+import com.supnet.entry.register.RegisterState.Idle
+import com.supnet.entry.register.RegisterState.Loading
 import kotlinx.android.synthetic.main.fragment_register.*
 
 class RegisterFragment : BaseFragment() {
 
     private val viewModel: RegisterViewModel by lazy {
-        ViewModelProviders
+
+        val navigator = ViewModelProviders
             .of(parentFragment!!)
             .get(EntryViewModel::class.java)
+
+        ViewModelProviders
+            .of(this, RegisterViewModelFactory(Supnet.app.connectionAgent, Supnet.credentialsManager, navigator))
+            .get(RegisterViewModel::class.java)
     }
 
     override fun provideViewId() = R.layout.fragment_register
@@ -23,22 +29,40 @@ class RegisterFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        txtUserName.addTextChangedListener(SimpleTextWatcher {
+            viewModel.onViewEvent(UsernameChanged(it))
+        })
+
+        txtEmail.addTextChangedListener(SimpleTextWatcher {
+            viewModel.onViewEvent(EmailChanged(it))
+        })
+
+        txtPassword.addTextChangedListener(SimpleTextWatcher {
+            viewModel.onViewEvent(PasswordChanged(it))
+        })
+
         btnCreateAccount.setOnClickListener {
-            viewModel.onRegisterClicked("", "", "")
+            viewModel.onViewEvent(RegisterClicked)
+            hideKeyboard()
         }
 
         btnBackRegister.setOnClickListener {
-            viewModel.onBackFromRegisterClicked()
+            viewModel.onViewEvent(RegisterBackClicked)
         }
 
-        observe(viewModel.getConnectionState()) {
-            val isEnabled = when (it) {
-                CONNECTED -> true
-                DISCONNECTED -> false
-            }
-            btnCreateAccount.isEnabled = isEnabled
-        }
+        observe(viewModel.liveState, this::onLiveState)
 
+    }
+
+    private fun onLiveState(state: RegisterState) = when (state) {
+        is Idle -> {
+            btnCreateAccount.isEnabled = state.isCreateEnabled
+            progressBar.hide()
+        }
+        is Loading -> {
+            btnCreateAccount.isEnabled = false
+            progressBar.show()
+        }
     }
 
 }

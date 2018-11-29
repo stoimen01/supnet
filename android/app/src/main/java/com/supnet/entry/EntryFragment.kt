@@ -6,20 +6,18 @@ import com.supnet.R
 import com.supnet.Supnet
 import com.supnet.common.BaseFragment
 import com.supnet.common.observeCommands
-import com.supnet.model.connection.AndroidConnectionAgent
 import com.supnet.common.BackPressHandler
 import com.supnet.entry.EntryCommand.*
 import com.supnet.entry.login.LoginFragment
 import com.supnet.entry.register.RegisterFragment
+import com.supnet.root.RootViewModel
 
 class EntryFragment : BaseFragment(), BackPressHandler {
 
     private val viewModel by lazy {
-        ViewModelProviders
-            .of(this, EntryViewModelFactory(
-                AndroidConnectionAgent(context!!.applicationContext),
-                Supnet.credentialsManager
-            ))
+        val navigator = ViewModelProviders.of(activity!!).get(RootViewModel::class.java)
+        return@lazy ViewModelProviders
+            .of(this, EntryViewModelFactory(navigator))
             .get(EntryViewModel::class.java)
     }
 

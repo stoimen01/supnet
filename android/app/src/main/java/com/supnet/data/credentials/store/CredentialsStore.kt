@@ -1,4 +1,4 @@
-package com.supnet.model.credentials.store
+package com.supnet.data.credentials.store
 
 import io.reactivex.Completable
 import io.reactivex.Single

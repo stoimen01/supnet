@@ -2,11 +2,11 @@ package com.supnet.indoor
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.supnet.common.BaseViewModel
+import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.indoor.IndoorCommand.*
 
-class IndoorViewModel : BaseViewModel() {
+class IndoorViewModel : AutoDisposableViewModel() {
 
     private val liveCommands = MutableLiveData<Command<IndoorCommand>>()
 
