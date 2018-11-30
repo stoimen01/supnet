@@ -5,7 +5,7 @@ import com.supnet.common.AndroidSchedulersProvider
 import com.supnet.data.connection.AndroidConnectionAgent
 import com.supnet.data.credentials.api.AndroidCredentialsClient
 import com.supnet.data.credentials.store.AndroidCredentialsStore
-import com.supnet.data.credentials.CredentialsRepositoryImpl
+import com.supnet.data.credentials.SupnetRepositoryImpl
 import com.supnet.signaling.rooms.RxRoomsManager
 import com.supnet.signaling.client.RxSignalingClient
 import com.supnet.signaling.rooms.RoomsReducer
@@ -43,7 +43,7 @@ class Supnet : Application() {
 
         val schedulersProvider by lazy { AndroidSchedulersProvider() }
 
-        val credentialsManager by lazy { CredentialsRepositoryImpl(credentialsStore, credentialsClient) }
+        val credentialsManager by lazy { SupnetRepositoryImpl(credentialsStore, credentialsClient) }
 
     }
 }

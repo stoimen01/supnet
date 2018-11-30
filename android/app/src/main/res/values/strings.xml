@@ -22,4 +22,7 @@
     <string name="txt_search">Search</string>
     <string name="txt_add_friend">Add Friend</string>
     <string name="txt_sign_out">Sign out</string>
+    <string name="hint_friend_name">Friend username :</string>
+    <string name="hint_invitation_message">Short message :</string>
+    <string name="txt_send">Send</string>
 </resources>

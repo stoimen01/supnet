@@ -4,11 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.supnet.Supnet
 import com.supnet.data.connection.ConnectionAgent
-import com.supnet.data.credentials.CredentialsRepository
+import com.supnet.data.credentials.SupnetRepository
 
 class LoginViewModelFactory(
     private val connectionAgent: ConnectionAgent,
-    private val credentialsRepository: CredentialsRepository,
+    private val supnetRepository: SupnetRepository,
     private val navigator: LoginNavigator
 ) : ViewModelProvider.Factory {
 
@@ -16,7 +16,7 @@ class LoginViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return LoginViewModel(
             connectionAgent.getConnectionStates(),
-            credentialsRepository::signIn,
+            supnetRepository::signIn,
             navigator,
             Supnet.schedulersProvider,
             LoginReducer()

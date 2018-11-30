@@ -21,9 +21,6 @@ class IndoorFragment : BaseFragment() {
             .get(IndoorViewModel::class.java)
     }
 
-    private val currentFragment
-        get() = childFragmentManager.findFragmentById(R.id.containerIndoor)
-
     override fun provideViewId() = R.layout.fragment_indoor
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -57,13 +54,7 @@ class IndoorFragment : BaseFragment() {
     }
 
     private fun showFragment(fragment: Fragment) {
-
-        // don't show the same fragment multiple times
-        if (currentFragment?.javaClass?.canonicalName ==
-            fragment.javaClass.canonicalName) return
-
         childFragmentManager.beginTransaction()
-            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .replace(R.id.containerIndoor, fragment)
             .commit()
     }

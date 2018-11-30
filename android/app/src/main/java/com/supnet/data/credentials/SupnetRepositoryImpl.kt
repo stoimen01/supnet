@@ -3,10 +3,10 @@ package com.supnet.data.credentials
 import com.supnet.data.credentials.api.CredentialsClient
 import com.supnet.data.credentials.store.CredentialsStore
 
-class CredentialsRepositoryImpl(
+class SupnetRepositoryImpl(
     private val credentialsStore: CredentialsStore,
     private val credentialsClient: CredentialsClient
-) : CredentialsRepository {
+) : SupnetRepository {
 
     override fun signIn(email: String, password: String) =
         credentialsClient.loginUser(email, password)
@@ -15,7 +15,5 @@ class CredentialsRepositoryImpl(
         credentialsClient.registerUser(email, userName, password)
 
     override fun signOut() = credentialsClient.logoutUser()
-
-
 
 }

@@ -29,7 +29,7 @@ class LoginFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        txtEmail.addTextChangedListener(SimpleTextWatcher {
+        txtFriend.addTextChangedListener(SimpleTextWatcher {
             viewModel.onViewEvent(EmailChanged(it))
         })
 

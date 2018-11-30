@@ -33,7 +33,7 @@ class RegisterFragment : BaseFragment() {
             viewModel.onViewEvent(UsernameChanged(it))
         })
 
-        txtEmail.addTextChangedListener(SimpleTextWatcher {
+        txtFriend.addTextChangedListener(SimpleTextWatcher {
             viewModel.onViewEvent(EmailChanged(it))
         })
 

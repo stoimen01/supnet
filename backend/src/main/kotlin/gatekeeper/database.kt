@@ -1,3 +1,5 @@
+package gatekeeper
+
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.newFixedThreadPoolContext
@@ -8,9 +10,11 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 private val dispatcher = newFixedThreadPoolContext(5, "database-pool")
 
-fun initDatabase() {
+fun installDatabase() {
     Database.connect(hikari())
-    transaction { SchemaUtils.create(Users) }
+    transaction {
+        SchemaUtils.create(Users, Friends)
+    }
 }
 
 private fun hikari(): HikariDataSource {
@@ -24,7 +28,7 @@ private fun hikari(): HikariDataSource {
     return HikariDataSource(config)
 }
 
-suspend fun <T> dbQuery(block: () -> T): T =
+suspend fun <T> trans(block: () -> T): T =
         withContext(dispatcher) {
             transaction {
                 block()

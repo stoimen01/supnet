@@ -4,16 +4,17 @@ import com.supnet.common.BaseViewModel
 import com.supnet.common.SchedulersProvider
 import com.supnet.common.StateReducer
 import com.supnet.data.connection.ConnectionState
+import com.supnet.data.credentials.api.SignResult
 import com.supnet.entry.register.RegisterEffect.*
 import com.supnet.entry.register.RegisterEvent.*
 import com.supnet.entry.register.RegisterState.Idle
-import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.rxkotlin.plusAssign
 
 class RegisterViewModel(
     private val connectionStates: Observable<ConnectionState>,
-    private val onRegister: (email: String, username: String, password: String) -> Completable,
+    private val onRegister: (email: String, username: String, password: String) -> Single<SignResult>,
     private val registerNavigator: RegisterNavigator,
     schedulersProvider: SchedulersProvider,
     stateReducer: StateReducer<RegisterState, RegisterEvent, RegisterEffect>
@@ -34,6 +35,8 @@ class RegisterViewModel(
 
         is TryToRegister -> {
             disposables += onRegister(effect.email, effect.username, effect.password)
+                .subscribeOn(schedulersProvider.io())
+                .observeOn(schedulersProvider.ui())
                 .subscribe({
                     onEvent(OnRegisterSuccess)
                 }, {
