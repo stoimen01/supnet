@@ -118,7 +118,7 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
 
         synchronized(tokens) { tokens.add(token) }
 
-        return@trans SignResult(id!!, info.name, listOf(), listOf(), listOf())
+        return@trans SignResult(id!!, token.toString(), info.name, listOf(), listOf(), listOf())
     }
 
     private suspend fun signIn(signInInfo: SignInInfo): SignResult? = trans {
@@ -147,7 +147,7 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
 
             val token = UUID.randomUUID()
             synchronized(tokens) { tokens.add(token) }
-            return@trans SignResult(user.id, user.name, friends, listOf(), invitations)
+            return@trans SignResult(user.id, token.toString(), user.name, friends, listOf(), invitations)
         } else {
             return@trans null
         }
