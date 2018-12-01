@@ -2,9 +2,12 @@ package com.supnet.indoor.friends.invitation
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import com.supnet.common.AutoDisposableViewModel
+import io.reactivex.Completable
 
-class InvitationViewModel : ViewModel() {
+class InvitationViewModel(
+    private val onSendInvitation: (recipient: String, message: String) -> Completable
+) : AutoDisposableViewModel() {
 
     private val liveState = MutableLiveData<Boolean>()
 

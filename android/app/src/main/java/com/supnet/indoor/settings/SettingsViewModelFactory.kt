@@ -2,7 +2,7 @@ package com.supnet.indoor.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.supnet.data.credentials.SupnetRepository
+import com.supnet.data.supnet.SupnetRepository
 
 class SettingsViewModelFactory(
     private val supnetRepository: SupnetRepository

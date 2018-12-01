@@ -14,6 +14,12 @@ object Friends : Table() {
     val friend = integer("friend")
 }
 
+object Invitations : Table() {
+    val recipientName = varchar("recipientName", 255)
+    val initiatorName = varchar("initiatorName", 255)
+    val message = varchar("message", 255)
+}
+
 data class User(
         val id: Int,
         val name: String,
@@ -34,11 +40,19 @@ data class SignInInfo(
 
 data class SignResult(
         val id: Int,
+        val token: String,
         val username: String,
         val friends: List<Friend>,
-        val gadgets: List<Gadget>
+        val gadgets: List<Gadget>,
+        val invitations: List<FriendshipInvitation>
 )
 
 data class Friend(val name: String)
 
 data class Gadget(val name: String, val owner: String)
+
+data class FriendshipInvitation(
+        val initiatorName: String,
+        val recipientName: String,
+        val message: String
+)

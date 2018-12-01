@@ -23,9 +23,7 @@ class AndroidConnectionAgent(private val context: Context) : BroadcastReceiver()
 
     override fun getConnectionStates() = networkObservable
 
-    override fun onReceive(context: Context?, intent: Intent?) {
-        networkStateRelay.accept(getConnectionState())
-    }
+    override fun onReceive(context: Context?, intent: Intent?) = networkStateRelay.accept(getConnectionState())
 
     private fun getConnectionState(): ConnectionState {
         val networkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo

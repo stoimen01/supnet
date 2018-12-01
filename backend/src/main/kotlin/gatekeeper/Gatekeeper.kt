@@ -29,6 +29,7 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
         authenticate()
         post("/signup") { onSignUp() }
         post("/signin") { onSignIn() }
+        post("/invitation") { onInvitation() }
         webSocket("/signaling") { onSignalling() }
     }
 
@@ -57,6 +58,20 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
             call.respond(HttpStatusCode.BadRequest)
         } else {
             call.respond(HttpStatusCode.OK, result)
+        }
+    }
+
+    private suspend fun PipelineContext<Unit, ApplicationCall>.onInvitation() = guardContent {
+        val principal = call.validatePrincipal()
+        if (principal == null) {
+            call.respond(HttpStatusCode.Forbidden)
+        } else {
+            val isSent = sendInvitation(call.receive())
+            if (!isSent) {
+                call.respond(HttpStatusCode.Conflict)
+            } else {
+                call.respond(HttpStatusCode.OK)
+            }
         }
     }
 
@@ -103,7 +118,7 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
 
         synchronized(tokens) { tokens.add(token) }
 
-        return@trans SignResult(id!!, info.name, listOf(), listOf())
+        return@trans SignResult(id!!, info.name, listOf(), listOf(), listOf())
     }
 
     private suspend fun signIn(signInInfo: SignInInfo): SignResult? = trans {
@@ -117,7 +132,7 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
         if (user != null) {
 
             val friends = Friends
-                    .select { (Friends.user eq user.id) }
+                    .select { Friends.user eq user.id }
                     .mapNotNull {
                         val friendId = it[Friends.friend]
                         Users.select { Users.id eq friendId }
@@ -126,12 +141,33 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
                     }
                     .map { Friend(it.name) }
 
+            val invitations = Invitations
+                    .select { Invitations.recipientName eq user.name }
+                    .map(::toInvitation)
+
             val token = UUID.randomUUID()
             synchronized(tokens) { tokens.add(token) }
-            return@trans SignResult(user.id, user.name, friends, listOf())
+            return@trans SignResult(user.id, user.name, friends, listOf(), invitations)
         } else {
             return@trans null
         }
+    }
+
+    private suspend fun sendInvitation(invitation: FriendshipInvitation) = trans {
+        val (iName, rName, msg) = invitation
+
+        val recipientUser = Users
+                .select { Users.name eq rName }
+                .map(::toUser)
+                .singleOrNull() ?: return@trans false
+
+        Invitations.insert {
+            it[recipientName] = rName
+            it[initiatorName] = iName
+            it[message] = msg
+        }
+
+        return@trans true
     }
 
     private suspend fun removeAccount(id: Int) = trans {
@@ -144,6 +180,12 @@ class Gatekeeper(private val signalingManager: SignalingManager) {
             name = row[Users.name],
             email = row[Users.email],
             password = row[Users.password]
+    )
+
+    private fun toInvitation(row: ResultRow) = FriendshipInvitation(
+            initiatorName = row[Invitations.initiatorName],
+            recipientName = row[Invitations.recipientName],
+            message = row[Invitations.message]
     )
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.guardContent(

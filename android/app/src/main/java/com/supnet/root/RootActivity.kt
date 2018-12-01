@@ -10,13 +10,12 @@ import com.supnet.common.*
 import com.supnet.root.RootCommand.*
 import com.supnet.entry.EntryFragment
 import com.supnet.indoor.IndoorFragment
-import kotlinx.android.synthetic.main.activity_navigation.*
 
 class RootActivity : AppCompatActivity() {
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this, RootViewModelFactory(Supnet.credentialsManager))
+            .of(this, RootViewModelFactory(Supnet.supnetRepository))
             .get(RootViewModel::class.java)
     }
 

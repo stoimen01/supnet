@@ -3,21 +3,18 @@ package com.supnet.entry
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
-import com.supnet.Supnet
 import com.supnet.common.BaseFragment
 import com.supnet.common.observeCommands
 import com.supnet.common.BackPressHandler
 import com.supnet.entry.EntryCommand.*
-import com.supnet.entry.login.LoginFragment
-import com.supnet.entry.register.RegisterFragment
-import com.supnet.root.RootViewModel
+import com.supnet.entry.signin.SignInFragment
+import com.supnet.entry.signup.SignUpFragment
 
 class EntryFragment : BaseFragment(), BackPressHandler {
 
     private val viewModel by lazy {
-        val navigator = ViewModelProviders.of(activity!!).get(RootViewModel::class.java)
         return@lazy ViewModelProviders
-            .of(this, EntryViewModelFactory(navigator))
+            .of(this)
             .get(EntryViewModel::class.java)
     }
 
@@ -25,25 +22,25 @@ class EntryFragment : BaseFragment(), BackPressHandler {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        observeCommands(viewModel.getCommands()) {
-            return@observeCommands when (it) {
-                ShowLogin -> {
-                    childFragmentManager.beginTransaction()
-                        .replace(R.id.childFragmentContainer, LoginFragment(), null)
-                        .commit()
-                    Unit
-                }
-                ShowRegister -> {
-                    childFragmentManager.beginTransaction()
-                        .replace(R.id.childFragmentContainer, RegisterFragment(), null)
-                        .addToBackStack(null)
-                        .commit()
-                    Unit
-                }
-                BackFromRegister -> {
-                    childFragmentManager.popBackStack()
-                }
-            }
+        observeCommands(viewModel.getCommands(), this::onCommand)
+    }
+
+    private fun onCommand(cmd: EntryCommand) = when (cmd) {
+        ShowSignIn -> {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.childFragmentContainer, SignInFragment(), null)
+                .commit()
+            Unit
+        }
+        ShowSignUp -> {
+            childFragmentManager.beginTransaction()
+                .replace(R.id.childFragmentContainer, SignUpFragment(), null)
+                .addToBackStack(null)
+                .commit()
+            Unit
+        }
+        ShowBack -> {
+            childFragmentManager.popBackStack()
         }
     }
 
@@ -53,4 +50,5 @@ class EntryFragment : BaseFragment(), BackPressHandler {
             true
         } else false
     }
+
 }

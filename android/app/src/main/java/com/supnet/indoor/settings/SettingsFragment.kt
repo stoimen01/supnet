@@ -11,7 +11,7 @@ class SettingsFragment : BaseFragment() {
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this, SettingsViewModelFactory(Supnet.credentialsManager))
+            .of(this, SettingsViewModelFactory(Supnet.supnetRepository))
             .get(SettingsViewModel::class.java)
     }
 

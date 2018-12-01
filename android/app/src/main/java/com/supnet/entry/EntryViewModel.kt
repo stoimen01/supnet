@@ -4,31 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
-import com.supnet.entry.register.RegisterNavigator
+import com.supnet.entry.signup.SignUpNavigator
 import com.supnet.entry.EntryCommand.*
-import com.supnet.data.connection.ConnectionState
-import com.supnet.entry.login.LoginNavigator
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.rxkotlin.plusAssign
+import com.supnet.entry.signin.SignInNavigator
 
-class EntryViewModel(
-    private val entryFlowNavigator: EntryFlowNavigator
-) : AutoDisposableViewModel(), RegisterNavigator, LoginNavigator {
+class EntryViewModel : AutoDisposableViewModel(), SignUpNavigator, SignInNavigator {
 
     private val liveCommands = MutableLiveData<Command<EntryCommand>>()
 
-    init { postCommand(ShowLogin) }
+    init { postCommand(ShowSignIn) }
 
     fun getCommands(): LiveData<Command<EntryCommand>> = liveCommands
 
-    override fun onSuccessfulLogin() = entryFlowNavigator.onSuccessfulLogin()
+    override fun onBackFromRegisterClicked() = postCommand(ShowBack)
 
-    override fun onRegisterSuccessful() = entryFlowNavigator.onSuccessfulRegistration()
-
-    override fun onBackFromRegisterClicked() = postCommand(BackFromRegister)
-
-    override fun onCreateAccount() = postCommand(ShowRegister)
+    override fun onSignUp() = postCommand(ShowSignUp)
 
     private fun postCommand(cmd: EntryCommand) = liveCommands.postValue(Command(cmd))
 

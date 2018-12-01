@@ -13,7 +13,7 @@ private val dispatcher = newFixedThreadPoolContext(5, "database-pool")
 fun installDatabase() {
     Database.connect(hikari())
     transaction {
-        SchemaUtils.create(Users, Friends)
+        SchemaUtils.create(Users, Friends, Invitations)
     }
 }
 
