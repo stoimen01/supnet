@@ -2,17 +2,19 @@ package com.supnet
 
 import android.app.Application
 import com.supnet.common.AndroidSchedulersProvider
-import com.supnet.data.connection.AndroidConnectionAgent
-import com.supnet.data.supnet.client.AndroidSupnetClient
-import com.supnet.data.supnet.store.AndroidSupnetStore
-import com.supnet.data.supnet.SupnetRepositoryImpl
-import com.supnet.data.supnet.client.rest.AndroidRestClient
-import com.supnet.data.supnet.client.rest.SupnetRestApi
-import com.supnet.data.supnet.client.socket.AndroidSocketClient
+import com.supnet.device.connection.AndroidConnectionAgent
+import com.supnet.data.local.AndroidSupnetStore
+import com.supnet.data.SupnetRepositoryImpl
+import com.supnet.data.remote.rest.AndroidRestClient
+import com.supnet.data.remote.rest.SupnetRestApi
+import com.supnet.data.remote.ws.AndroidWsClient
 import com.supnet.signaling.rooms.RxRoomsManager
 import com.supnet.signaling.client.RxSignalingClient
 import com.supnet.signaling.rooms.RoomsReducer
+import io.reactivex.Observable
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.WebSocketListener
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -28,6 +30,10 @@ class Supnet : Application() {
 
     val connectionAgent by lazy {
         AndroidConnectionAgent(applicationContext)
+    }
+
+    val socketClient by lazy {
+        AndroidWsClient(wsBuilder, supnetRepository.userStates(), connectionAgent.getConnectionStates())
     }
 
     companion object {
@@ -47,7 +53,7 @@ class Supnet : Application() {
         private val restApi by lazy {
             Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.createWithScheduler(schedulersProvider.io()))
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(SupnetRestApi::class.java)
@@ -59,13 +65,17 @@ class Supnet : Application() {
 
         private val restClient by lazy { AndroidRestClient(restApi) }
 
-        private val socketClient by lazy { AndroidSocketClient(okHttpClient, "ws://10.0.2.2:8080/signaling")}
-
-        private val supnetClient by lazy { AndroidSupnetClient(restClient, socketClient) }
+        private val wsBuilder = { token: String, listener: WebSocketListener ->
+            val request = Request.Builder()
+                .addHeader("Authorization: Bearer ", token)
+                .url("ws://10.0.2.2:8080/signaling")
+                .build()
+            okHttpClient.newWebSocket(request, listener)
+        }
 
         val schedulersProvider by lazy { AndroidSchedulersProvider() }
 
-        val supnetRepository by lazy { SupnetRepositoryImpl(store, supnetClient) }
+        val supnetRepository by lazy { SupnetRepositoryImpl(store, restClient) }
 
     }
 }

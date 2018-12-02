@@ -1,4 +1,4 @@
-package com.supnet.data.supnet.client.rest
+package com.supnet.data.remote.rest
 
 data class RegisterCredentials(
     val name: String,

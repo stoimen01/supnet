@@ -1,6 +1,6 @@
 package com.supnet.entry.signin
 
-import com.supnet.data.connection.ConnectionState
+import com.supnet.device.connection.ConnectionState
 
 sealed class SignInEvent {
 

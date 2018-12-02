@@ -1,4 +1,4 @@
-package com.supnet.data.supnet
+package com.supnet.data
 
 data class SignResult(
     val id: Int,

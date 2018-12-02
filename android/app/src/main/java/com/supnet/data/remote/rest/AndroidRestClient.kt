@@ -1,7 +1,7 @@
-package com.supnet.data.supnet.client.rest
+package com.supnet.data.remote.rest
 
-import com.supnet.data.supnet.FriendshipInvitation
-import com.supnet.data.supnet.SignResult
+import com.supnet.data.FriendshipInvitation
+import com.supnet.data.SignResult
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -13,7 +13,7 @@ class AndroidRestClient(
         supnetRestApi.signUp(RegisterCredentials(userName, email, password))
             .map { it.body()!! }
 
-    override fun signOff(): Completable {
+    override fun signOff(token: String): Completable {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -21,11 +21,11 @@ class AndroidRestClient(
         supnetRestApi.signIn(LoginCredentials(email, password))
             .map { it.body()!! }
 
-    override fun signOut(): Completable {
+    override fun signOut(token: String): Completable {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun sendInvitation(invitation: FriendshipInvitation): Completable =
+    override fun sendInvitation(token: String, invitation: FriendshipInvitation): Completable =
         supnetRestApi.sendInvitation(invitation)
 
 }

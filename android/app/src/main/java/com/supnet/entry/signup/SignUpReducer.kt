@@ -2,7 +2,7 @@ package com.supnet.entry.signup
 
 import com.supnet.common.ReduceResult
 import com.supnet.common.StateReducer
-import com.supnet.data.connection.ConnectionState.*
+import com.supnet.device.connection.ConnectionState.*
 import com.supnet.entry.signup.SignUpEffect.*
 import com.supnet.entry.signup.SignUpEvent.*
 import com.supnet.entry.signup.SignUpEvent.SignUpViewEvent.*

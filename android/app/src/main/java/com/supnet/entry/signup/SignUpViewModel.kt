@@ -1,11 +1,11 @@
 package com.supnet.entry.signup
 
-import com.supnet.SupnetEvent
-import com.supnet.SupnetEvent.SignUpEvent.*
+import com.supnet.data.SupnetResult
+import com.supnet.data.SupnetResult.SignUpResult.*
 import com.supnet.common.BaseViewModel
 import com.supnet.common.SchedulersProvider
 import com.supnet.common.StateReducer
-import com.supnet.data.connection.ConnectionState
+import com.supnet.device.connection.ConnectionState
 import com.supnet.entry.signup.SignUpEffect.*
 import com.supnet.entry.signup.SignUpEvent.*
 import com.supnet.entry.signup.SignUpState.Idle
@@ -14,7 +14,7 @@ import io.reactivex.rxkotlin.plusAssign
 
 class SignUpViewModel(
     private val connectionStates: Observable<ConnectionState>,
-    private val signUpEvents: Observable<SupnetEvent.SignUpEvent>,
+    private val signUpEvents: Observable<SupnetResult.SignUpResult>,
     private val onTryToSignUp: (email: String, username: String, password: String) -> Unit,
     private val signUpNavigator: SignUpNavigator,
     schedulersProvider: SchedulersProvider,
@@ -39,7 +39,7 @@ class SignUpViewModel(
                 .subscribeOn(schedulersProvider.ui())
                 .subscribe {
                     return@subscribe when (it) {
-                        SignUpSuccess -> onEvent(OnSignUpSuccess)
+                        is SignUpSuccess -> onEvent(OnSignUpSuccess)
                         SignUpFailure -> onEvent(OnSignUpFailure)
                     }
                 }

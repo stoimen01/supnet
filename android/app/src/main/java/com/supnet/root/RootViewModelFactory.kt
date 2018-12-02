@@ -2,9 +2,7 @@ package com.supnet.root
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.supnet.UserState
-import com.supnet.data.supnet.SupnetRepository
-import io.reactivex.Observable
+import com.supnet.data.SupnetRepository
 
 class RootViewModelFactory(
     private val supnetRepository: SupnetRepository
@@ -13,7 +11,7 @@ class RootViewModelFactory(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return RootViewModel(
-            Observable.just(UserState.SIGNED_OUT)
+            supnetRepository.userStates()
         ) as T
     }
 

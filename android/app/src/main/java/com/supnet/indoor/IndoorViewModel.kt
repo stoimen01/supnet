@@ -4,13 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
-import com.supnet.data.supnet.SocketState
 import com.supnet.indoor.IndoorCommand.*
-import io.reactivex.Observable
 
-class IndoorViewModel(
-    socketStates: Observable<SocketState>
-): AutoDisposableViewModel() {
+class IndoorViewModel : AutoDisposableViewModel() {
 
     private val liveCommands = MutableLiveData<Command<IndoorCommand>>()
 

@@ -1,7 +1,7 @@
-package com.supnet.data.supnet.store
+package com.supnet.data.local
 
-import com.supnet.data.supnet.Friend
-import com.supnet.data.supnet.Gadget
+import com.supnet.data.Friend
+import com.supnet.data.Gadget
 
 data class UserInfo(
     val id: Int,

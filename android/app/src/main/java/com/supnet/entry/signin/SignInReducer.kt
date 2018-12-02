@@ -2,7 +2,7 @@ package com.supnet.entry.signin
 
 import com.supnet.common.ReduceResult
 import com.supnet.common.StateReducer
-import com.supnet.data.connection.ConnectionState.*
+import com.supnet.device.connection.ConnectionState.*
 import com.supnet.entry.signin.SignInEffect.*
 import com.supnet.entry.signin.SignInState.Idle
 import com.supnet.entry.signin.SignInState.Loading

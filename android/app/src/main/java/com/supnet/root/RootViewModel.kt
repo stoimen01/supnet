@@ -2,8 +2,8 @@ package com.supnet.root
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.supnet.UserState
-import com.supnet.UserState.*
+import com.supnet.data.UserState
+import com.supnet.data.UserState.*
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.root.RootCommand.*
@@ -19,16 +19,16 @@ class RootViewModel(
     init {
         disposables += userStates
             .subscribe {
-                when (it!!) {
-                    SIGNED_IN -> postCommand(ShowIndoorFlow)
-                    SIGNED_OUT -> postCommand(ShowEntryFlow)
-                    UNDEFINED, LOADING -> { /*no-op*/ }
+                return@subscribe when (it!!) {
+                    SignedOut -> postCommand(ShowEntryFlow)
+                    is SignedIn -> postCommand(ShowIndoorFlow)
+                    Undefined, Loading -> { /*no-op*/ }
                 }
             }
     }
 
     private fun postCommand(cmd: RootCommand) {
-        liveCommands.value = Command(cmd)
+        liveCommands.postValue(Command(cmd))
     }
 
     fun getCommands(): LiveData<Command<RootCommand>> = liveCommands

@@ -1,7 +1,7 @@
-package com.supnet.data.supnet.client.rest
+package com.supnet.data.remote.rest
 
-import com.supnet.data.supnet.FriendshipInvitation
-import com.supnet.data.supnet.SignResult
+import com.supnet.data.FriendshipInvitation
+import com.supnet.data.SignResult
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.Response

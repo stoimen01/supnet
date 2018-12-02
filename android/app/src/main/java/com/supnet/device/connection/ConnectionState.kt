@@ -1,3 +1,3 @@
-package com.supnet.data.connection
+package com.supnet.device.connection
 
 enum class ConnectionState { CONNECTED, DISCONNECTED }

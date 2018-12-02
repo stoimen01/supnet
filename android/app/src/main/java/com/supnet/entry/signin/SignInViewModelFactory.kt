@@ -3,8 +3,10 @@ package com.supnet.entry.signin
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.supnet.Supnet
-import com.supnet.data.connection.ConnectionAgent
-import com.supnet.data.supnet.SupnetRepository
+import com.supnet.data.SupnetIntent
+import com.supnet.device.connection.ConnectionAgent
+import com.supnet.data.SupnetRepository
+import com.supnet.data.SupnetResult
 
 class SignInViewModelFactory(
     private val connectionAgent: ConnectionAgent,
@@ -16,8 +18,8 @@ class SignInViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return SignInViewModel(
             connectionAgent.getConnectionStates(),
-            supnetRepository.signInEvents(),
-            supnetRepository::signIn,
+            supnetRepository.results().ofType(SupnetResult.SignInResult::class.java),
+            { email, pass -> supnetRepository.sendIntent(SupnetIntent.SignInIntent(email, pass)) },
             navigator,
             Supnet.schedulersProvider,
             SignInReducer()
