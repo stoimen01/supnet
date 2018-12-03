@@ -1,5 +1,3 @@
-package signaling
-
 import com.google.protobuf.InvalidProtocolBufferException
 import io.ktor.http.cio.websocket.*
 import io.ktor.websocket.DefaultWebSocketServerSession
