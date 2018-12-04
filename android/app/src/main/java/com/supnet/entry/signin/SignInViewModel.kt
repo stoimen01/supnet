@@ -1,5 +1,6 @@
 package com.supnet.entry.signin
 
+import android.util.Log
 import com.supnet.data.SupnetResult
 import com.supnet.data.SupnetResult.SignInResult.*
 import com.supnet.common.BaseViewModel
@@ -21,7 +22,7 @@ class SignInViewModel(
     reducer: StateReducer<SignInState, SignInEvent, SignInEffect>
 ) : BaseViewModel<SignInState, SignInEvent, SignInViewEvent, SignInEffect> (
     initialState = Idle(),
-    initialEffect = TrackConnectionChanges,
+    initialEffects = listOf(TrackConnectionChanges, TrackSignInEvents),
     schedulersProvider = schedulersProvider,
     reducer = reducer
 ) {
@@ -30,14 +31,13 @@ class SignInViewModel(
 
         TrackConnectionChanges -> {
             disposables += connectionStates
-                .observeOn(schedulersProvider.ui())
                 .subscribe { onEvent(ConnectionStateChanged(it)) }
         }
 
         TrackSignInEvents -> {
             disposables += signInEvents
-                .observeOn(schedulersProvider.ui())
                 .subscribe {
+                    Log.d("SignInResult", "$it")
                     return@subscribe when (it) {
                         is SignInSuccess -> onEvent(OnSignInSuccess)
                         SignInFailure -> onEvent(OnSignInError)

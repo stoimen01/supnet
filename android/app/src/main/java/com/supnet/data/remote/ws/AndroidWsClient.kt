@@ -1,17 +1,13 @@
 package com.supnet.data.remote.ws
 
-import com.jakewharton.rxrelay2.PublishRelay
-import com.supnet.data.FriendshipInvitation
 import com.supnet.data.UserState
 import com.supnet.data.UserState.*
 import com.supnet.data.remote.ws.WsEvent.*
-import com.supnet.data.remote.ws.WsEvent.WsMessageEvent.*
 import com.supnet.device.connection.ConnectionState
 import com.supnet.device.connection.ConnectionState.*
 import io.reactivex.Observable
 import io.reactivex.ObservableEmitter
 import io.reactivex.rxkotlin.Observables
-import io.reactivex.rxkotlin.withLatestFrom
 import okhttp3.*
 import okio.ByteString
 import java.util.concurrent.TimeUnit
@@ -21,8 +17,6 @@ class AndroidWsClient(
     private val userStates: Observable<UserState>,
     private val connectionStates: Observable<ConnectionState>
 ) : WsClient {
-
-    private val invitationIntents = PublishRelay.create<FriendshipInvitation>()
 
     // source of messages and states combined
     private val socketStream by lazy {
@@ -52,33 +46,17 @@ class AndroidWsClient(
     }
 
     private val socketMessages by lazy {
-
-        val intents = invitationIntents
-            .withLatestFrom(statesStream)
-            .flatMap { (invitation, wsState) ->
-                return@flatMap when (wsState) {
-                    is WsStateEvent.WsOpen -> {
-                        if (wsState.ws.send("")) Observable.just(InvitationSending)
-                        else Observable.just(InvitationError)
-                    }
-                    WsStateEvent.WsClosed -> Observable.just(InvitationError)
-                }
-            }
-
-        val rawMessages = socketStream
+       socketStream
             .flatMap { return@flatMap when (it) {
                 is WsMessageEvent -> Observable.just(it)
                 else -> Observable.empty()
             }}
-
-        return@lazy Observable.merge(intents, rawMessages)
     }
 
     override fun socketStates() = statesStream
 
     override fun socketMessages(): Observable<WsEvent.WsMessageEvent> = socketMessages
 
-    override fun sendInvitation(invitation: FriendshipInvitation) = invitationIntents.accept(invitation)
 
     private fun openSocket(token: String): Observable<WsEvent> {
         return Observable.create { emitter ->

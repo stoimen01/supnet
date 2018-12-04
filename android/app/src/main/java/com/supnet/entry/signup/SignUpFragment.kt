@@ -29,7 +29,7 @@ class SignUpFragment : BaseFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        txtUserName.addTextChangedListener(SimpleTextWatcher {
+        txtInitiatorName.addTextChangedListener(SimpleTextWatcher {
             viewModel.onViewEvent(UsernameChanged(it))
         })
 

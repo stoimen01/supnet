@@ -1,5 +1,6 @@
 package com.supnet.data
 
+import android.util.Log
 import com.jakewharton.rxrelay2.PublishRelay
 import com.supnet.data.SupnetIntent.*
 import com.supnet.data.SupnetResult.*
@@ -23,7 +24,8 @@ class SupnetRepositoryImpl(
 
     override fun sendIntent(intent: SupnetIntent) = supnetIntents.accept(intent)
 
-    override fun results() = results
+    override fun results(): Observable<SupnetResult> = results
+        .doOnNext { Log.d("RESULT:", "RESULT $it") }
 
     private val results: Observable<SupnetResult> by lazy {
         return@lazy supnetIntents
@@ -49,17 +51,20 @@ class SupnetRepositoryImpl(
                 val userInfo = UserInfo(
                     id = result.id,
                     token = result.token,
-                    name = result.username,
+                    name = name,
                     email = email,
                     password = password,
-                    friends = result.friends,
-                    gadgets = result.gadgets
+                    friends = listOf(),
+                    gadgets = listOf()
                 )
 
                 return@flatMapObservable supnetStore
                     .saveUserInfo(userInfo)
                     .andThen(Observable.just<SignUpResult>(SignUpSuccess(result.token)))
-                    .onErrorReturn { SignUpFailure }
+            }
+            .onErrorReturn {
+                it.printStackTrace()
+                SignUpFailure
             }
     }
 
@@ -74,8 +79,11 @@ class SupnetRepositoryImpl(
                         .signOff(usrInfo.token)
                         .andThen(supnetStore.removeUserInfo())
                         .andThen(Observable.just<SignOffResult>(SignOffSuccess))
-                        .onErrorReturn { SignOffFailure }
                 }
+            }
+            .onErrorReturn {
+                it.printStackTrace()
+                SignOffFailure
             }
     }
 
@@ -98,7 +106,10 @@ class SupnetRepositoryImpl(
                 return@flatMapObservable supnetStore
                     .saveUserInfo(userInfo)
                     .andThen(Observable.just<SignInResult>(SignInSuccess(result.token)))
-                    .onErrorReturn { SignInFailure }
+            }
+            .onErrorReturn {
+                it.printStackTrace()
+                SignInFailure
             }
     }
 
@@ -113,8 +124,11 @@ class SupnetRepositoryImpl(
                         .signOut(usrInfo.token)
                         .andThen(supnetStore.removeUserInfo())
                         .andThen(Observable.just<SignOutResult>(SignOutSuccess))
-                        .onErrorReturn { SignOutFailure }
                 }
+            }
+            .onErrorReturn {
+                it.printStackTrace()
+                SignOutFailure
             }
     }
 
@@ -125,13 +139,16 @@ class SupnetRepositoryImpl(
                 return@flatMapObservable if (usrInfo == null) {
                     Observable.just(InvitationFailure)
                 } else {
-                    val invitation = FriendshipInvitation(usrInfo.name, intent.recipient, intent.message)
+                    val invitation = InvitationRequest(intent.recipient, intent.message)
                     supnetClient
                         .sendInvitation(usrInfo.token, invitation)
                         .andThen(supnetStore.removeUserInfo())
                         .andThen(Observable.just<InvitationResult>(InvitationSend))
-                        .onErrorReturn { InvitationFailure }
                 }
+            }
+            .onErrorReturn {
+                it.printStackTrace()
+                InvitationFailure
             }
     }
 
@@ -149,7 +166,7 @@ class SupnetRepositoryImpl(
                 is SignUpSuccess -> Observable.just(SignedIn(it.token))
                 is SignInSuccess -> Observable.just(SignedIn(it.token))
                 SignOutSuccess, SignOffSuccess -> Observable.just(SignedOut)
-                else -> Observable.empty<UserState>()
+                else -> Observable.empty()
             } }
             .startWith(storageStream)
             .replay(1)

@@ -10,9 +10,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
-import com.supnet.common.hide
-import com.supnet.common.observe
-import com.supnet.common.show
+import com.supnet.common.*
+import com.supnet.indoor.friends.invitation.InvitationCommand.*
 import kotlinx.android.synthetic.main.dialog_invitation.*
 import kotlinx.android.synthetic.main.dialog_invitation.view.*
 import kotlinx.android.synthetic.main.dialog_room_creator.view.*
@@ -22,7 +21,7 @@ class InvitationDialogFragment : DialogFragment() {
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this)
+            .of(this, InvitationViewModelFactory())
             .get(InvitationViewModel::class.java)
     }
 
@@ -37,7 +36,7 @@ class InvitationDialogFragment : DialogFragment() {
             }
 
             view.btnSend.setOnClickListener {
-                viewModel.sendInvitation()
+                viewModel.sendInvitation(view.txtFriend.toString(), view.txtMessage.toString())
             }
 
             return@let AlertDialog.Builder(it)
@@ -48,14 +47,26 @@ class InvitationDialogFragment : DialogFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        observe(viewModel.getLiveState()) { it.render() }
+        observeCommands(viewModel.getLiveCommand(), this::onCommand)
+    }
 
-        observe(viewModel.getLiveState()) {
-            if (it) {
-                dialog.findViewById<View>(R.id.progressBar).show()
-            } else {
-                dialog.findViewById<View>(R.id.progressBar).hide()
-            }
+    private fun InvitationState.render() {
+        if (isLoading) {
+            dialog.findViewById<View>(R.id.progressBar).show()
+        } else {
+            dialog.findViewById<View>(R.id.progressBar).hide()
         }
     }
+
+    private fun onCommand(cmd: InvitationCommand) = when (cmd) {
+        SHOW_ERROR -> {
+            showToast("Sending invitation failed")
+        }
+        DISMISS -> {
+            dialog.dismiss()
+        }
+    }
+
 
 }

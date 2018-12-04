@@ -30,13 +30,11 @@ class SignUpViewModel(
 
         TrackConnectionChanges -> {
             disposables += connectionStates
-                .observeOn(schedulersProvider.ui())
                 .subscribe { onEvent(ConnectionStateChanged(it)) }
         }
 
         TrackSignUpMessages -> {
             disposables += signUpEvents
-                .subscribeOn(schedulersProvider.ui())
                 .subscribe {
                     return@subscribe when (it) {
                         is SignUpSuccess -> onEvent(OnSignUpSuccess)

@@ -1,22 +1,37 @@
 package com.supnet.data.remote.rest
 
-import com.supnet.data.FriendshipInvitation
-import com.supnet.data.SignResult
+import com.supnet.data.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface SupnetRestApi {
 
     @POST("/signup")
-    fun signUp(@Body value: RegisterCredentials): Single<Response<SignResult>>
+    fun signUp(@Body value: SignUpRequest): Single<Response<SignUpResponse>>
+
+    @POST("/signoff")
+    fun signOff(@Header("Authorization") token: String): Completable
 
     @POST("/signin")
-    fun signIn(@Body value: LoginCredentials): Single<Response<SignResult>>
+    fun signIn(@Body value: SignInRequest): Single<Response<SignInResponse>>
 
-    @POST("/invitation")
-    fun sendInvitation(@Body value: FriendshipInvitation): Completable
+    @POST("/signout")
+    fun signOut(@Header("Authorization") token: String): Completable
+
+    @POST("/invitation/send")
+    fun sendInvitation(
+        @Header("Authorization") token: String,
+        @Body value: InvitationRequest
+    ): Completable
+
+    @POST("/invitation/accept")
+    fun acceptInvitation(
+        @Header("Authorization") token: String,
+        @Body value: AcceptInvitationRequest
+    ): Completable
 
 }

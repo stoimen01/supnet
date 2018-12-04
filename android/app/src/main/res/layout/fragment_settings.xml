@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -17,14 +18,40 @@
         app:title="@string/txt_settings"
         app:titleTextColor="@color/colorWhite" />
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbarSettings" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSignOut"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/txt_sign_out"
+        android:textColor="@color/colorPrimaryDark"
+        app:layout_constraintBottom_toTopOf="@+id/btnSignOff"
+        app:layout_constraintEnd_toEndOf="@+id/btnSignOff"
+        app:layout_constraintStart_toStartOf="@+id/btnSignOff"
+        app:strokeColor="@color/colorPrimaryDark" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSignOff"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/txt_sign_out"
+        android:layout_marginBottom="32dp"
+        android:text="@string/txt_sign_off"
+        android:textColor="@color/colorError"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbarSettings" />
+        app:strokeColor="@color/colorError" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

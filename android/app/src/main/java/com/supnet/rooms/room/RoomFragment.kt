@@ -100,7 +100,7 @@ class RoomFragment : BaseFragment(), BackPressHandler, AlertDialogFragment.Liste
 
         class MyViewHolder(
             val view: View,
-            val userNameView: TextView = view.findViewById(R.id.txtUserName),
+            val userNameView: TextView = view.findViewById(R.id.txtInitiatorName),
             val msgView: TextView = view.findViewById(R.id.txtMsg)
         ) : RecyclerView.ViewHolder(view)
 

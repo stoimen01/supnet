@@ -18,11 +18,16 @@
     <string name="txt_welcome">Welcome to Supnet !</string>
     <string name="txt_gadgets">Gadgets</string>
     <string name="txt_friends">Friends</string>
+    <string name="txt_invitation">Friendship invitation</string>
     <string name="txt_settings">Settings</string>
     <string name="txt_search">Search</string>
     <string name="txt_add_friend">Add Friend</string>
+    <string name="txt_connect">Connect</string>
     <string name="txt_sign_out">Sign out</string>
+    <string name="txt_sign_off">Delete accout</string>
     <string name="hint_friend_name">Friend username :</string>
     <string name="hint_invitation_message">Short message :</string>
+    <string name="txt_accept_invitation">Accept</string>
+    <string name="txt_reject_invitation">Reject</string>
     <string name="txt_send">Send</string>
 </resources>

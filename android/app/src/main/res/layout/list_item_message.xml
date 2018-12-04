@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <ImageView
-        android:id="@+id/imgUserIcon"
+        android:id="@+id/imgFriendIcon"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -17,12 +17,12 @@
         app:srcCompat="@drawable/icon_user" />
 
     <TextView
-        android:id="@+id/txtUserName"
+        android:id="@+id/txtInitiatorName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="@+id/imgUserIcon"
-        app:layout_constraintStart_toStartOf="@+id/imgUserIcon"
-        app:layout_constraintTop_toBottomOf="@+id/imgUserIcon"
+        app:layout_constraintEnd_toEndOf="@+id/imgFriendIcon"
+        app:layout_constraintStart_toStartOf="@+id/imgFriendIcon"
+        app:layout_constraintTop_toBottomOf="@+id/imgFriendIcon"
         tools:text="bob" />
 
     <TextView
@@ -35,10 +35,10 @@
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/txtUserName"
+        app:layout_constraintBottom_toBottomOf="@+id/txtInitiatorName"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imgUserIcon"
-        app:layout_constraintTop_toTopOf="@+id/imgUserIcon"
+        app:layout_constraintStart_toEndOf="@+id/imgFriendIcon"
+        app:layout_constraintTop_toTopOf="@+id/imgFriendIcon"
         app:layout_constraintVertical_bias="0.0"
         tools:text="sample mesasge" />
 
