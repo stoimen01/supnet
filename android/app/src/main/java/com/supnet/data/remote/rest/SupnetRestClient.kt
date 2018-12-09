@@ -1,6 +1,9 @@
 package com.supnet.data.remote.rest
 
-import com.supnet.data.*
+import com.supnet.domain.AcceptInvitationRequest
+import com.supnet.domain.InvitationRequest
+import com.supnet.domain.SignInResponse
+import com.supnet.domain.SignUpResponse
 import io.reactivex.Completable
 import io.reactivex.Single
 

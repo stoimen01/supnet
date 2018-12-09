@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.common.SchedulersProvider
-import com.supnet.data.SupnetResult
-import com.supnet.data.SupnetResult.SignOffResult.*
-import com.supnet.data.SupnetResult.SignOutResult.*
+import com.supnet.domain.user.UserManagerResult
+import com.supnet.domain.user.UserManagerResult.SignOffResult.*
+import com.supnet.domain.user.UserManagerResult.SignOutResult.*
 import com.supnet.device.connection.ConnectionState
 import com.supnet.device.connection.ConnectionState.*
 import io.reactivex.Observable
@@ -15,8 +15,8 @@ import io.reactivex.rxkotlin.plusAssign
 
 class SettingsViewModel(
     private val connectionStates: Observable<ConnectionState>,
-    private val signOutResults: Observable<SupnetResult.SignOutResult>,
-    private val signOffResults: Observable<SupnetResult.SignOffResult>,
+    private val signOutResults: Observable<UserManagerResult.SignOutResult>,
+    private val signOffResults: Observable<UserManagerResult.SignOffResult>,
     private val onSignOut: () -> Unit,
     private val onSighOff: () -> Unit,
     private val schedulersProvider: SchedulersProvider

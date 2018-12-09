@@ -2,8 +2,8 @@ package com.supnet.root
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.supnet.data.UserState
-import com.supnet.data.UserState.*
+import com.supnet.domain.user.UserState
+import com.supnet.domain.user.UserState.*
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.root.RootCommand.*

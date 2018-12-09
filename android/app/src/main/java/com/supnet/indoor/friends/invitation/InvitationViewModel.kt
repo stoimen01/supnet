@@ -5,14 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.common.SchedulersProvider
-import com.supnet.data.SupnetResult
-import com.supnet.data.SupnetResult.InvitationResult.*
-import io.reactivex.Completable
+import com.supnet.domain.user.UserManagerResult
+import com.supnet.domain.user.UserManagerResult.InvitationResult.*
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.plusAssign
 
 class InvitationViewModel(
-    private val results: Observable<SupnetResult.InvitationResult>,
+    private val results: Observable<UserManagerResult.InvitationResult>,
     private val onSendInvitation: (recipient: String, message: String) -> Unit,
     private val schedulersProvider: SchedulersProvider
 ) : AutoDisposableViewModel() {

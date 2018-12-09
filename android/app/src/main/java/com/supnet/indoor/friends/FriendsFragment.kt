@@ -34,7 +34,7 @@ class FriendsFragment : BaseFragment(), Toolbar.OnMenuItemClickListener {
         listFriends.adapter = adapter
         listFriends.layoutManager = LinearLayoutManager(context)
 
-        adapter.update(listOf<Card>(
+        adapter.update(listOf(
             InvitationCard(10, "bob", "hi"),
             InvitationCard(10, "bob", "hi"),
             InvitationCard(10, "bob", "hi"),
@@ -60,7 +60,6 @@ class FriendsFragment : BaseFragment(), Toolbar.OnMenuItemClickListener {
         }
         else -> false
     }
-
 
     sealed class Card {
 

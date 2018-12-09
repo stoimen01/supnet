@@ -1,7 +1,7 @@
 package com.supnet.data.remote.ws
 
-import com.supnet.data.UserState
-import com.supnet.data.UserState.*
+import com.google.protobuf.InvalidProtocolBufferException
+import com.supnet.domain.user.UserState
 import com.supnet.data.remote.ws.WsEvent.*
 import com.supnet.device.connection.ConnectionState
 import com.supnet.device.connection.ConnectionState.*
@@ -10,6 +10,7 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.rxkotlin.Observables
 import okhttp3.*
 import okio.ByteString
+import proto.WsEvent.EventCase.*
 import java.util.concurrent.TimeUnit
 
 class AndroidWsClient(
@@ -22,12 +23,10 @@ class AndroidWsClient(
     private val socketStream by lazy {
         Observables.combineLatest(userStates, connectionStates)
             .switchMap { (usrState, connState) ->
-                return@switchMap when (usrState) {
-                    is SignedIn -> when (connState) {
-                        CONNECTED -> openSocket(usrState.token)
-                        DISCONNECTED -> Observable.empty()
-                    }
-                    else -> Observable.empty()
+                val token = usrState.token() ?: return@switchMap Observable.empty<WsStateEvent>()
+                return@switchMap when (connState) {
+                    CONNECTED -> openSocket(token)
+                    DISCONNECTED -> Observable.empty()
                 }
             }
             .retryWhen { errors ->
@@ -57,7 +56,6 @@ class AndroidWsClient(
 
     override fun socketMessages(): Observable<WsEvent.WsMessageEvent> = socketMessages
 
-
     private fun openSocket(token: String): Observable<WsEvent> {
         return Observable.create { emitter ->
             val ws = buildWs(token, WsListener(emitter))
@@ -70,29 +68,47 @@ class AndroidWsClient(
     ) : WebSocketListener() {
 
         override fun onOpen(webSocket: WebSocket, response: Response) {
-            if (!emitter.isDisposed) {
-                emitter.onNext(WsStateEvent.WsOpen(webSocket))
-            }
+            if (emitter.isDisposed) return
+            emitter.onNext(WsStateEvent.WsOpen(webSocket))
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
-            if (!emitter.isDisposed) {
-                emitter.onNext(WsStateEvent.WsClosed)
-            }
+            if (emitter.isDisposed) return
+            emitter.onNext(WsStateEvent.WsClosed)
         }
 
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-            if (!emitter.isDisposed) {
-                emitter.onNext(WsStateEvent.WsClosed)
-                emitter.onError(t)
-            }
+            if (emitter.isDisposed) return
+            emitter.onNext(WsStateEvent.WsClosed)
+            emitter.onError(t)
         }
 
         override fun onMessage(webSocket: WebSocket, bytes: ByteString) {
-            if (!emitter.isDisposed) {
-               // emitter.onNext()
+            if (emitter.isDisposed) return
+            try {
+                processEvent(proto.WsEvent.parseFrom(bytes.toByteArray()))
+            } catch (ex: InvalidProtocolBufferException) {
+                ex.printStackTrace()
             }
         }
+
+        private fun processEvent(wsEvent: proto.WsEvent) = when (wsEvent.eventCase) {
+
+            INVITATION_EVENT -> with(wsEvent.invitationEvent) {
+                emitter.onNext(WsMessageEvent.InvitationReceived(
+                    invitationId = invitationId,
+                    senderName = senderName,
+                    message = message
+                ))
+            }
+
+            INVITATION_ACCEPTED_EVENT -> with(wsEvent.invitationAcceptedEvent) {
+
+            }
+
+            EVENT_NOT_SET, null -> {}
+        }
+
     }
 
 }

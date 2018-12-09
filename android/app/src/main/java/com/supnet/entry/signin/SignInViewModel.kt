@@ -1,8 +1,8 @@
 package com.supnet.entry.signin
 
 import android.util.Log
-import com.supnet.data.SupnetResult
-import com.supnet.data.SupnetResult.SignInResult.*
+import com.supnet.domain.user.UserManagerResult
+import com.supnet.domain.user.UserManagerResult.SignInResult.*
 import com.supnet.common.BaseViewModel
 import com.supnet.common.SchedulersProvider
 import com.supnet.common.StateReducer
@@ -15,7 +15,7 @@ import io.reactivex.rxkotlin.plusAssign
 
 class SignInViewModel(
     private val connectionStates: Observable<ConnectionState>,
-    private val signInEvents: Observable<SupnetResult.SignInResult>,
+    private val signInEvents: Observable<UserManagerResult.SignInResult>,
     private val onLogin: (email : String, password: String) -> Unit,
     private val navigator: SignInNavigator,
     schedulersProvider: SchedulersProvider,

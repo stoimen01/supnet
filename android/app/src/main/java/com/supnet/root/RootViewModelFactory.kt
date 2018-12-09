@@ -2,16 +2,16 @@ package com.supnet.root
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.supnet.data.SupnetRepository
+import com.supnet.domain.user.UserManager
 
 class RootViewModelFactory(
-    private val supnetRepository: SupnetRepository
+    private val userManager: UserManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return RootViewModel(
-            supnetRepository.userStates()
+            userManager.userStates()
         ) as T
     }
 

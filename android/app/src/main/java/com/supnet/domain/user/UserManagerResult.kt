@@ -1,8 +1,8 @@
-package com.supnet.data
+package com.supnet.domain.user
 
-sealed class SupnetResult {
+sealed class UserManagerResult {
 
-    sealed class SignUpResult : SupnetResult() {
+    sealed class SignUpResult : UserManagerResult() {
 
         data class SignUpSuccess(val token: String) : SignUpResult()
 
@@ -10,7 +10,7 @@ sealed class SupnetResult {
 
     }
 
-    sealed class SignInResult : SupnetResult() {
+    sealed class SignInResult : UserManagerResult() {
 
         data class SignInSuccess(val token: String) : SignInResult()
 
@@ -18,7 +18,7 @@ sealed class SupnetResult {
 
     }
 
-    sealed class SignOutResult : SupnetResult() {
+    sealed class SignOutResult : UserManagerResult() {
 
         object SignOutSuccess : SignOutResult()
 
@@ -26,7 +26,7 @@ sealed class SupnetResult {
 
     }
 
-    sealed class SignOffResult : SupnetResult() {
+    sealed class SignOffResult : UserManagerResult() {
 
         object SignOffSuccess : SignOffResult()
 
@@ -34,7 +34,7 @@ sealed class SupnetResult {
 
     }
 
-    sealed class InvitationResult : SupnetResult() {
+    sealed class InvitationResult : UserManagerResult() {
 
         object InvitationSend : InvitationResult()
 

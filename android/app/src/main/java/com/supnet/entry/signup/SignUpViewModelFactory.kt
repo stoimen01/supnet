@@ -3,14 +3,14 @@ package com.supnet.entry.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.supnet.Supnet
-import com.supnet.data.SupnetIntent
+import com.supnet.domain.user.UserManagerIntent
 import com.supnet.device.connection.ConnectionAgent
-import com.supnet.data.SupnetRepository
-import com.supnet.data.SupnetResult
+import com.supnet.domain.user.UserManager
+import com.supnet.domain.user.UserManagerResult
 
 class SignUpViewModelFactory(
     private val connectionAgent: ConnectionAgent,
-    private val supnetRepository: SupnetRepository,
+    private val userManager: UserManager,
     private val navigator: SignUpNavigator
 ) : ViewModelProvider.Factory {
 
@@ -18,8 +18,8 @@ class SignUpViewModelFactory(
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return SignUpViewModel(
             connectionAgent.getConnectionStates(),
-            supnetRepository.results().ofType(SupnetResult.SignUpResult::class.java),
-            { email, name, pass -> supnetRepository.sendIntent(SupnetIntent.SignUpIntent(email, name, pass))},
+            userManager.results().ofType(UserManagerResult.SignUpResult::class.java),
+            { email, name, pass -> userManager.sendIntent(UserManagerIntent.SignUpIntent(email, name, pass))},
             navigator,
             Supnet.schedulersProvider,
             SignUpReducer()

@@ -1,15 +1,30 @@
 package com.supnet.data.local
 
 import com.supnet.common.Nullable
+import com.supnet.domain.Friend
+import com.supnet.domain.Invitation
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 interface SupnetStore {
 
-    fun saveUserInfo(info: UserInfo): Completable
+    fun saveToken(token: String): Completable
 
-    fun getUserInfo(): Single<Nullable<UserInfo>>
+    fun getToken(): Single<Nullable<String>>
 
-    fun removeUserInfo(): Completable
+    fun saveUserData(id: Int, name: String, email: String, password: String): Completable
+
+    fun removeUserData(): Completable
+
+    fun addFriend(friend: Friend): Completable
+
+    fun saveFriends(friends: List<Friend>): Completable
+
+    fun friends(): Observable<Friend>
+
+    fun addInvitation(invitation: Invitation): Completable
+
+    fun invitations(): Observable<Invitation>
 
 }

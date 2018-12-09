@@ -1,6 +1,6 @@
 package com.supnet.data.remote.rest
 
-import com.supnet.data.*
+import com.supnet.domain.*
 import io.reactivex.Completable
 import io.reactivex.Single
 import retrofit2.Response

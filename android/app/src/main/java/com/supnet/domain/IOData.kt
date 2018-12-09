@@ -1,4 +1,7 @@
-package com.supnet.data
+package com.supnet.domain
+
+import com.supnet.domain.entities.Friend
+import com.supnet.domain.entities.Gadget
 
 data class SignUpRequest(
     val name: String,
@@ -23,10 +26,6 @@ data class SignInResponse(
     val friends: List<Friend>,
     val gadgets: List<Gadget>
 )
-
-data class Friend(val name: String)
-
-data class Gadget(val name: String, val owner: String)
 
 data class InvitationRequest(
     val recipientName: String,

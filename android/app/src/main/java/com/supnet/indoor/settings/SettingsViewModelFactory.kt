@@ -3,9 +3,8 @@ package com.supnet.indoor.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.supnet.Supnet
-import com.supnet.data.SupnetIntent
-import com.supnet.data.SupnetRepository
-import com.supnet.data.SupnetResult
+import com.supnet.domain.user.UserManagerIntent
+import com.supnet.domain.user.UserManagerResult
 
 class SettingsViewModelFactory : ViewModelProvider.Factory {
 
@@ -13,10 +12,10 @@ class SettingsViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return SettingsViewModel(
             Supnet.app.connectionAgent.getConnectionStates(),
-            Supnet.supnetRepository.results().ofType(SupnetResult.SignOutResult::class.java),
-            Supnet.supnetRepository.results().ofType(SupnetResult.SignOffResult::class.java),
-            { Supnet.supnetRepository.sendIntent(SupnetIntent.SignOutIntent) },
-            { Supnet.supnetRepository.sendIntent(SupnetIntent.SignOffIntent) },
+            Supnet.app.supnetRepository.results().ofType(UserManagerResult.SignOutResult::class.java),
+            Supnet.app.supnetRepository.results().ofType(UserManagerResult.SignOffResult::class.java),
+            { Supnet.app.supnetRepository.sendIntent(UserManagerIntent.SignOutIntent) },
+            { Supnet.app.supnetRepository.sendIntent(UserManagerIntent.SignOffIntent) },
             Supnet.schedulersProvider
         ) as T
     }
