@@ -3,12 +3,12 @@ package com.supnet.data.local
 import android.annotation.SuppressLint
 import android.content.SharedPreferences
 import com.supnet.common.Nullable
-import com.supnet.domain.Friend
-import com.supnet.domain.Invitation
 import com.supnet.data.local.db.FriendRow
 import com.supnet.data.local.db.InvitationRow
 import com.supnet.data.local.db.SupnetDatabase
 import com.supnet.data.local.db.UserRow
+import com.supnet.domain.entities.Friend
+import com.supnet.domain.entities.Invitation
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -34,9 +34,11 @@ class AndroidSupnetStore(
         db.userDao().insertUserRow(UserRow(id, name, email, password))
 
     override fun removeUserData(): Completable {
-        return db.userDao()
-            .deleteAllUserRows()
-            .andThen(db.friendDao().deleteAllFriendRows())
+        return Completable.fromAction {
+            db.userDao().deleteAllUserRows()
+            db.friendDao().deleteAllFriendRows()
+            db.invitationDao().deleteAllInvitations()
+        }
     }
 
     override fun addFriend(friend: Friend): Completable {
@@ -49,10 +51,10 @@ class AndroidSupnetStore(
             .insertAll(friends.map { FriendRow(it.id, it.name) })
     }
 
-    override fun friends(): Observable<Friend> {
+    override fun friends(): Observable<List<Friend>> {
         return db.friendDao()
             .getFriends()
-            .map { Friend(it.id, it.name) }
+            .map { it.map { Friend(it.id, it.name) } }
     }
 
     override fun addInvitation(invitation: Invitation): Completable {
@@ -60,10 +62,10 @@ class AndroidSupnetStore(
             .insertInvitation(InvitationRow(invitation.id, invitation.senderName, invitation.message))
     }
 
-    override fun invitations(): Observable<Invitation> {
+    override fun invitations(): Observable<List<Invitation>> {
         return db.invitationDao()
             .getInvitations()
-            .map { Invitation(it.id, it.senderName, it.message) }
+            .map { it.map { Invitation(it.id, it.senderName, it.message) } }
     }
 
     companion object {

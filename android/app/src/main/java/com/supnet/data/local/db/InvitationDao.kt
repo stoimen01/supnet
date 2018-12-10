@@ -12,7 +12,7 @@ import io.reactivex.Single
 interface InvitationDao {
 
     @Query("SELECT * FROM invitations")
-    fun getInvitations(): Observable<InvitationRow>
+    fun getInvitations(): Observable<List<InvitationRow>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertInvitation(invitationRow: InvitationRow): Completable
@@ -21,6 +21,6 @@ interface InvitationDao {
     fun insertAll(invitations: List<InvitationRow>): Completable
 
     @Query("DELETE FROM invitations")
-    fun deleteAllInvitations(): Single<Int>
+    fun deleteAllInvitations()
 
 }

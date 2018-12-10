@@ -12,12 +12,12 @@ import io.reactivex.Single
 interface UserDao {
 
     @Query("SELECT * FROM users WHERE id = :id")
-    fun getUserRowById(id: String): Observable<UserRow>
+    fun getUserRowById(id: String): Observable<List<UserRow>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUserRow(user: UserRow): Completable
 
     @Query("DELETE FROM users")
-    fun deleteAllUserRows(): Single<Int>
+    fun deleteAllUserRows()
 
 }

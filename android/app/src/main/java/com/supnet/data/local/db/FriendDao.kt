@@ -12,7 +12,7 @@ import io.reactivex.Single
 interface FriendDao {
 
     @Query("SELECT * FROM friends")
-    fun getFriends(): Observable<FriendRow>
+    fun getFriends(): Observable<List<FriendRow>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFriendRow(friend: FriendRow): Completable
@@ -21,6 +21,6 @@ interface FriendDao {
     fun insertAll(friends: List<FriendRow>): Completable
 
     @Query("DELETE FROM friends")
-    fun deleteAllFriendRows(): Single<Int>
+    fun deleteAllFriendRows()
 
 }

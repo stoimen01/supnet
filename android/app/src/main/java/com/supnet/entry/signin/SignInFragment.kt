@@ -20,7 +20,7 @@ class SignInFragment : BaseFragment() {
             .get(EntryViewModel::class.java)
 
         ViewModelProviders
-            .of(this, SignInViewModelFactory(Supnet.app.connectionAgent, Supnet.supnetRepository, navigator))
+            .of(this, SignInViewModelFactory(Supnet.app.connectionAgent, Supnet.app.supnetRepository, navigator))
             .get(SignInViewModel::class.java)
     }
 

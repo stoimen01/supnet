@@ -1,8 +1,8 @@
 package com.supnet.data.local
 
 import com.supnet.common.Nullable
-import com.supnet.domain.Friend
-import com.supnet.domain.Invitation
+import com.supnet.domain.entities.Friend
+import com.supnet.domain.entities.Invitation
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -21,10 +21,10 @@ interface SupnetStore {
 
     fun saveFriends(friends: List<Friend>): Completable
 
-    fun friends(): Observable<Friend>
+    fun friends(): Observable<List<Friend>>
 
     fun addInvitation(invitation: Invitation): Completable
 
-    fun invitations(): Observable<Invitation>
+    fun invitations(): Observable<List<Invitation>>
 
 }
