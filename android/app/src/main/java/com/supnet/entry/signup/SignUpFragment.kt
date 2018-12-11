@@ -20,7 +20,7 @@ class SignUpFragment : BaseFragment() {
             .get(EntryViewModel::class.java)
 
         ViewModelProviders
-            .of(this, SignUpViewModelFactory(Supnet.app.connectionAgent, Supnet.app.supnetRepository, navigator))
+            .of(this, SignUpViewModelFactory(Supnet.app.connectionAgent, Supnet.app.userManager, navigator))
             .get(SignUpViewModel::class.java)
     }
 

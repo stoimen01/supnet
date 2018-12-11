@@ -34,12 +34,4 @@ sealed class UserManagerResult {
 
     }
 
-    sealed class InvitationResult : UserManagerResult() {
-
-        object InvitationSend : InvitationResult()
-
-        object InvitationFailure : InvitationResult()
-
-    }
-
 }

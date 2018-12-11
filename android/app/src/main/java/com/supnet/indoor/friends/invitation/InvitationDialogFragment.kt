@@ -2,7 +2,6 @@ package com.supnet.indoor.friends.invitation
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +11,7 @@ import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
 import com.supnet.common.*
 import com.supnet.indoor.friends.invitation.InvitationCommand.*
-import kotlinx.android.synthetic.main.dialog_invitation.*
 import kotlinx.android.synthetic.main.dialog_invitation.view.*
-import kotlinx.android.synthetic.main.dialog_room_creator.view.*
-import java.lang.IllegalArgumentException
 
 class InvitationDialogFragment : DialogFragment() {
 

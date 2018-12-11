@@ -12,10 +12,10 @@ class SettingsViewModelFactory : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         return SettingsViewModel(
             Supnet.app.connectionAgent.getConnectionStates(),
-            Supnet.app.supnetRepository.results().ofType(UserManagerResult.SignOutResult::class.java),
-            Supnet.app.supnetRepository.results().ofType(UserManagerResult.SignOffResult::class.java),
-            { Supnet.app.supnetRepository.sendIntent(UserManagerIntent.SignOutIntent) },
-            { Supnet.app.supnetRepository.sendIntent(UserManagerIntent.SignOffIntent) },
+            Supnet.app.userManager.results().ofType(UserManagerResult.SignOutResult::class.java),
+            Supnet.app.userManager.results().ofType(UserManagerResult.SignOffResult::class.java),
+            { Supnet.app.userManager.sendIntent(UserManagerIntent.SignOutIntent) },
+            { Supnet.app.userManager.sendIntent(UserManagerIntent.SignOffIntent) },
             Supnet.schedulersProvider
         ) as T
     }

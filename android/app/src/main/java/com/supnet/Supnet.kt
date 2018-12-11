@@ -10,7 +10,7 @@ import com.supnet.data.local.db.SupnetDatabase
 import com.supnet.data.remote.rest.AndroidRestClient
 import com.supnet.data.remote.rest.SupnetRestApi
 import com.supnet.data.remote.ws.AndroidWsClient
-import com.supnet.domain.store.StoreManagerImpl
+import com.supnet.domain.friends.FriendsManagerImpl
 import com.supnet.signaling.rooms.RxRoomsManager
 import com.supnet.signaling.client.RxSignalingClient
 import com.supnet.signaling.rooms.RoomsReducer
@@ -33,8 +33,8 @@ class Supnet : Application() {
         AndroidConnectionAgent(applicationContext)
     }
 
-    val wsClient by lazy {
-        AndroidWsClient(wsBuilder, supnetRepository.userStates(), connectionAgent.getConnectionStates())
+    private val wsClient by lazy {
+        AndroidWsClient(wsBuilder, userManager.userStates(), connectionAgent.getConnectionStates())
     }
 
     private val store by lazy {
@@ -44,9 +44,9 @@ class Supnet : Application() {
         )
     }
 
-    val supnetRepository by lazy { UserManagerImpl(store, restClient) }
+    val userManager by lazy { UserManagerImpl(store, restClient) }
 
-    val storeManager by lazy { StoreManagerImpl(wsClient, store) }
+    val friendsManager by lazy { FriendsManagerImpl(restClient, wsClient, store) }
 
     companion object {
 

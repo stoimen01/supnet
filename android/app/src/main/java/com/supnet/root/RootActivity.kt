@@ -15,7 +15,7 @@ class RootActivity : AppCompatActivity() {
 
     private val viewModel by lazy {
         ViewModelProviders
-            .of(this, RootViewModelFactory(Supnet.app.supnetRepository))
+            .of(this, RootViewModelFactory(Supnet.app.userManager))
             .get(RootViewModel::class.java)
     }
 

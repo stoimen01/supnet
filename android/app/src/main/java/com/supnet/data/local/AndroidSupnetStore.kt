@@ -62,6 +62,12 @@ class AndroidSupnetStore(
             .insertInvitation(InvitationRow(invitation.id, invitation.senderName, invitation.message))
     }
 
+    override fun removeInvitation(id: Int): Completable {
+        return Completable.fromAction {
+            db.invitationDao().deleteInvitation(id)
+        }
+    }
+
     override fun invitations(): Observable<List<Invitation>> {
         return db.invitationDao()
             .getInvitations()

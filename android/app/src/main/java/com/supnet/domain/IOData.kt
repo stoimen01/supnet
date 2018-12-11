@@ -35,3 +35,7 @@ data class InvitationRequest(
 data class AcceptInvitationRequest(
     val invitationId: Int
 )
+
+data class RejectInvitationRequest(
+    val invitationId: Int
+)

@@ -5,15 +5,15 @@ import androidx.lifecycle.MutableLiveData
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
 import com.supnet.common.SchedulersProvider
-import com.supnet.domain.user.UserManagerResult
-import com.supnet.domain.user.UserManagerResult.InvitationResult.*
+import com.supnet.domain.friends.FriendsManagerResult
+import com.supnet.domain.friends.FriendsManagerResult.InvitationResult.*
 import io.reactivex.Observable
 import io.reactivex.rxkotlin.plusAssign
 
 class InvitationViewModel(
-    private val results: Observable<UserManagerResult.InvitationResult>,
+    results: Observable<FriendsManagerResult.InvitationResult>,
     private val onSendInvitation: (recipient: String, message: String) -> Unit,
-    private val schedulersProvider: SchedulersProvider
+    schedulersProvider: SchedulersProvider
 ) : AutoDisposableViewModel() {
 
     private val liveState = MutableLiveData<InvitationState>()

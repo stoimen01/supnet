@@ -25,6 +25,8 @@ interface SupnetStore {
 
     fun addInvitation(invitation: Invitation): Completable
 
+    fun removeInvitation(id: Int): Completable
+
     fun invitations(): Observable<List<Invitation>>
 
 }

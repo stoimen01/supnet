@@ -1,9 +1,6 @@
 package com.supnet.data.remote.rest
 
-import com.supnet.domain.AcceptInvitationRequest
-import com.supnet.domain.InvitationRequest
-import com.supnet.domain.SignInResponse
-import com.supnet.domain.SignUpResponse
+import com.supnet.domain.*
 import io.reactivex.Completable
 import io.reactivex.Single
 
@@ -20,5 +17,7 @@ interface SupnetRestClient {
     fun sendInvitation(token: String, invitation: InvitationRequest): Completable
 
     fun acceptInvitation(token: String, request: AcceptInvitationRequest): Completable
+
+    fun rejectInvitation(token: String, request: RejectInvitationRequest): Completable
 
 }
