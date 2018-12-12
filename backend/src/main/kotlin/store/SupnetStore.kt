@@ -24,6 +24,12 @@ interface SupnetStore {
 
     suspend fun addInvitation(initiatorId: UserID, recipientId: UserID, msg: String): InvitationID
 
+    suspend fun removeInvitation(id: InvitationID): Boolean
+
+    suspend fun getInvitation(id: InvitationID): Invitation?
+
     suspend fun getInvitationsByRecipient(recipientId: UserID): List<Invitation>
+
+    suspend fun addFriendship(user1: UserID, user2: UserID)
 
 }

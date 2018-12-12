@@ -20,6 +20,11 @@ public final class Ws {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_InvitationEvent_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_InvitationAcceptedEvent_descriptor;
+  static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_InvitationAcceptedEvent_fieldAccessorTable;
+  static final com.google.protobuf.Descriptors.Descriptor
     internal_static_WsEvent_descriptor;
   static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
@@ -35,9 +40,12 @@ public final class Ws {
     java.lang.String[] descriptorData = {
       "\n\010ws.proto\"N\n\017InvitationEvent\022\025\n\rinvitat" +
       "ion_id\030\001 \001(\005\022\023\n\013sender_name\030\002 \001(\t\022\017\n\007mes" +
-      "sage\030\003 \001(\t\"@\n\007WsEvent\022,\n\020invitation_even" +
-      "t\030\001 \001(\0132\020.InvitationEventH\000B\007\n\005eventB\t\n\005" +
-      "protoP\001b\006proto3"
+      "sage\030\003 \001(\t\"X\n\027InvitationAcceptedEvent\022\025\n" +
+      "\rinvitation_id\030\001 \001(\005\022\021\n\tfriend_id\030\002 \001(\005\022" +
+      "\023\n\013friend_name\030\003 \001(\t\"s\n\007WsEvent\022&\n\ninvit" +
+      "ation\030\001 \001(\0132\020.InvitationEventH\000\0227\n\023invit" +
+      "ation_accepted\030\002 \001(\0132\030.InvitationAccepte" +
+      "dEventH\000B\007\n\005eventB\t\n\005protoP\001b\006proto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -57,12 +65,18 @@ public final class Ws {
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_InvitationEvent_descriptor,
         new java.lang.String[] { "InvitationId", "SenderName", "Message", });
-    internal_static_WsEvent_descriptor =
+    internal_static_InvitationAcceptedEvent_descriptor =
       getDescriptor().getMessageTypes().get(1);
+    internal_static_InvitationAcceptedEvent_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_InvitationAcceptedEvent_descriptor,
+        new java.lang.String[] { "InvitationId", "FriendId", "FriendName", });
+    internal_static_WsEvent_descriptor =
+      getDescriptor().getMessageTypes().get(2);
     internal_static_WsEvent_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_WsEvent_descriptor,
-        new java.lang.String[] { "InvitationEvent", "Event", });
+        new java.lang.String[] { "Invitation", "InvitationAccepted", "Event", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

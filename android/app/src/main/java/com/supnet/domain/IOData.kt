@@ -36,6 +36,11 @@ data class AcceptInvitationRequest(
     val invitationId: Int
 )
 
+data class AcceptInvitationResponse(
+    val friendId: Int,
+    val friendName: String
+)
+
 data class RejectInvitationRequest(
     val invitationId: Int
 )

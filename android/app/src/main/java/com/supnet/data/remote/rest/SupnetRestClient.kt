@@ -16,7 +16,7 @@ interface SupnetRestClient {
 
     fun sendInvitation(token: String, invitation: InvitationRequest): Completable
 
-    fun acceptInvitation(token: String, request: AcceptInvitationRequest): Completable
+    fun acceptInvitation(token: String, request: AcceptInvitationRequest): Single<AcceptInvitationResponse>
 
     fun rejectInvitation(token: String, request: RejectInvitationRequest): Completable
 

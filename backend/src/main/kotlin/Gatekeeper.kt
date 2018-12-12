@@ -34,7 +34,10 @@ class Gatekeeper(
         post("/signoff") { onSignOff() }
         post("/signin") { onSignIn() }
         post("/signout") { onSignOut() }
-        post("/invitation") { onInvitation() }
+        post("/invitation/send") { onSendInvitation() }
+        post("/invitation/accept") { onAcceptInvitation() }
+        post("/invitation/reject") { onRejectInvitation() }
+
         webSocket("/signaling") { onSignalling() }
     }
 
@@ -89,10 +92,32 @@ class Gatekeeper(
         }
     }
 
-    private suspend fun PipelineContext<Unit, ApplicationCall>.onInvitation() = guardContent {
+    private suspend fun PipelineContext<Unit, ApplicationCall>.onSendInvitation() = guardContent {
         withToken { token ->
             val isSent = usersManager.sendInvitation(call.receive(), token)
             if (!isSent) {
+                call.respond(HttpStatusCode.Conflict)
+            } else {
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+    }
+
+    private suspend fun PipelineContext<Unit, ApplicationCall>.onAcceptInvitation() = guardContent {
+        withToken { token ->
+            val isAccepted = usersManager.acceptInvitation(call.receive(), token)
+            if (!isAccepted) {
+                call.respond(HttpStatusCode.Conflict)
+            } else {
+                call.respond(HttpStatusCode.OK)
+            }
+        }
+    }
+
+    private suspend fun PipelineContext<Unit, ApplicationCall>.onRejectInvitation() = guardContent {
+        withToken { token ->
+            val isRejected = usersManager.rejectInvitation(call.receive(), token)
+            if (!isRejected) {
                 call.respond(HttpStatusCode.Conflict)
             } else {
                 call.respond(HttpStatusCode.OK)

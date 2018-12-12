@@ -14,6 +14,7 @@ import store.db.tables.Friends
 import store.db.tables.Invitations
 import store.db.tables.Users
 import Invitation
+import InvitationID
 
 class DatabaseStore : SupnetStore {
 
@@ -88,8 +89,28 @@ class DatabaseStore : SupnetStore {
         } get Invitations.id)!!
     }
 
+    override suspend fun removeInvitation(id: InvitationID) = query {
+        Invitations.deleteWhere { Invitations.id eq id } > 0
+    }
+
+    override suspend fun getInvitation(id: InvitationID) = query {
+        Invitations.select { Invitations.id eq id }.map(::toInvitation).singleOrNull()
+    }
+
     override suspend fun getInvitationsByRecipient(recipientId: UserID) = query {
         Invitations.select { Invitations.recipient eq recipientId }.map(::toInvitation)
+    }
+
+    override suspend fun addFriendship(user1: UserID, user2: UserID) = query {
+        Friends.insert {
+            it[user] = user1
+            it[friend] = user2
+        }
+        Friends.insert {
+            it[user] = user2
+            it[friend] = user1
+        }
+        Unit
     }
 
     private fun toUser(row: ResultRow) = User(

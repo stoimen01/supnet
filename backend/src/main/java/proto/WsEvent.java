@@ -56,6 +56,20 @@ public  final class WsEvent extends
             eventCase_ = 1;
             break;
           }
+          case 18: {
+            proto.InvitationAcceptedEvent.Builder subBuilder = null;
+            if (eventCase_ == 2) {
+              subBuilder = ((proto.InvitationAcceptedEvent) event_).toBuilder();
+            }
+            event_ =
+                input.readMessage(proto.InvitationAcceptedEvent.parser(), extensionRegistry);
+            if (subBuilder != null) {
+              subBuilder.mergeFrom((proto.InvitationAcceptedEvent) event_);
+              event_ = subBuilder.buildPartial();
+            }
+            eventCase_ = 2;
+            break;
+          }
         }
       }
     } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -83,7 +97,8 @@ public  final class WsEvent extends
   private java.lang.Object event_;
   public enum EventCase
       implements com.google.protobuf.Internal.EnumLite {
-    INVITATION_EVENT(1),
+    INVITATION(1),
+    INVITATION_ACCEPTED(2),
     EVENT_NOT_SET(0);
     private final int value;
     private EventCase(int value) {
@@ -99,7 +114,8 @@ public  final class WsEvent extends
 
     public static EventCase forNumber(int value) {
       switch (value) {
-        case 1: return INVITATION_EVENT;
+        case 1: return INVITATION;
+        case 2: return INVITATION_ACCEPTED;
         case 0: return EVENT_NOT_SET;
         default: return null;
       }
@@ -115,24 +131,44 @@ public  final class WsEvent extends
         eventCase_);
   }
 
-  public static final int INVITATION_EVENT_FIELD_NUMBER = 1;
+  public static final int INVITATION_FIELD_NUMBER = 1;
   /**
-   * <code>optional .InvitationEvent invitation_event = 1;</code>
+   * <code>optional .InvitationEvent invitation = 1;</code>
    */
-  public proto.InvitationEvent getInvitationEvent() {
+  public proto.InvitationEvent getInvitation() {
     if (eventCase_ == 1) {
        return (proto.InvitationEvent) event_;
     }
     return proto.InvitationEvent.getDefaultInstance();
   }
   /**
-   * <code>optional .InvitationEvent invitation_event = 1;</code>
+   * <code>optional .InvitationEvent invitation = 1;</code>
    */
-  public proto.InvitationEventOrBuilder getInvitationEventOrBuilder() {
+  public proto.InvitationEventOrBuilder getInvitationOrBuilder() {
     if (eventCase_ == 1) {
        return (proto.InvitationEvent) event_;
     }
     return proto.InvitationEvent.getDefaultInstance();
+  }
+
+  public static final int INVITATION_ACCEPTED_FIELD_NUMBER = 2;
+  /**
+   * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+   */
+  public proto.InvitationAcceptedEvent getInvitationAccepted() {
+    if (eventCase_ == 2) {
+       return (proto.InvitationAcceptedEvent) event_;
+    }
+    return proto.InvitationAcceptedEvent.getDefaultInstance();
+  }
+  /**
+   * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+   */
+  public proto.InvitationAcceptedEventOrBuilder getInvitationAcceptedOrBuilder() {
+    if (eventCase_ == 2) {
+       return (proto.InvitationAcceptedEvent) event_;
+    }
+    return proto.InvitationAcceptedEvent.getDefaultInstance();
   }
 
   private byte memoizedIsInitialized = -1;
@@ -150,6 +186,9 @@ public  final class WsEvent extends
     if (eventCase_ == 1) {
       output.writeMessage(1, (proto.InvitationEvent) event_);
     }
+    if (eventCase_ == 2) {
+      output.writeMessage(2, (proto.InvitationAcceptedEvent) event_);
+    }
   }
 
   public int getSerializedSize() {
@@ -160,6 +199,10 @@ public  final class WsEvent extends
     if (eventCase_ == 1) {
       size += com.google.protobuf.CodedOutputStream
         .computeMessageSize(1, (proto.InvitationEvent) event_);
+    }
+    if (eventCase_ == 2) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(2, (proto.InvitationAcceptedEvent) event_);
     }
     memoizedSize = size;
     return size;
@@ -182,8 +225,12 @@ public  final class WsEvent extends
     if (!result) return false;
     switch (eventCase_) {
       case 1:
-        result = result && getInvitationEvent()
-            .equals(other.getInvitationEvent());
+        result = result && getInvitation()
+            .equals(other.getInvitation());
+        break;
+      case 2:
+        result = result && getInvitationAccepted()
+            .equals(other.getInvitationAccepted());
         break;
       case 0:
       default:
@@ -200,8 +247,12 @@ public  final class WsEvent extends
     hash = (19 * hash) + getDescriptorForType().hashCode();
     switch (eventCase_) {
       case 1:
-        hash = (37 * hash) + INVITATION_EVENT_FIELD_NUMBER;
-        hash = (53 * hash) + getInvitationEvent().hashCode();
+        hash = (37 * hash) + INVITATION_FIELD_NUMBER;
+        hash = (53 * hash) + getInvitation().hashCode();
+        break;
+      case 2:
+        hash = (37 * hash) + INVITATION_ACCEPTED_FIELD_NUMBER;
+        hash = (53 * hash) + getInvitationAccepted().hashCode();
         break;
       case 0:
       default:
@@ -349,10 +400,17 @@ public  final class WsEvent extends
     public proto.WsEvent buildPartial() {
       proto.WsEvent result = new proto.WsEvent(this);
       if (eventCase_ == 1) {
-        if (invitationEventBuilder_ == null) {
+        if (invitationBuilder_ == null) {
           result.event_ = event_;
         } else {
-          result.event_ = invitationEventBuilder_.build();
+          result.event_ = invitationBuilder_.build();
+        }
+      }
+      if (eventCase_ == 2) {
+        if (invitationAcceptedBuilder_ == null) {
+          result.event_ = event_;
+        } else {
+          result.event_ = invitationAcceptedBuilder_.build();
         }
       }
       result.eventCase_ = eventCase_;
@@ -398,8 +456,12 @@ public  final class WsEvent extends
     public Builder mergeFrom(proto.WsEvent other) {
       if (other == proto.WsEvent.getDefaultInstance()) return this;
       switch (other.getEventCase()) {
-        case INVITATION_EVENT: {
-          mergeInvitationEvent(other.getInvitationEvent());
+        case INVITATION: {
+          mergeInvitation(other.getInvitation());
+          break;
+        }
+        case INVITATION_ACCEPTED: {
+          mergeInvitationAccepted(other.getInvitationAccepted());
           break;
         }
         case EVENT_NOT_SET: {
@@ -448,58 +510,58 @@ public  final class WsEvent extends
 
 
     private com.google.protobuf.SingleFieldBuilderV3<
-        proto.InvitationEvent, proto.InvitationEvent.Builder, proto.InvitationEventOrBuilder> invitationEventBuilder_;
+        proto.InvitationEvent, proto.InvitationEvent.Builder, proto.InvitationEventOrBuilder> invitationBuilder_;
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public proto.InvitationEvent getInvitationEvent() {
-      if (invitationEventBuilder_ == null) {
+    public proto.InvitationEvent getInvitation() {
+      if (invitationBuilder_ == null) {
         if (eventCase_ == 1) {
           return (proto.InvitationEvent) event_;
         }
         return proto.InvitationEvent.getDefaultInstance();
       } else {
         if (eventCase_ == 1) {
-          return invitationEventBuilder_.getMessage();
+          return invitationBuilder_.getMessage();
         }
         return proto.InvitationEvent.getDefaultInstance();
       }
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public Builder setInvitationEvent(proto.InvitationEvent value) {
-      if (invitationEventBuilder_ == null) {
+    public Builder setInvitation(proto.InvitationEvent value) {
+      if (invitationBuilder_ == null) {
         if (value == null) {
           throw new NullPointerException();
         }
         event_ = value;
         onChanged();
       } else {
-        invitationEventBuilder_.setMessage(value);
+        invitationBuilder_.setMessage(value);
       }
       eventCase_ = 1;
       return this;
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public Builder setInvitationEvent(
+    public Builder setInvitation(
         proto.InvitationEvent.Builder builderForValue) {
-      if (invitationEventBuilder_ == null) {
+      if (invitationBuilder_ == null) {
         event_ = builderForValue.build();
         onChanged();
       } else {
-        invitationEventBuilder_.setMessage(builderForValue.build());
+        invitationBuilder_.setMessage(builderForValue.build());
       }
       eventCase_ = 1;
       return this;
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public Builder mergeInvitationEvent(proto.InvitationEvent value) {
-      if (invitationEventBuilder_ == null) {
+    public Builder mergeInvitation(proto.InvitationEvent value) {
+      if (invitationBuilder_ == null) {
         if (eventCase_ == 1 &&
             event_ != proto.InvitationEvent.getDefaultInstance()) {
           event_ = proto.InvitationEvent.newBuilder((proto.InvitationEvent) event_)
@@ -510,18 +572,18 @@ public  final class WsEvent extends
         onChanged();
       } else {
         if (eventCase_ == 1) {
-          invitationEventBuilder_.mergeFrom(value);
+          invitationBuilder_.mergeFrom(value);
         }
-        invitationEventBuilder_.setMessage(value);
+        invitationBuilder_.setMessage(value);
       }
       eventCase_ = 1;
       return this;
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public Builder clearInvitationEvent() {
-      if (invitationEventBuilder_ == null) {
+    public Builder clearInvitation() {
+      if (invitationBuilder_ == null) {
         if (eventCase_ == 1) {
           eventCase_ = 0;
           event_ = null;
@@ -532,22 +594,22 @@ public  final class WsEvent extends
           eventCase_ = 0;
           event_ = null;
         }
-        invitationEventBuilder_.clear();
+        invitationBuilder_.clear();
       }
       return this;
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public proto.InvitationEvent.Builder getInvitationEventBuilder() {
-      return getInvitationEventFieldBuilder().getBuilder();
+    public proto.InvitationEvent.Builder getInvitationBuilder() {
+      return getInvitationFieldBuilder().getBuilder();
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
-    public proto.InvitationEventOrBuilder getInvitationEventOrBuilder() {
-      if ((eventCase_ == 1) && (invitationEventBuilder_ != null)) {
-        return invitationEventBuilder_.getMessageOrBuilder();
+    public proto.InvitationEventOrBuilder getInvitationOrBuilder() {
+      if ((eventCase_ == 1) && (invitationBuilder_ != null)) {
+        return invitationBuilder_.getMessageOrBuilder();
       } else {
         if (eventCase_ == 1) {
           return (proto.InvitationEvent) event_;
@@ -556,16 +618,16 @@ public  final class WsEvent extends
       }
     }
     /**
-     * <code>optional .InvitationEvent invitation_event = 1;</code>
+     * <code>optional .InvitationEvent invitation = 1;</code>
      */
     private com.google.protobuf.SingleFieldBuilderV3<
         proto.InvitationEvent, proto.InvitationEvent.Builder, proto.InvitationEventOrBuilder> 
-        getInvitationEventFieldBuilder() {
-      if (invitationEventBuilder_ == null) {
+        getInvitationFieldBuilder() {
+      if (invitationBuilder_ == null) {
         if (!(eventCase_ == 1)) {
           event_ = proto.InvitationEvent.getDefaultInstance();
         }
-        invitationEventBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+        invitationBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
             proto.InvitationEvent, proto.InvitationEvent.Builder, proto.InvitationEventOrBuilder>(
                 (proto.InvitationEvent) event_,
                 getParentForChildren(),
@@ -574,7 +636,137 @@ public  final class WsEvent extends
       }
       eventCase_ = 1;
       onChanged();;
-      return invitationEventBuilder_;
+      return invitationBuilder_;
+    }
+
+    private com.google.protobuf.SingleFieldBuilderV3<
+        proto.InvitationAcceptedEvent, proto.InvitationAcceptedEvent.Builder, proto.InvitationAcceptedEventOrBuilder> invitationAcceptedBuilder_;
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public proto.InvitationAcceptedEvent getInvitationAccepted() {
+      if (invitationAcceptedBuilder_ == null) {
+        if (eventCase_ == 2) {
+          return (proto.InvitationAcceptedEvent) event_;
+        }
+        return proto.InvitationAcceptedEvent.getDefaultInstance();
+      } else {
+        if (eventCase_ == 2) {
+          return invitationAcceptedBuilder_.getMessage();
+        }
+        return proto.InvitationAcceptedEvent.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public Builder setInvitationAccepted(proto.InvitationAcceptedEvent value) {
+      if (invitationAcceptedBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        event_ = value;
+        onChanged();
+      } else {
+        invitationAcceptedBuilder_.setMessage(value);
+      }
+      eventCase_ = 2;
+      return this;
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public Builder setInvitationAccepted(
+        proto.InvitationAcceptedEvent.Builder builderForValue) {
+      if (invitationAcceptedBuilder_ == null) {
+        event_ = builderForValue.build();
+        onChanged();
+      } else {
+        invitationAcceptedBuilder_.setMessage(builderForValue.build());
+      }
+      eventCase_ = 2;
+      return this;
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public Builder mergeInvitationAccepted(proto.InvitationAcceptedEvent value) {
+      if (invitationAcceptedBuilder_ == null) {
+        if (eventCase_ == 2 &&
+            event_ != proto.InvitationAcceptedEvent.getDefaultInstance()) {
+          event_ = proto.InvitationAcceptedEvent.newBuilder((proto.InvitationAcceptedEvent) event_)
+              .mergeFrom(value).buildPartial();
+        } else {
+          event_ = value;
+        }
+        onChanged();
+      } else {
+        if (eventCase_ == 2) {
+          invitationAcceptedBuilder_.mergeFrom(value);
+        }
+        invitationAcceptedBuilder_.setMessage(value);
+      }
+      eventCase_ = 2;
+      return this;
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public Builder clearInvitationAccepted() {
+      if (invitationAcceptedBuilder_ == null) {
+        if (eventCase_ == 2) {
+          eventCase_ = 0;
+          event_ = null;
+          onChanged();
+        }
+      } else {
+        if (eventCase_ == 2) {
+          eventCase_ = 0;
+          event_ = null;
+        }
+        invitationAcceptedBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public proto.InvitationAcceptedEvent.Builder getInvitationAcceptedBuilder() {
+      return getInvitationAcceptedFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    public proto.InvitationAcceptedEventOrBuilder getInvitationAcceptedOrBuilder() {
+      if ((eventCase_ == 2) && (invitationAcceptedBuilder_ != null)) {
+        return invitationAcceptedBuilder_.getMessageOrBuilder();
+      } else {
+        if (eventCase_ == 2) {
+          return (proto.InvitationAcceptedEvent) event_;
+        }
+        return proto.InvitationAcceptedEvent.getDefaultInstance();
+      }
+    }
+    /**
+     * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        proto.InvitationAcceptedEvent, proto.InvitationAcceptedEvent.Builder, proto.InvitationAcceptedEventOrBuilder> 
+        getInvitationAcceptedFieldBuilder() {
+      if (invitationAcceptedBuilder_ == null) {
+        if (!(eventCase_ == 2)) {
+          event_ = proto.InvitationAcceptedEvent.getDefaultInstance();
+        }
+        invitationAcceptedBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            proto.InvitationAcceptedEvent, proto.InvitationAcceptedEvent.Builder, proto.InvitationAcceptedEventOrBuilder>(
+                (proto.InvitationAcceptedEvent) event_,
+                getParentForChildren(),
+                isClean());
+        event_ = null;
+      }
+      eventCase_ = 2;
+      onChanged();;
+      return invitationAcceptedBuilder_;
     }
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {

@@ -8,13 +8,22 @@ public interface WsEventOrBuilder extends
     com.google.protobuf.MessageOrBuilder {
 
   /**
-   * <code>optional .InvitationEvent invitation_event = 1;</code>
+   * <code>optional .InvitationEvent invitation = 1;</code>
    */
-  proto.InvitationEvent getInvitationEvent();
+  proto.InvitationEvent getInvitation();
   /**
-   * <code>optional .InvitationEvent invitation_event = 1;</code>
+   * <code>optional .InvitationEvent invitation = 1;</code>
    */
-  proto.InvitationEventOrBuilder getInvitationEventOrBuilder();
+  proto.InvitationEventOrBuilder getInvitationOrBuilder();
+
+  /**
+   * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+   */
+  proto.InvitationAcceptedEvent getInvitationAccepted();
+  /**
+   * <code>optional .InvitationAcceptedEvent invitation_accepted = 2;</code>
+   */
+  proto.InvitationAcceptedEventOrBuilder getInvitationAcceptedOrBuilder();
 
   public proto.WsEvent.EventCase getEventCase();
 }

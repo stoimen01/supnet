@@ -92,7 +92,9 @@ class FriendsManagerImpl(
                     val request = AcceptInvitationRequest(intent.id)
                     supnetClient
                         .acceptInvitation(token, request)
-                        .andThen(store.removeInvitation(intent.id))
+                        .flatMapCompletable {
+                            store.removeInvitation(intent.id)
+                        }
                         .andThen(Observable.just<AcceptInvitationResult>(InvitationAccepted))
                 }
             }

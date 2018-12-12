@@ -60,6 +60,30 @@ class UsersManager(
         return true
     }
 
+    suspend fun acceptInvitation(request: AcceptInvitationRequest, token: UUID): AcceptInvitationResponse? {
+        val recipientId = getUserId(token) ?: return null
+        val recipient = store.getUserById(recipientId) ?: return null
+        val invitation = store.getInvitation(request.invitationId) ?: return null
+        val initiator = store.getUserById(invitation.initiatorId) ?: return null
+
+        if (recipientId != invitation.recipientId) return null
+
+        store.addFriendship(invitation.initiatorId, invitation.recipientId)
+
+        wsManager.notifyInvitationAccepted(invitation.initiatorId, invitation.id, recipientId, recipient.name)
+
+        return AcceptInvitationResponse(
+                friendId = initiator.id,
+                friendName = initiator.name
+        )
+    }
+
+    suspend fun rejectInvitation(request: RejectInvitationRequest, token: UUID): Boolean {
+        getUserId(token) ?: return false
+
+        return store.removeInvitation(request.invitationId)
+    }
+
     private fun addToken(id: Int) = tokensContainer.add(id)
 
     private fun getUserId(token: UUID) = tokensContainer.get(token)

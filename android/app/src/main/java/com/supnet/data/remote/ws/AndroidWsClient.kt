@@ -94,7 +94,7 @@ class AndroidWsClient(
 
         private fun processEvent(wsEvent: proto.WsEvent) = when (wsEvent.eventCase) {
 
-            INVITATION_EVENT -> with(wsEvent.invitationEvent) {
+            INVITATION -> with(wsEvent.invitation) {
                 emitter.onNext(WsMessageEvent.InvitationReceived(
                     invitationId = invitationId,
                     senderName = senderName,
@@ -102,11 +102,16 @@ class AndroidWsClient(
                 ))
             }
 
-            INVITATION_ACCEPTED_EVENT -> with(wsEvent.invitationAcceptedEvent) {
-
+            INVITATION_ACCEPTED -> with(wsEvent.invitationAccepted) {
+                emitter.onNext(WsMessageEvent.InvitationAccepted(
+                    invitationId = invitationId,
+                    friendId = friendId,
+                    friendName = friendName
+                ))
             }
 
             EVENT_NOT_SET, null -> {}
+
         }
 
     }

@@ -33,7 +33,14 @@ class AndroidRestClient(
     override fun sendInvitation(token: String, invitation: InvitationRequest): Completable =
         supnetRestApi.sendInvitation(tokenPrefix + token, invitation)
 
-    override fun acceptInvitation(token: String, request: AcceptInvitationRequest): Completable {
+    override fun acceptInvitation(token: String, request: AcceptInvitationRequest): Single<AcceptInvitationResponse> {
         return supnetRestApi.acceptInvitation(tokenPrefix + token, request)
+            .map {
+                it.body()!!
+            }
+    }
+
+    override fun rejectInvitation(token: String, request: RejectInvitationRequest): Completable {
+        return supnetRestApi.rejectInvitation(tokenPrefix + token, request)
     }
 }

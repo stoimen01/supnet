@@ -5,6 +5,7 @@ import io.ktor.http.cio.websocket.close
 import io.ktor.websocket.DefaultWebSocketServerSession
 import kotlinx.coroutines.channels.ClosedReceiveChannelException
 import kotlinx.coroutines.channels.ClosedSendChannelException
+import proto.InvitationAcceptedEvent
 import proto.InvitationEvent
 import proto.WsEvent
 import store.SupnetStore
@@ -44,6 +45,17 @@ class WsManager(
         }
     }
 
+    suspend fun notifyInvitationAccepted(initiator: UserID, invId: InvitationID, friendId: UserID, friendName: String) {
+        if (!connections.containsKey(initiator)) return
+
+        val event = InvitationAcceptedEvent.newBuilder()
+                .setInvitationId(invId)
+                .setFriendId(friendId)
+                .setFriendName(friendName)
+
+        sendEvent(initiator) { setInvitationAccepted(event) }
+    }
+
     suspend fun tryToSendInvitation(invitation: Invitation) {
         if (!connections.containsKey(invitation.recipientId)) return
         val (invId, initiatorId, recipientId, msg) = invitation
@@ -54,7 +66,7 @@ class WsManager(
                 .setSenderName(initiator.name)
                 .setMessage(msg)
 
-        sendEvent(recipientId) { setInvitationEvent(event) }
+        sendEvent(recipientId) { setInvitation(event) }
     }
 
     private fun buildEvent(builder: WsEvent.Builder.() -> Unit): WsEvent {
@@ -86,6 +98,4 @@ class WsManager(
             }
         }
     }
-
-
 }

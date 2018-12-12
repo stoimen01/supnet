@@ -21,6 +21,19 @@ data class InvitationRequest(
         val message: String
 )
 
+data class AcceptInvitationRequest(
+        val invitationId: Int
+)
+
+data class AcceptInvitationResponse(
+        val friendId: Int,
+        val friendName: String
+)
+
+data class RejectInvitationRequest(
+        val invitationId: Int
+)
+
 data class SignUpRequest(
         val name: String,
         val email: String,

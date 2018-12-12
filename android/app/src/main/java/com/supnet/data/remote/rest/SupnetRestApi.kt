@@ -32,6 +32,12 @@ interface SupnetRestApi {
     fun acceptInvitation(
         @Header("Authorization") token: String,
         @Body value: AcceptInvitationRequest
+    ): Single<Response<AcceptInvitationResponse>>
+
+    @POST("/invitation/reject")
+    fun rejectInvitation(
+        @Header("Authorization") token: String,
+        @Body value: RejectInvitationRequest
     ): Completable
 
 }
