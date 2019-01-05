@@ -19,6 +19,10 @@ class FriendsViewModel(
     reducer = reducer
 ) {
 
+    init {
+        disposables += friendsManager.results().subscribe()
+    }
+
     override fun onEffect(effect: FriendsEffect) = when (effect) {
 
         ObserveFriends -> {

@@ -77,8 +77,8 @@ class Supnet : Application() {
 
         private val wsBuilder = { token: String, listener: WebSocketListener ->
             val request = Request.Builder()
-                .addHeader("Authorization: Bearer ", token)
-                .url("ws://10.0.2.2:8080/signaling")
+                .addHeader("Authorization", "Bearer $token")
+                .url("ws://10.0.2.2:8080/signalling")
                 .build()
             okHttpClient.newWebSocket(request, listener)
         }

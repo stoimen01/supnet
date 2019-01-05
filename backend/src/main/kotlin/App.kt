@@ -16,8 +16,8 @@ fun Application.main() {
 
     val tokensContainer = TokensContainer()
     val store = DatabaseStore()
-    val wsManager = WsManager(tokensContainer, store)
-    val usersManager = UsersManager(tokensContainer, store, wsManager)
+    val wsManager = SignallingService(tokensContainer, store)
+    val usersManager = UsersService(tokensContainer, store, wsManager)
     val gatekeeper = Gatekeeper(wsManager, usersManager)
 
     install(DefaultHeaders)

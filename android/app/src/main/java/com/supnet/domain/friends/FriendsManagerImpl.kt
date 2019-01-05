@@ -72,7 +72,6 @@ class FriendsManagerImpl(
                     val invitation = InvitationRequest(intent.recipient, intent.message)
                     supnetClient
                         .sendInvitation(token, invitation)
-                        .andThen(store.removeUserData())
                         .andThen(Observable.just<InvitationResult>(InvitationSend))
                 }
             }
@@ -109,7 +108,7 @@ class FriendsManagerImpl(
             .getToken()
             .flatMapObservable { (token) ->
                 return@flatMapObservable if (token == null) {
-                    Observable.just(RejectInvitationFailute)
+                    Observable.just(RejectInvitationFailure)
                 } else {
                     val request = RejectInvitationRequest(intent.id)
                     supnetClient
@@ -120,7 +119,7 @@ class FriendsManagerImpl(
             }
             .onErrorReturn {
                 it.printStackTrace()
-                RejectInvitationFailute
+                RejectInvitationFailure
             }
     }
 

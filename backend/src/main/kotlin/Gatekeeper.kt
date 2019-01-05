@@ -22,8 +22,8 @@ import io.ktor.websocket.webSocket
 import java.util.*
 
 class Gatekeeper(
-        private val wsManager: WsManager,
-        private val usersManager: UsersManager
+        private val sigService: SignallingService,
+        private val usersService: UsersService
 ) {
 
     private class SupnetPrincipal(val token: UUID) : Principal
@@ -37,8 +37,7 @@ class Gatekeeper(
         post("/invitation/send") { onSendInvitation() }
         post("/invitation/accept") { onAcceptInvitation() }
         post("/invitation/reject") { onRejectInvitation() }
-
-        webSocket("/signaling") { onSignalling() }
+        webSocket("/signalling") { onSignalling() }
     }
 
     private fun Route.authenticate() {
@@ -56,7 +55,7 @@ class Gatekeeper(
     }
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.onSignUp() = guardContent {
-        val result = usersManager.signUp(call.receive())
+        val result = usersService.signUp(call.receive())
         if (result == null) {
             call.respond(HttpStatusCode.Conflict)
         } else {
@@ -65,7 +64,7 @@ class Gatekeeper(
     }
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.onSignOff() = withToken { token ->
-        val isSignedOff = usersManager.signOff(token)
+        val isSignedOff = usersService.signOff(token)
         if (!isSignedOff) {
             call.respond(HttpStatusCode.Conflict)
         } else {
@@ -73,9 +72,8 @@ class Gatekeeper(
         }
     }
 
-
     private suspend fun PipelineContext<Unit, ApplicationCall>.onSignIn() = guardContent {
-        val result = usersManager.signIn(call.receive())
+        val result = usersService.signIn(call.receive())
         if (result == null) {
             call.respond(HttpStatusCode.BadRequest)
         } else {
@@ -84,7 +82,7 @@ class Gatekeeper(
     }
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.onSignOut() = withToken { token ->
-        val isSignedOff = usersManager.signOut(token)
+        val isSignedOff = usersService.signOut(token)
         if (!isSignedOff) {
             call.respond(HttpStatusCode.Conflict)
         } else {
@@ -94,7 +92,7 @@ class Gatekeeper(
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.onSendInvitation() = guardContent {
         withToken { token ->
-            val isSent = usersManager.sendInvitation(call.receive(), token)
+            val isSent = usersService.sendInvitation(call.receive(), token)
             if (!isSent) {
                 call.respond(HttpStatusCode.Conflict)
             } else {
@@ -105,8 +103,8 @@ class Gatekeeper(
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.onAcceptInvitation() = guardContent {
         withToken { token ->
-            val isAccepted = usersManager.acceptInvitation(call.receive(), token)
-            if (!isAccepted) {
+            val response = usersService.acceptInvitation(call.receive(), token)
+            if (response == null) {
                 call.respond(HttpStatusCode.Conflict)
             } else {
                 call.respond(HttpStatusCode.OK)
@@ -116,7 +114,7 @@ class Gatekeeper(
 
     private suspend fun PipelineContext<Unit, ApplicationCall>.onRejectInvitation() = guardContent {
         withToken { token ->
-            val isRejected = usersManager.rejectInvitation(call.receive(), token)
+            val isRejected = usersService.rejectInvitation(call.receive(), token)
             if (!isRejected) {
                 call.respond(HttpStatusCode.Conflict)
             } else {
@@ -126,8 +124,9 @@ class Gatekeeper(
     }
 
     private suspend fun DefaultWebSocketServerSession.onSignalling() {
+        println("SOCKET CONNECTION:")
         call.tokenOrNull()?.let {
-            wsManager.onConnection(it, this)
+            sigService.onConnection(it, this)
         } ?: close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Token not found !"))
     }
 

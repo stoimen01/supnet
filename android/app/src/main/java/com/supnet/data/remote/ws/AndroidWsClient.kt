@@ -30,7 +30,10 @@ class AndroidWsClient(
                 }
             }
             .retryWhen { errors ->
-                errors.flatMap { Observable.timer(5, TimeUnit.SECONDS) }
+                errors.flatMap {
+                    it.printStackTrace()
+                    Observable.timer(5, TimeUnit.SECONDS)
+                }
             }
     }
 

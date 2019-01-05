@@ -12,8 +12,7 @@ import com.supnet.indoor.friends.FriendsEvent.FriendsViewEvent.*
 import com.supnet.indoor.friends.invitation.InvitationDialogFragment
 import kotlinx.android.synthetic.main.fragment_friends.*
 
-class FriendsFragment : BaseFragment(), Toolbar.OnMenuItemClickListener,
-    FriendsListAdapter.Listener {
+class FriendsFragment : BaseFragment(), Toolbar.OnMenuItemClickListener, FriendsListAdapter.Listener {
 
     private val viewModel by lazy {
         ViewModelProviders

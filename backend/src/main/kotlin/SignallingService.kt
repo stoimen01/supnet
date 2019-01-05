@@ -14,7 +14,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
-class WsManager(
+class SignallingService(
         private val tokensContainer: TokensContainer,
         private val store: SupnetStore
 ) {

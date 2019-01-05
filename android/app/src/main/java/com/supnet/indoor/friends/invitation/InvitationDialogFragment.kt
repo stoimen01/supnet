@@ -32,7 +32,7 @@ class InvitationDialogFragment : DialogFragment() {
             }
 
             view.btnSend.setOnClickListener {
-                viewModel.sendInvitation(view.txtFriend.toString(), view.txtMessage.toString())
+                viewModel.sendInvitation(view.txtFriend.text.toString(), view.txtMessage.text.toString())
             }
 
             return@let AlertDialog.Builder(it)

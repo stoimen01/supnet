@@ -1,10 +1,10 @@
 import store.*
 import java.util.*
 
-class UsersManager(
+class UsersService(
         private val tokensContainer: TokensContainer,
         private val store: SupnetStore,
-        private val wsManager: WsManager
+        private val sigService: SignallingService
 ) {
 
     suspend fun signUp(request: SignUpRequest): SignUpResponse? {
@@ -55,7 +55,7 @@ class UsersManager(
 
         val invId = store.addInvitation(initiatorId, recipient.id, msg)
 
-        wsManager.tryToSendInvitation(Invitation(invId, initiatorId, recipient.id, msg))
+        sigService.tryToSendInvitation(Invitation(invId, initiatorId, recipient.id, msg))
 
         return true
     }
@@ -70,7 +70,7 @@ class UsersManager(
 
         store.addFriendship(invitation.initiatorId, invitation.recipientId)
 
-        wsManager.notifyInvitationAccepted(invitation.initiatorId, invitation.id, recipientId, recipient.name)
+        sigService.notifyInvitationAccepted(invitation.initiatorId, invitation.id, recipientId, recipient.name)
 
         return AcceptInvitationResponse(
                 friendId = initiator.id,
@@ -80,7 +80,6 @@ class UsersManager(
 
     suspend fun rejectInvitation(request: RejectInvitationRequest, token: UUID): Boolean {
         getUserId(token) ?: return false
-
         return store.removeInvitation(request.invitationId)
     }
 

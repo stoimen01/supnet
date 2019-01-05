@@ -22,7 +22,7 @@ sealed class FriendsManagerResult {
 
         object InvitationRejected : RejectInvitationResult()
 
-        object RejectInvitationFailute : RejectInvitationResult()
+        object RejectInvitationFailure : RejectInvitationResult()
 
     }
 
