@@ -53,7 +53,7 @@ class FriendsReducer : StateReducer<FriendsState, FriendsEvent, FriendsEffect> {
 
             is OnAcceptInvitation -> resultOf(state, SendIntent(AcceptInvitation(event.id)))
 
-            is OnConnect -> resultOf(state, SendIntent(Connect(event.id)))
+            is OnConnect -> resultOf(state, TryConnect(event.id))
 
         }
 

@@ -4,14 +4,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.supnet.common.AutoDisposableViewModel
 import com.supnet.common.Command
+import com.supnet.domain.connection.ConnectionManager
+import com.supnet.domain.connection.ConnectionManagerState.*
 import com.supnet.indoor.IndoorCommand.*
+import io.reactivex.rxkotlin.plusAssign
 
-class IndoorViewModel : AutoDisposableViewModel() {
+class IndoorViewModel(connectionManager: ConnectionManager) : AutoDisposableViewModel() {
 
     private val liveCommands = MutableLiveData<Command<IndoorCommand>>()
 
     init {
-        postCommand(ShowFriends)
+
+        disposables += connectionManager
+            .states()
+            .subscribe {
+                when (it) {
+                    IDLE -> {
+
+                    }
+                    CONNECTED -> {
+
+                    }
+                }
+            }
+
     }
 
     fun getLiveCommands(): LiveData<Command<IndoorCommand>> = liveCommands

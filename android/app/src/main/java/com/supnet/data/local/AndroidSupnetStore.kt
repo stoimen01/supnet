@@ -13,12 +13,12 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 
+@SuppressLint("ApplySharedPref")
 class AndroidSupnetStore(
     private val db: SupnetDatabase,
     private val sp: SharedPreferences
 ) : SupnetStore {
 
-    @SuppressLint("ApplySharedPref")
     override fun saveToken(token: String): Completable = Completable.fromCallable {
         with(sp.edit()) {
             putString(SP_TOKEN_KEY, token)
@@ -38,6 +38,10 @@ class AndroidSupnetStore(
             db.userDao().deleteAllUserRows()
             db.friendDao().deleteAllFriendRows()
             db.invitationDao().deleteAllInvitations()
+            with(sp.edit()) {
+                remove(SP_TOKEN_KEY)
+                commit()
+            }
         }
     }
 

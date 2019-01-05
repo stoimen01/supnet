@@ -11,6 +11,4 @@ sealed class FriendsManagerIntent {
 
     data class RejectInvitation(val id: Int) : FriendsManagerIntent()
 
-    data class Connect(val id: Int) : FriendsManagerIntent()
-
 }

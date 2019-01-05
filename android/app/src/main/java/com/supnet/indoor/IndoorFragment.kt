@@ -6,8 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.supnet.R
 import com.supnet.common.BaseFragment
+import com.supnet.common.hide
 import com.supnet.common.observeCommands
 import com.supnet.indoor.IndoorCommand.*
+import com.supnet.indoor.connection.ConnectionFragment
 import com.supnet.indoor.friends.FriendsFragment
 import com.supnet.indoor.gadgets.GadgetsFragment
 import com.supnet.indoor.settings.SettingsFragment
@@ -33,6 +35,10 @@ class IndoorFragment : BaseFragment() {
         ShowFriends -> showFragment(FriendsFragment())
         ShowGadgets -> showFragment(GadgetsFragment())
         ShowSettings -> showFragment(SettingsFragment())
+        ShowConnection -> {
+            navBottom.hide()
+            showFragment(ConnectionFragment())
+        }
     }
 
     private fun onNavItemSelected(item: MenuItem): Boolean {

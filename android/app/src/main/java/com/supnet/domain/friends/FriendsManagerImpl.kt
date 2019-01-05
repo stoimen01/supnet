@@ -26,13 +26,13 @@ class FriendsManagerImpl(
 
     init {
         wsClient
-            .socketMessages()
+            .events()
             .flatMapCompletable {
                 return@flatMapCompletable when (it) {
-                    is WsEvent.WsMessageEvent.InvitationAccepted -> {
+                    is WsEvent.InvitationAccepted -> {
                         store.addFriend(Friend(it.friendId, it.friendName))
                     }
-                    is WsEvent.WsMessageEvent.InvitationReceived -> {
+                    is WsEvent.InvitationReceived -> {
                         store.addInvitation(
                             Invitation(
                                 id = it.invitationId,
@@ -55,7 +55,6 @@ class FriendsManagerImpl(
                     is InvitationIntent -> onInvitation(intent)
                     is AcceptInvitation -> onAcceptInvitation(intent)
                     is RejectInvitation -> onRejectInvitation(intent)
-                    is Connect -> TODO()
                 }
             }
             .publish()
@@ -91,8 +90,9 @@ class FriendsManagerImpl(
                     val request = AcceptInvitationRequest(intent.id)
                     supnetClient
                         .acceptInvitation(token, request)
-                        .flatMapCompletable {
-                            store.removeInvitation(intent.id)
+                        .flatMapCompletable { response ->
+                            store.addFriend(Friend(response.friendId, response.friendName))
+                                .andThen(store.removeInvitation(intent.id))
                         }
                         .andThen(Observable.just<AcceptInvitationResult>(InvitationAccepted))
                 }

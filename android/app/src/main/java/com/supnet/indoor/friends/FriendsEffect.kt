@@ -10,4 +10,6 @@ sealed class FriendsEffect {
 
     data class SendIntent(val intent: FriendsManagerIntent) : FriendsEffect()
 
+    data class TryConnect(val id: Int) : FriendsEffect()
+
 }

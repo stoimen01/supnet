@@ -107,7 +107,7 @@ class Gatekeeper(
             if (response == null) {
                 call.respond(HttpStatusCode.Conflict)
             } else {
-                call.respond(HttpStatusCode.OK)
+                call.respond(HttpStatusCode.OK, response)
             }
         }
     }
@@ -124,7 +124,6 @@ class Gatekeeper(
     }
 
     private suspend fun DefaultWebSocketServerSession.onSignalling() {
-        println("SOCKET CONNECTION:")
         call.tokenOrNull()?.let {
             sigService.onConnection(it, this)
         } ?: close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Token not found !"))

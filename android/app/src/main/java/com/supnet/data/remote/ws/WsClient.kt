@@ -4,8 +4,9 @@ import io.reactivex.Observable
 
 interface WsClient {
 
-    fun socketStates(): Observable<WsEvent.WsStateEvent>
+    fun sendMessage(msg: WsMessage)
 
-    fun socketMessages(): Observable<WsEvent.WsMessageEvent>
+    fun events(): Observable<WsEvent>
 
+    fun states(): Observable<WsState>
 }
